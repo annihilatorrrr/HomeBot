@@ -6,7 +6,6 @@ from homebot.modules.ci.artifacts import Artifacts, STATUS_UPLOADING, STATUS_UPL
 from homebot.modules.ci.projects.aosp.post import PostManager
 from homebot.modules.ci.projects.aosp.returncode import SUCCESS, ERROR_CODES, NEEDS_LOGS_UPLOAD
 from homebot.modules.ci.upload import Uploader
-from importlib import import_module
 from pathlib import Path
 import re
 import subprocess
