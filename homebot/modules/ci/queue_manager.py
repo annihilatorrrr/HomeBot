@@ -23,12 +23,13 @@ class QueueManager:
 					message += format_exception(e)
 					LOGE(message)
 					self.current_workflow.update.message.reply_text(f"Error: {message}")
-				LOGI(f"CI workflow finished, project: {workflow_name}")
-				self.current_workflow = None
 			except Exception as e:
 				message = "Unhandled exception from QueueManager:"
 				message += format_exception(e)
 				LOGE(message)
+			finally:
+				LOGI(f"CI workflow finished, project: {workflow_name}")
+				self.current_workflow = None
 
 	def put(self, workflow):
 		self.queue.put(workflow)
