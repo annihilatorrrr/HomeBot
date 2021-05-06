@@ -7,7 +7,6 @@ class QueueManager:
 	def __init__(self):
 		self.queue = Queue()
 		self.current_workflow = None
-		self.running = False
 		self.ci_thread = threading.Thread(target=self.run, name="CI workflows")
 		self.ci_thread.start()
 
@@ -15,7 +14,6 @@ class QueueManager:
 		while True:
 			try:
 				self.current_workflow = self.queue.get()
-				self.running = True
 				workflow_name = self.current_workflow.project_name
 				LOGI(f"CI workflow started, project: {workflow_name}")
 				try:
@@ -25,7 +23,6 @@ class QueueManager:
 					message += format_exception(e)
 					LOGE(message)
 					self.current_workflow.update.message.reply_text(f"Error: {message}")
-				self.running = False
 				LOGI(f"CI workflow finished, project: {workflow_name}")
 				self.current_workflow = None
 			except Exception as e:
@@ -45,8 +42,9 @@ class QueueManager:
 		workflows_info = []
 		for i, workflow in enumerate(self.get_queue_list()):
 			workflows_info += [f"{i+1}) {workflow.get_info()}"]
-		text = f"CI status: {'Running' if self.running else 'Stopped'}\n\n"
-		if self.running:
+		running = self.current_workflow is not None
+		text = f"CI status: {'Running' if running else 'Stopped'}\n\n"
+		if running:
 			text += f"Running workflow: {self.current_workflow.get_info()}\n"
 		text += f"Queued workflows: {qsize}\n\n"
 		text += "\n".join(workflows_info)
