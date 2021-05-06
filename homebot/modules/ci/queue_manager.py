@@ -13,20 +13,25 @@ class QueueManager:
 
 	def run(self):
 		while True:
-			self.current_workflow = self.queue.get()
-			self.running = True
-			workflow_name = self.current_workflow.project_name
-			LOGI(f"CI workflow started, project: {workflow_name}")
 			try:
-				self.current_workflow.run()
+				self.current_workflow = self.queue.get()
+				self.running = True
+				workflow_name = self.current_workflow.project_name
+				LOGI(f"CI workflow started, project: {workflow_name}")
+				try:
+					self.current_workflow.run()
+				except Exception as e:
+					message = "Unhandled exception from CI workflow:"
+					message += format_exception(e)
+					LOGE(message)
+					self.current_workflow.update.message.reply_text(f"Error: {message}")
+				self.running = False
+				LOGI(f"CI workflow finished, project: {workflow_name}")
+				self.current_workflow = None
 			except Exception as e:
-				message = "Unhandled exception from CI workflow:"
+				message = "Unhandled exception from QueueManager:"
 				message += format_exception(e)
 				LOGE(message)
-				self.current_workflow.update.message.reply_text(f"Error: {message}")
-			self.running = False
-			LOGI(f"CI workflow finished, project: {workflow_name}")
-			self.current_workflow = None
 
 	def put(self, workflow):
 		self.queue.put(workflow)
