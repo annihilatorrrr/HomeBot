@@ -36,7 +36,7 @@ class QueueManager:
 	def get_queue_list(self):
 		with self.queue.mutex:
 			return list(self.queue.queue)
-	
+
 	def get_formatted_queue_list(self):
 		qsize = self.queue.qsize()
 		workflows_info = []
