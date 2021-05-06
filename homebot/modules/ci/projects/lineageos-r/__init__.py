@@ -1,3 +1,5 @@
+"""LineageOS R CI project."""
+
 from homebot.modules.ci.projects.lineageos import LineageOSProject
 
 class Project(LineageOSProject):

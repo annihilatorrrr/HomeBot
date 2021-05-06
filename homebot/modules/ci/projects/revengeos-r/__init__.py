@@ -1,3 +1,5 @@
+"""RevengeOS R CI project."""
+
 from homebot.modules.ci.projects.revengeos import RevengeOSProject
 
 class Project(RevengeOSProject):

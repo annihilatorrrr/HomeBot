@@ -1,3 +1,5 @@
+"""twrpdtgen CI project."""
+
 from datetime import date
 from homebot.modules.ci.parser import CIParser
 from homebot.modules.ci.project import ProjectBase

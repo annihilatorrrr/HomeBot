@@ -1,3 +1,5 @@
+"""Fluid R CI project."""
+
 from homebot.modules.ci.projects.fluid import FluidProject
 
 class Project(FluidProject):

@@ -1,3 +1,5 @@
+"""LineageOS common CI project."""
+
 from homebot.modules.ci.projects.aosp.project import AOSPProject
 
 class LineageOSProject(AOSPProject):
