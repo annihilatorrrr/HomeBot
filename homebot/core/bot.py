@@ -25,7 +25,7 @@ class HomeBotDispatcher(Dispatcher):
 
 		self.add_error_handler(error_handler, True)
 
-		self.modules = []
+		self.modules = {}
 
 		LOGI("Parsing modules")
 		for module in modules:
@@ -35,7 +35,7 @@ class HomeBotDispatcher(Dispatcher):
 				LOGE(f"Error initializing module {module.name}, will be skipped\n"
 					 f"Error: {e}")
 			else:
-				self.modules.append(module_instance)
+				self.modules[module_instance.name] = module_instance
 		LOGI("Modules parsed")
 
 		LOGI("Loading modules")
@@ -43,33 +43,43 @@ class HomeBotDispatcher(Dispatcher):
 			self.load_module(module)
 		LOGI("Modules loaded")
 
-	def load_module(self, module):
+	def load_module(self, module: str):
 		"""
 		Load a provided module and add its command handler
 		to the bot's dispatcher.
 		"""
-		LOGI(f"Loading module {module.name}")
-		module.set_status("Starting up")
+		LOGI(f"Loading module {module}")
+		module_class = self.modules[module]
 
-		for command in module.commands:
+		if module_class.status == "Running":
+			raise AttributeError("Module is already loaded")
+
+		module_class.set_status("Starting up")
+
+		for command in module_class.commands:
 			self.add_handler(command.handler)
 
-		module.set_status("Running")
-		LOGI(f"Module {module.name} loaded")
+		module_class.set_status("Running")
+		LOGI(f"Module {module} loaded")
 
-	def unload_module(self, module):
+	def unload_module(self, module: str):
 		"""
 		Unload a provided module and remove its command handler
 		from the bot's dispatcher.
 		"""
-		LOGI(f"Unloading module {module.name}")
-		module.set_status("Stopping")
+		LOGI(f"Unloading module {module}")
+		module_class = self.modules[module]
 
-		for command in module.commands:
+		if module_class.status == "Disabled":
+			raise AttributeError("Module is already unloaded")
+
+		module_class.set_status("Stopping")
+
+		for command in module_class.commands:
 			self.remove_handler(command.handler)
 
-		module.set_status("Disabled")
-		LOGI(f"Module {module.name} unloaded")
+		module_class.set_status("Disabled")
+		LOGI(f"Module {module} unloaded")
 
 class HomeBotUpdater(Updater):
 	"""
