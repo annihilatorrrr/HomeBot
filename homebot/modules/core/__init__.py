@@ -19,8 +19,8 @@ class Module(ModuleBase):
 	def modules(update: Update, context: CallbackContext):
 		message = "Loaded modules:\n\n"
 		modules = context.dispatcher.modules
-		for module in modules:
-			message += f"{module.name}\n"
+		for module_name, module in modules.items():
+			message += f"{module_name}\n"
 			message += f"Status: {module.status}\n"
 			message += f"Commands: {', '.join([command.name for command in module.commands])}\n\n"
 		update.message.reply_text(message)
@@ -30,48 +30,60 @@ class Module(ModuleBase):
 			update.message.reply_text("Error: You are not authorized to load modules")
 			return
 
-		try:
-			module_name = update.message.text.split(' ', 1)[1]
-		except IndexError:
+		if len(context.args) < 1:
 			update.message.reply_text("Error: Module name not provided")
 			return
 
-		if module_name == "core":
-			update.message.reply_text("Error: You can't load module used for loading/unloading modules")
-			return
+		result = {}
+		for module_name in context.args:
+			if module_name == "core":
+				text = "Error: You can't load module used for loading/unloading modules"
+			else:
+				try:
+					context.dispatcher.load_module(module_name)
+				except ModuleNotFoundError:
+					text = "Error: Module not found"
+				except AttributeError:
+					text = "Module already loaded"
+				else:
+					text = "Module loaded"
 
-		modules = context.dispatcher.modules
-		for module in modules:
-			if module_name == module.name:
-				context.dispatcher.load_module(module)
-				update.message.reply_text(f"Module {module_name} loaded")
-				return
+			result[module_name] = text
 
-		update.message.reply_text("Error: Module not found")
+		text = ""
+		for module_name, status in result.items():
+			text += f"{module_name}: {status}\n"
+		update.message.reply_text(text)
 
 	def unload(update: Update, context: CallbackContext):
 		if not user_is_admin(update.message.from_user.id):
 			update.message.reply_text("Error: You are not authorized to unload modules")
 			return
 
-		try:
-			module_name = update.message.text.split(' ', 1)[1]
-		except IndexError:
+		if len(context.args) < 1:
 			update.message.reply_text("Error: Module name not provided")
 			return
 
-		if module_name == "core":
-			update.message.reply_text("Error: You can't unload module used for loading/unloading modules")
-			return
+		result = {}
+		for module_name in context.args:
+			if module_name == "core":
+				text = "Error: You can't unload module used for loading/unloading modules"
+			else:
+				try:
+					context.dispatcher.unload_module(module_name)
+				except ModuleNotFoundError:
+					text = "Error: Module not found"
+				except AttributeError:
+					text = "Module already unloaded"
+				else:
+					text = "Module unloaded"
 
-		modules = context.dispatcher.modules
-		for module in modules:
-			if module_name == module.name:
-				context.dispatcher.unload_module(module)
-				update.message.reply_text(f"Module {module_name} unloaded")
-				return
+			result[module_name] = text
 
-		update.message.reply_text("Error: Module not found")
+		text = ""
+		for module_name, status in result.items():
+			text += f"{module_name}: {status}\n"
+		update.message.reply_text(text)
 
 	commands = {
 		start: ['start', 'help'],
