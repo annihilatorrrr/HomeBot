@@ -77,7 +77,7 @@ class AOSPProject(ProjectBase):
 				continue
 
 			now = datetime.now()
-			if (now - last_edit).seconds < 300:
+			if (now - last_edit).seconds < 150:
 				continue
 
 			result = re.search(r"\[ +([0-9]+% [0-9]+/[0-9]+)\]", output.strip())
