@@ -87,3 +87,6 @@ dmypy.json
 
 # HomeBot configuration file
 config.env
+
+# Allow lib directory
+!/homebot/lib/

@@ -1,7 +1,8 @@
+"""Remote upload utils library"""
+
 from ftplib import FTP, error_perm
 from homebot import get_config
 from homebot.core.logging import LOGI
-from homebot.modules.ci.artifacts import Artifact
 import os.path
 import paramiko
 from pathlib import Path
@@ -58,31 +59,31 @@ class Uploader:
 		if self.method not in ALLOWED_METHODS:
 			raise NotImplementedError("Upload method not valid")
 
-	def upload(self, artifact: Artifact, destination_path_ci: Path):
+	def upload(self, file: Path, destination: Path):
 		"""
 		Upload an artifact using settings from config.env
 
 		Returns True if the upload went fine
 		"""
-		if not artifact.path.is_file():
+		if not file.is_file():
 			raise FileNotFoundError("File doesn't exists")
 
 		if self.destination_path_base is None:
-			destination_path = destination_path_ci
+			destination_path = destination
 		else:
-			destination_path = self.destination_path_base / destination_path_ci
+			destination_path = self.destination_path_base / destination
 
-		LOGI(f"Started uploading of {artifact.path.name}")
+		LOGI(f"Started uploading of {file.name}")
 
 		if self.method == "localcopy":
 			os.makedirs(destination_path, exist_ok=True)
-			shutil.copy(artifact.path, destination_path)
+			shutil.copy(file, destination_path)
 		elif self.method == "ftp":
 			ftp = FTP(self.server)
 			ftp.login(self.username, self.password)
 			ftp_chdir(ftp, destination_path)
-			with open(artifact.path, 'rb') as f:
-				ftp.storbinary('STOR %s' % artifact.path.name, f)
+			with open(file, 'rb') as f:
+				ftp.storbinary('STOR %s' % file.name, f)
 				f.close()
 			ftp.close()
 		elif self.method == "sftp":
@@ -90,9 +91,9 @@ class Uploader:
 			transport.connect(username=self.username, password=self.password)
 			sftp = paramiko.SFTPClient.from_transport(transport)
 			sftp_chdir(sftp, destination_path)
-			sftp.put(artifact.path, artifact.path.name)
+			sftp.put(file, file.name)
 			sftp.close()
 			transport.close()
 
-		LOGI(f"Finished uploading of {artifact.path.name}")
+		LOGI(f"Finished uploading of {file.name}")
 		return True

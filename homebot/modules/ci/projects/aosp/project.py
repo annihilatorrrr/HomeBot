@@ -5,7 +5,7 @@ from homebot.modules.ci.parser import CIParser
 from homebot.modules.ci.artifacts import Artifacts, STATUS_UPLOADING, STATUS_UPLOADED, STATUS_NOT_UPLOADED
 from homebot.modules.ci.projects.aosp.post import PostManager
 from homebot.modules.ci.projects.aosp.returncode import SUCCESS, ERROR_CODES, NEEDS_LOGS_UPLOAD
-from homebot.modules.ci.upload import Uploader
+from homebot.lib.libupload import Uploader
 from pathlib import Path
 import re
 import subprocess
@@ -125,7 +125,7 @@ class AOSPProject(ProjectBase):
 			post_manager.update(build_result)
 
 			try:
-				uploader.upload(artifact, Path(self.category) / self.parsed_args.device / self.name / self.android_version)
+				uploader.upload(artifact.path, Path(self.category) / self.parsed_args.device / self.name / self.android_version)
 			except Exception as e:
 				artifact.status = f"{STATUS_NOT_UPLOADED}: {type(e)}: {e}"
 			else:
