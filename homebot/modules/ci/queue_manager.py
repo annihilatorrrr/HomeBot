@@ -19,12 +19,12 @@ class QueueManager:
 				try:
 					self.current_workflow.run()
 				except Exception as e:
-					message = "Unhandled exception from CI workflow:"
+					message = "Unhandled exception from CI workflow:\n"
 					message += format_exception(e)
 					LOGE(message)
 					self.current_workflow.update.message.reply_text(f"Error: {message}")
 			except Exception as e:
-				message = "Unhandled exception from QueueManager:"
+				message = "Unhandled exception from QueueManager:\n"
 				message += format_exception(e)
 				LOGE(message)
 			finally:
