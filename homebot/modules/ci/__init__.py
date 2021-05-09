@@ -6,7 +6,6 @@ from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGE, LOGI
 from homebot.core.modules_manager import ModuleBase
 from homebot.modules.ci.parser import CIParser
-from homebot.modules.ci.project import ProjectBase
 from homebot.modules.ci.queue_manager import queue_manager
 from homebot.modules.ci.workflow import Workflow
 from importlib import import_module
