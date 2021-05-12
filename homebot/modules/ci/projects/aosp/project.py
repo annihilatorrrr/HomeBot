@@ -1,6 +1,8 @@
 from datetime import datetime
 from homebot.modules.ci.project import ProjectBase
 from homebot import bot_path, get_config
+from homebot.core.error_handler import format_exception
+from homebot.core.logging import LOGE
 from homebot.modules.ci.parser import CIParser
 from homebot.modules.ci.artifacts import Artifacts, STATUS_UPLOADING, STATUS_UPLOADED, STATUS_NOT_UPLOADED
 from homebot.modules.ci.projects.aosp.post import PostManager
@@ -128,6 +130,8 @@ class AOSPProject(ProjectBase):
 				uploader.upload(artifact.path, Path(self.category) / self.parsed_args.device / self.name / self.android_version)
 			except Exception as e:
 				artifact.status = f"{STATUS_NOT_UPLOADED}: {type(e)}: {e}"
+				LOGE(f"Error while uploading artifact {artifact.name}:\n"
+					 f"{format_exception(e)}")
 			else:
 				artifact.status = STATUS_UPLOADED
 
