@@ -1,6 +1,7 @@
 from homebot import get_config
 from homebot.modules.ci.artifacts import Artifacts
-from telegram.error import TimedOut
+from telegram.error import TimedOut, RetryAfter
+from time import sleep
 
 chat_id = get_config("CI_CHANNEL_ID")
 
@@ -34,5 +35,9 @@ class PostManager:
 		# Read timed out. (read timeout=5.0)
 		try:
 			return self.message.edit_text(text)
+		except RetryAfter as err:
+			# Just in case
+			sleep(err.retry_after + 5)
+			return self.edit_text(text)
 		except TimedOut:
 			pass
