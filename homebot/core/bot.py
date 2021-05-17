@@ -1,6 +1,6 @@
-from homebot import modules
 from homebot.core.error_handler import error_handler
 from homebot.core.logging import LOGE, LOGI
+from homebot.core.modules_manager import get_bot_modules
 from telegram import Bot
 from telegram.ext import Dispatcher, JobQueue, Updater
 from telegram.utils.request import Request
@@ -28,7 +28,7 @@ class HomeBotDispatcher(Dispatcher):
 		self.modules = {}
 
 		LOGI("Parsing modules")
-		for module in modules:
+		for module in get_bot_modules():
 			try:
 				module_instance = module()
 			except Exception as e:

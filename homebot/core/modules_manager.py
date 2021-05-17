@@ -5,7 +5,7 @@ from pkgutil import iter_modules
 from telegram.ext import CommandHandler
 from types import FunctionType
 
-def import_bot_modules():
+def get_bot_modules():
 	modules = []
 	for module_name in [name for _, name, _ in iter_modules([modules_path])]:
 		try:
