@@ -2,6 +2,7 @@ from homebot.modules.ci.project import ProjectBase
 
 class Workflow:
 	def __init__(self, project: ProjectBase):
+		"""Initialize the workflow."""
 		self.project = project
 		self.update = self.project.update
 		self.context = self.project.context

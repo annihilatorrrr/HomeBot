@@ -20,6 +20,7 @@ class Project(ProjectBase):
 	name = "twrpdtgen"
 
 	def __init__(self, update: Update, context: CallbackContext, args: list[str]):
+		"""Init twrpdtgen project class."""
 		super().__init__(update, context, args)
 		parser = CIParser(prog="/ci twrpdtgen")
 		parser.set_output(self.update.message.reply_text)
@@ -86,8 +87,8 @@ class Project(ProjectBase):
 		try:
 			devicetree.git_repo.git.push(git_repo_url, f"HEAD:refs/heads/{branch}")
 			devicetree_repo.edit(default_branch=branch)
-		except GitCommandError as error:
-			status_message.edit_text(f"Error: Push to remote failed!")
+		except GitCommandError:
+			status_message.edit_text("Error: Push to remote failed!")
 			return
 
 		status_message.edit_text("Done")

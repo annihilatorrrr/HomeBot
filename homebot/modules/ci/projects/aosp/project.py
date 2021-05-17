@@ -35,6 +35,7 @@ class AOSPProject(ProjectBase):
 	artifacts: str
 
 	def __init__(self, update: Update, context: CallbackContext, args: list[str]):
+		"""Initialize AOSP project class."""
 		super().__init__(update, context, args)
 		parser = CIParser(prog="/ci")
 		parser.set_output(self.update.message.reply_text)

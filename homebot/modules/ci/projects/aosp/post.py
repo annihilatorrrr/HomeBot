@@ -7,6 +7,7 @@ chat_id = get_config("CI_CHANNEL_ID")
 
 class PostManager:
 	def __init__(self, project, device: str, artifacts: Artifacts):
+		"""Initialize PostManager class."""
 		self.project = project
 		self.device = device
 		self.artifacts = artifacts

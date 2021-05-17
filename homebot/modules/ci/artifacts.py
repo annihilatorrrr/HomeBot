@@ -6,25 +6,15 @@ STATUS_UPLOADED = "Uploaded"
 STATUS_NOT_UPLOADED = "Error while uploading"
 
 class Artifact:
-	"""
-	This class represent an artifact.
-	"""
 	def __init__(self, path: Path):
-		"""
-		Initialize the artifact.
-		"""
+		"""Initialize the artifact class."""
 		self.name = path.name
 		self.path = path
 		self.status = "On queue"
 
 class Artifacts:
-	"""
-	This class represent a lost of artifacts.
-	"""
 	def __init__(self, path: Path, pattern: str):
-		"""
-		Find the artifacts.
-		"""
+		"""Find the artifacts."""
 		self.pattern = pattern
 		self.path = path
 		self.artifacts = []

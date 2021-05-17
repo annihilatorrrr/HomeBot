@@ -5,6 +5,7 @@ import threading
 
 class QueueManager:
 	def __init__(self):
+		"""Initialize the QueueManager class."""
 		self.queue = Queue()
 		self.current_workflow = None
 		self.ci_thread = threading.Thread(target=self.run, name="CI workflows")

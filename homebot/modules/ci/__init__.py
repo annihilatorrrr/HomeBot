@@ -47,7 +47,7 @@ class Module(ModuleBase):
 		try:
 			project_class = import_module(f"homebot.modules.ci.projects.{args.project}", package="Project").Project
 		except (ModuleNotFoundError, AttributeError):
-			update.message.reply_text(f"Error: Project script not found")
+			update.message.reply_text("Error: Project script not found")
 			return
 		except Exception as e:
 			text = "Error: Error while importing project:"
