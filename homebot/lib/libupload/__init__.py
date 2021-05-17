@@ -1,4 +1,4 @@
-"""Remote upload utils library"""
+"""Remote upload utils library."""
 
 from ftplib import FTP, error_perm
 from homebot import get_config
@@ -41,13 +41,8 @@ def sftp_chdir(sftp: paramiko.SFTPClient, remote_directory: Path):
 		return True
 
 class Uploader:
-	"""
-	Uploader class.
-	"""
 	def __init__(self):
-		"""
-		Initialize the uploader variables.
-		"""
+		"""Initialize the uploader variables."""
 		self.method = get_config("CI_ARTIFACTS_UPLOAD_METHOD")
 		self.destination_path_base = Path(get_config("CI_UPLOAD_BASE_DIR"))
 		self.host = get_config("CI_UPLOAD_HOST")
@@ -60,11 +55,7 @@ class Uploader:
 			raise NotImplementedError("Upload method not valid")
 
 	def upload(self, file: Path, destination: Path):
-		"""
-		Upload an artifact using settings from config.env
-
-		Returns True if the upload went fine
-		"""
+		"""Upload an artifact using settings from config.env."""
 		if not file.is_file():
 			raise FileNotFoundError("File doesn't exists")
 
