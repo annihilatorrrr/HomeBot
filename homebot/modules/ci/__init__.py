@@ -1,10 +1,10 @@
 """HomeBot CI module."""
 
 from homebot import get_config
-from homebot.core.admin import user_is_admin
 from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGE, LOGI
 from homebot.core.modules_manager import ModuleBase
+from homebot.lib.libadmin import user_is_admin
 from homebot.modules.ci.parser import CIParser
 from homebot.modules.ci.queue_manager import queue_manager
 from homebot.modules.ci.workflow import Workflow

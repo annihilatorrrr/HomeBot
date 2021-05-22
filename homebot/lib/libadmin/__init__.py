@@ -1,3 +1,5 @@
+"""Admin utils library."""
+
 from homebot import get_config
 from homebot.core.logging import LOGI
 

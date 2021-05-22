@@ -1,7 +1,7 @@
 """HomeBot shell module."""
 
-from homebot.core.admin import user_is_admin
 from homebot.core.modules_manager import ModuleBase
+from homebot.lib.libadmin import user_is_admin
 import subprocess
 from telegram.ext import CallbackContext
 from telegram.update import Update
