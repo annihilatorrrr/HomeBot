@@ -7,7 +7,7 @@ from types import FunctionType
 
 def get_bot_modules():
 	modules = []
-	for module_name in [name for _, name, _ in iter_modules([modules_path])]:
+	for module_name in [name for _, name, _ in iter_modules([str(modules_path)])]:
 		try:
 			module_class = import_module(f'homebot.modules.{module_name}', package="Module").Module
 		except Exception as e:
