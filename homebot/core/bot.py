@@ -1,113 +1,100 @@
 from homebot.core.error_handler import error_handler
 from homebot.core.logging import LOGE, LOGI
-from homebot.core.modules_manager import get_bot_modules
-from telegram import Bot
-from telegram.ext import Dispatcher, JobQueue, Updater
-from telegram.utils.request import Request
-from threading import Event
-from queue import Queue
+from homebot.core.mdlintf import get_all_modules_list, get_module
+from telegram.ext import Dispatcher, Updater
+from threading import Lock
+from types import MethodType
 
-class HomeBotDispatcher(Dispatcher):
+# Module status
+(
+	MODULE_STATUS_DISABLED,
+	MODULE_STATUS_ENABLED,
+	MODULE_STATUS_ENABLING,
+	MODULE_STATUS_DISABLING,
+	MODULE_STATUS_ERROR,
+) = range(5)
+
+MODULE_STATUS_MESSAGE = {
+	MODULE_STATUS_DISABLED: "Disabled",
+	MODULE_STATUS_ENABLED: "Enabled",
+	MODULE_STATUS_ENABLING: "Enabling",
+	MODULE_STATUS_DISABLING: "Disabling",
+	MODULE_STATUS_ERROR: "Error",
+}
+
+def enable_module(self: Dispatcher, module_name: str):
 	"""
-	HomeBot dispatcher.
+	Load a provided module and add its command handler
+	to the bot's dispatcher.
 	"""
-	def __init__(self,
-				 bot: 'Bot',
-				 update_queue: Queue,
-				 workers: int = 4,
-				 exception_event: Event = None,
-				 job_queue: 'JobQueue' = None):
-		"""
-		Initialize the dispatcher and its modules.
-		"""
-		super().__init__(bot, update_queue, workers=workers,
-						 exception_event=exception_event, job_queue=job_queue)
+	LOGI(f"Loading module {module_name}")
 
-		self.add_error_handler(error_handler, True)
+	module = get_module(module_name)
+	if module is None:
+		raise ModuleNotFoundError(f"Module {module_name} not found")
 
-		self.modules = {}
+	with self.modules_status_lock:
+		if not module_name in self.modules_status:
+			self.modules_status[module_name] = MODULE_STATUS_DISABLED
 
-		LOGI("Parsing modules")
-		for module in get_bot_modules():
-			try:
-				module_instance = module()
-			except Exception as e:
-				LOGE(f"Error initializing module {module.name}, will be skipped\n"
-					 f"Error: {e}")
-			else:
-				self.modules[module_instance.name] = module_instance
-		LOGI("Modules parsed")
+		if self.modules_status[module_name] == MODULE_STATUS_ENABLED:
+			raise AttributeError("Module is already enabled")
 
-		LOGI("Loading modules")
-		for module in self.modules:
-			self.load_module(module)
-		LOGI("Modules loaded")
+		self.modules_status[module_name] = MODULE_STATUS_ENABLING
 
-	def load_module(self, module: str):
-		"""
-		Load a provided module and add its command handler
-		to the bot's dispatcher.
-		"""
-		LOGI(f"Loading module {module}")
-		module_class = self.modules[module]
+		try:
+			for command in module.commands:
+				self.add_handler(command.handler)
+		except:
+			LOGE(f"Failed to add handler for module {module_name}")
+			self.modules_status[module_name] = MODULE_STATUS_ERROR
 
-		if module_class.status == "Running":
-			raise AttributeError("Module is already loaded")
+		self.modules_status[module_name] = MODULE_STATUS_ENABLED
 
-		module_class.set_status("Starting up")
+	LOGI(f"Module {module_name} enabled")
 
-		for command in module_class.commands:
-			self.add_handler(command.handler)
-
-		module_class.set_status("Running")
-		LOGI(f"Module {module} loaded")
-
-	def unload_module(self, module: str):
-		"""
-		Unload a provided module and remove its command handler
-		from the bot's dispatcher.
-		"""
-		LOGI(f"Unloading module {module}")
-		module_class = self.modules[module]
-
-		if module_class.status == "Disabled":
-			raise AttributeError("Module is already unloaded")
-
-		module_class.set_status("Stopping")
-
-		for command in module_class.commands:
-			self.remove_handler(command.handler)
-
-		module_class.set_status("Disabled")
-		LOGI(f"Module {module} unloaded")
-
-class HomeBotUpdater(Updater):
+def disable_module(self: Dispatcher, module_name: str):
 	"""
-	HomeBot updater.
+	Unload a provided module and remove its command handler
+	from the bot's dispatcher.
 	"""
-	def __init__(
-		self,
-		token: str = None,
-		workers: int = 4,
-	):
-		"""
-		Initialize the updater.
-		"""
-		con_pool_size = workers + 4
-		request_kwargs = {'con_pool_size': con_pool_size}
-		self._request = Request(**request_kwargs)
-		self.bot = Bot(token, request=self._request)
+	LOGI(f"Loading module {module_name}")
 
-		update_queue: Queue = Queue()
-		job_queue = JobQueue()
-		exception_event = Event()
-		dispatcher = HomeBotDispatcher(
-			self.bot,
-			update_queue,
-			job_queue=job_queue,
-			workers=workers,
-			exception_event=exception_event
-		)
-		job_queue.set_dispatcher(dispatcher)
+	module = get_module(module_name)
+	if module is None:
+		raise ModuleNotFoundError(f"Module {module_name} not found")
 
-		super().__init__(dispatcher=dispatcher, workers=None)
+	with self.modules_status_lock:
+		if not module_name in self.modules_status:
+			self.modules_status[module_name] = MODULE_STATUS_DISABLED
+
+		if self.modules_status[module_name] == MODULE_STATUS_DISABLED:
+			raise AttributeError("Module is already disabled")
+
+		self.modules_status[module_name] = MODULE_STATUS_DISABLING
+
+		try:
+			for command in module.commands:
+				self.add_handler(command.handler)
+		except:
+			LOGE(f"Failed to add handler for module {module_name}")
+			self.modules_status[module_name] = MODULE_STATUS_ERROR
+
+		self.modules_status[module_name] = MODULE_STATUS_DISABLED
+
+	LOGI(f"Module {module_name} disabled")
+
+class HomeBot(Updater):
+	def __init__(self, token: str):
+		super().__init__(token=token)
+
+		self.dispatcher.add_error_handler(error_handler, True)
+
+		self.dispatcher.modules_status = {}
+		self.dispatcher.modules_status_lock = Lock()
+
+		self.dispatcher.enable_module = MethodType(enable_module, self.dispatcher)
+		self.dispatcher.disable_module = MethodType(disable_module, self.dispatcher)
+
+		for module_name in get_all_modules_list():
+			self.dispatcher.enable_module(module_name)
