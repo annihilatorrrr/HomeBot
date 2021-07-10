@@ -1,26 +1,25 @@
 """HomeBot cowsay module."""
 
-from contextlib import redirect_stdout
-from cowsay import cow
-from homebot.core.modules_manager import ModuleBase
-import io
-from telegram.ext import CallbackContext
-from telegram.update import Update
+from homebot.core.mdlintf import (
+	MODULE_TYPE_EXTERNAL,
+	ModuleCommand,
+	ModuleInterface,
+	register_module,
+)
 
-class Module(ModuleBase):
-	name = "cowsay"
-	description = "Moo"
-	version = "1.0.0"
+from homebot.modules.cowsay.main import (
+	cowsay,
+)
 
-	def cowsay(update: Update, context: CallbackContext):
-		with io.StringIO() as buf, redirect_stdout(buf):
-			try:
-				cow(update.message.text.split(' ', 1)[1])
-			except IndexError:
-				update.message.reply_text("Error: Write something after the command!")
-			else:
-				update.message.reply_text(f"`{buf.getvalue()}`", parse_mode="Markdown")
-
-	commands = {
-		cowsay: ['cowsay']
-	}
+register_module(
+	ModuleInterface(
+		name = "cowsay",
+		version = "1.0.0",
+		module_type = MODULE_TYPE_EXTERNAL,
+		description = "Moo",
+		commands = {
+			ModuleCommand(cowsay, ['cowsay']),
+		},
+		ioctl = None,
+	)
+)
