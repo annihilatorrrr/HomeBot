@@ -5,9 +5,9 @@
 ## How to use it
 
 -   Execute `pip3 install .` to install all the dependencies
--   Copy `example_config.env` to `config.env`
--   Put a bot token in `config.env`
--   Edit additional variables in `config.env`
+-   Copy `example_config.py` to `config.py`
+-   Put a bot token in `config.py`
+-   Edit additional variables in `config.py`
 -   Launch the bot by typing
 
 ```bash
