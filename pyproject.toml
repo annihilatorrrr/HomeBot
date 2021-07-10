@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "homebot"
-version = "3.0.0"
+version = "4.0.0"
 description = "A Telegram bot written in Python"
 authors = ["Sebastiano Barezzi <barezzisebastiano@gmail.com>"]
 
