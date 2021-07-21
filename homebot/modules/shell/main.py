@@ -5,7 +5,7 @@ from telegram.update import Update
 
 def shell(update: Update, context: CallbackContext):
 	if not user_is_admin(update.message.from_user.id):
-		update.message.reply_text("Error: You are not authorized to load modules")
+		update.message.reply_text("Error: You are not authorized to use the shell")
 		return
 
 	if len(update.message.text.split(' ', 1)) < 2:
