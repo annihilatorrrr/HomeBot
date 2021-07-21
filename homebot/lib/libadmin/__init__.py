@@ -6,11 +6,28 @@ from homebot.core.logging import LOGI
 def user_is_admin(user_id):
 	"""
 	Check if the given user ID is in the list
+	of the admin user IDs.
+	"""
+	allowed = False
+
+	if user_id in get_config("bot.admin_user_ids", []):
+		allowed = True
+
+	LOGI(f"Access {'granted' if allowed else 'denied'} to user {user_id}")
+	return allowed
+
+def user_is_approved(user_id):
+	"""
+	Check if the given user ID is in the list
 	of the approved user IDs.
 	"""
-	if user_id not in get_config("libadmin.approved_user_ids", []):
-		LOGI(f"Access denied to user {user_id}")
-		return False
+	allowed = False
 
-	LOGI(f"Access granted to user {user_id}")
-	return True
+	if user_is_admin(user_id):
+		allowed = True
+
+	if user_id in get_config("libadmin.approved_user_ids", []):
+		allowed = True
+
+	LOGI(f"Access {'granted' if allowed else 'denied'} to user {user_id}")
+	return allowed
