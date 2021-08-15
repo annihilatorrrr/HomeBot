@@ -15,10 +15,10 @@ class QueueManager:
 		while True:
 			try:
 				self.current_workflow = self.queue.get()
-				workflow_name = self.current_workflow.project_name
+				workflow_name = self.current_workflow.name
 				LOGI(f"CI workflow started, project: {workflow_name}")
 				try:
-					self.current_workflow.run()
+					self.current_workflow.build()
 				except Exception as e:
 					message = "Unhandled exception from CI workflow:\n"
 					message += format_exception(e)

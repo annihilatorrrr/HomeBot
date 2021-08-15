@@ -4,7 +4,6 @@ from homebot.core.logging import LOGE, LOGI
 from homebot.lib.libadmin import user_is_approved
 from homebot.modules.ci.parser import CIParser
 from homebot.modules.ci.queue_manager import queue_manager
-from homebot.modules.ci.workflow import Workflow
 from importlib import import_module
 from telegram.ext import CallbackContext
 from telegram.update import Update
@@ -37,7 +36,7 @@ def ci(update: Update, context: CallbackContext):
 		parser.error("Please specify a project")
 
 	try:
-		project_class = import_module(f"homebot.modules.ci.projects.{args.project}", package="Project").Project
+		project = import_module(f"homebot.modules.ci.projects.{args.project}", package="Project").Project
 	except (ModuleNotFoundError, AttributeError):
 		update.message.reply_text("Error: Project script not found")
 		return
@@ -49,7 +48,7 @@ def ci(update: Update, context: CallbackContext):
 		return
 
 	try:
-		project = project_class(update, context, project_args)
+		workflow = project(update, context, project_args)
 	except Exception as e:
 		text = "Error: Project class initialization failed:\n"
 		text += format_exception(e)
@@ -57,7 +56,6 @@ def ci(update: Update, context: CallbackContext):
 		LOGE(text)
 		return
 
-	workflow = Workflow(project)
 	queue_manager.put(workflow)
 	update.message.reply_text("Workflow added to the queue")
 	LOGI("Workflow added to the queue")

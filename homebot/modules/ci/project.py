@@ -12,3 +12,8 @@ class ProjectBase:
 
 	def build(self):
 		pass
+
+	def get_info(self):
+		return (f"{self.name}\n"
+		        f"Arguments: {' '.join(self.args)}\n"
+		        f"Started by: {self.update.effective_user.name}\n")
