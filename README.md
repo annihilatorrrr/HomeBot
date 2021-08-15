@@ -20,16 +20,6 @@ python3 -m homebot
 -   Easy to understand
 -   It uses python-telegram-bot, one of the most used Telegram bot API library
 
-## Modules included
-
--   weather | Get weather updates of a city
--   speedtest | Test bot's Internet connection speed
--   ci | Automated CI system, you can trigger AOSP custom ROMs and custom recoveries building, with progress updating
--   cowsay
--   And more...
-
 ## Wiki
-
-Want to see how this bot works or you want to create a module for this bot?
 
 Head over to [the wiki](https://github.com/SebaUbuntu/HomeBot/wiki) for more informations
