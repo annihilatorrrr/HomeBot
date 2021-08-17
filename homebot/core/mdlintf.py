@@ -55,8 +55,8 @@ class ModuleInterface:
 				 version: str,
 				 module_type: int,
 				 description: str,
-				 commands: list[ModuleCommand],
-				 ioctl: Union[FunctionType, None],
+				 commands: list[ModuleCommand] = [],
+				 ioctl: Union[FunctionType, None] = None,
 				):
 		self.name = name
 		self.version = version
