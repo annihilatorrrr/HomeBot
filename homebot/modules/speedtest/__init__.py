@@ -20,6 +20,5 @@ register_module(
 		commands = {
 			ModuleCommand(speedtest, ['speedtest']),
 		},
-		ioctl = None,
 	)
 )

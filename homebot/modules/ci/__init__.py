@@ -20,6 +20,5 @@ register_module(
 		commands = {
 			ModuleCommand(ci, ['ci']),
 		},
-		ioctl = None,
 	)
 )

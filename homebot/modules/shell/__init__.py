@@ -20,6 +20,5 @@ register_module(
 		commands = {
 			ModuleCommand(shell, ['shell']),
 		},
-		ioctl = None,
 	)
 )

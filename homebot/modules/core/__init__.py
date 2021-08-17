@@ -26,6 +26,5 @@ register_module(
 			ModuleCommand(enable, ['enable']),
 			ModuleCommand(disable, ['disable']),
 		},
-		ioctl = None,
 	)
 )
