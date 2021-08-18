@@ -111,14 +111,12 @@ class ModuleInterface:
 				 name: str,
 				 version: str,
 				 module_type: int,
-				 description: str,
 				 commands: list[ModuleCommand] = [],
 				 ioctl: Union[Callable[[str, IOCTLData], int], None] = None,
 				):
 		self.name = name
 		self.version = version
 		self.type = module_type
-		self.description = description
 		self.commands = commands
 		self.ioctl = ioctl
 
