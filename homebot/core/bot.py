@@ -49,10 +49,9 @@ def enable_module(self: Dispatcher, module_name: str):
 		except:
 			LOGE(f"Failed to add handler for module {module_name}")
 			self.modules_status[module_name] = MODULE_STATUS_ERROR
-
-		self.modules_status[module_name] = MODULE_STATUS_ENABLED
-
-	LOGI(f"Module {module_name} enabled")
+		else:
+			self.modules_status[module_name] = MODULE_STATUS_ENABLED
+			LOGI(f"Module {module_name} enabled")
 
 def disable_module(self: Dispatcher, module_name: str):
 	"""
@@ -81,10 +80,9 @@ def disable_module(self: Dispatcher, module_name: str):
 		except:
 			LOGE(f"Failed to add handler for module {module_name}")
 			self.modules_status[module_name] = MODULE_STATUS_ERROR
-
-		self.modules_status[module_name] = MODULE_STATUS_DISABLED
-
-	LOGI(f"Module {module_name} disabled")
+		else:
+			self.modules_status[module_name] = MODULE_STATUS_DISABLED
+			LOGI(f"Module {module_name} disabled")
 
 class HomeBot(Updater):
 	def __init__(self, token: str):
