@@ -19,7 +19,6 @@ register_module(
 		name = "core",
 		version = "1.0.0",
 		module_type = MODULE_TYPE_CORE,
-		description = "Core functions of the bot",
 		commands = {
 			ModuleCommand(start, ['start', 'help']),
 			ModuleCommand(modules, ['modules']),

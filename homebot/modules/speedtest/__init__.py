@@ -16,7 +16,6 @@ register_module(
 		name = "speedtest",
 		version = "1.0.0",
 		module_type = MODULE_TYPE_EXTERNAL,
-		description = "Do a speedtest",
 		commands = {
 			ModuleCommand(speedtest, ['speedtest']),
 		},

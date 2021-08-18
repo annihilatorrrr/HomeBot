@@ -16,7 +16,6 @@ register_module(
 		name = "weather",
 		version = "1.0.0",
 		module_type = MODULE_TYPE_EXTERNAL,
-		description = "Get the weather of a city",
 		commands = {
 			ModuleCommand(weather, ['weather'])
 		},

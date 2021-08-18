@@ -16,7 +16,6 @@ register_module(
 		name = "shell",
 		version = "1.0.0",
 		module_type = MODULE_TYPE_CORE,
-		description = "Send a command in a local terminal",
 		commands = {
 			ModuleCommand(shell, ['shell']),
 		},

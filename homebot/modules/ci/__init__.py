@@ -16,7 +16,6 @@ register_module(
 		name = "ci",
 		version = "1.0.0",
 		module_type = MODULE_TYPE_EXTERNAL,
-		description = "A module that let you trigger actions with a single Telegram message",
 		commands = {
 			ModuleCommand(ci, ['ci']),
 		},
