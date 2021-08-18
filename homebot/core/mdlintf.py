@@ -112,7 +112,7 @@ class ModuleInterface:
 				 add_user: Callable[[Bot], Any] = lambda bot: None,
 				 remove_user: Callable[[Bot], Any] = lambda bot: None,
 				 commands: list[ModuleCommand] = [],
-				 ioctl: Callable[[str, IOCTLData], int] = lambda data: MODULE_IOCTL_RESULT_NO_IOCTL,
+				 ioctl: Callable[[IOCTLData], int] = lambda data: MODULE_IOCTL_RESULT_NO_IOCTL,
 				):
 		self.name = name
 		self.version = version
