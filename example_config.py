@@ -15,6 +15,13 @@ config = {
 	"ci.twrpdtgen.github_org": "",
 	"ci.twrpdtgen.channel_id": "",
 
+	# Module - LineageOS updater
+	"lineageos_updater.enable": False,
+	"lineageos_updater.devices": [],
+	"lineageos_updater.chat_id": "",
+	"lineageos_updater.photo_url_base": "",
+	"lineageos_updater.donation_link": "",
+
 	# Library - libadmin
 	"libadmin.approved_user_ids": [],
 
