@@ -45,6 +45,7 @@ def enable_module(self: Dispatcher, module_name: str):
 		try:
 			for command in module.commands:
 				self.add_handler(command.handler)
+			module.add_user(self.bot)
 		except:
 			LOGE(f"Failed to add handler for module {module_name}")
 			self.modules_status[module_name] = MODULE_STATUS_ERROR
@@ -76,6 +77,7 @@ def disable_module(self: Dispatcher, module_name: str):
 		try:
 			for command in module.commands:
 				self.add_handler(command.handler)
+			module.remove_user(self.bot)
 		except:
 			LOGE(f"Failed to add handler for module {module_name}")
 			self.modules_status[module_name] = MODULE_STATUS_ERROR

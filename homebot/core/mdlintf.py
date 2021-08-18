@@ -7,6 +7,7 @@ from homebot.core.logging import LOGE, LOGI, LOGW
 from importlib import import_module
 from pathlib import Path
 from pkgutil import iter_modules
+from telegram.bot import Bot
 from telegram.ext import CommandHandler, CallbackContext
 from telegram.update import Update
 from threading import Lock
@@ -111,12 +112,16 @@ class ModuleInterface:
 				 name: str,
 				 version: str,
 				 module_type: int,
+				 add_user: Callable[[Bot], Any] = lambda bot: None,
+				 remove_user: Callable[[Bot], Any] = lambda bot: None,
 				 commands: list[ModuleCommand] = [],
 				 ioctl: Union[Callable[[str, IOCTLData], int], None] = None,
 				):
 		self.name = name
 		self.version = version
 		self.type = module_type
+		self.add_user = add_user
+		self.remove_user = remove_user
 		self.commands = commands
 		self.ioctl = ioctl
 
