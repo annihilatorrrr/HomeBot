@@ -101,9 +101,6 @@ def mdlintf_ioctl(module_name: str, data: IOCTLData):
 	module = get_module(module_name)
 	if module is None:
 		return MODULE_IOCTL_RESULT_MODULE_NOT_FOUND
-	
-	if module.ioctl is None:
-		return MODULE_IOCTL_RESULT_NO_IOCTL
 
 	return module.ioctl(data)
 
@@ -115,7 +112,7 @@ class ModuleInterface:
 				 add_user: Callable[[Bot], Any] = lambda bot: None,
 				 remove_user: Callable[[Bot], Any] = lambda bot: None,
 				 commands: list[ModuleCommand] = [],
-				 ioctl: Union[Callable[[str, IOCTLData], int], None] = None,
+				 ioctl: Callable[[str, IOCTLData], int] = lambda data: MODULE_IOCTL_RESULT_NO_IOCTL,
 				):
 		self.name = name
 		self.version = version
