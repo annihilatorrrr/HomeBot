@@ -32,9 +32,4 @@ config = {
 	"libupload.port": "",
 	"libupload.username": "",
 	"libupload.password": "",
-
-	# Library - libweather
-	# Read this before continuing: https://github.com/SebaUbuntu/HomeBot/wiki/Module-%7C-Weather#variables
-	"libweather.api_key": "",
-	"libweather.temp_unit": "metric",
 }
