@@ -10,7 +10,7 @@ def user_is_admin(user_id):
 	"""
 	allowed = False
 
-	if user_id in get_config("bot.admin_user_ids", []):
+	if user_id in get_config("libadmin.admin_user_ids", []):
 		allowed = True
 
 	LOGI(f"Access {'granted' if allowed else 'denied'} to user {user_id}")

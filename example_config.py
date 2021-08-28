@@ -1,8 +1,6 @@
 config = {
 	# Add here your HTTP API bot token, get it from @BotFather
 	"bot.api_token": "",
-	# User IDs of users that have full power of the bot, as a list
-	"bot.admin_user_ids": [],
 
 	# Module - CI
 	# Read this before continuing: https://github.com/SebaUbuntu/HomeBot/wiki/Module-%7C-CI#variables
@@ -23,6 +21,7 @@ config = {
 	"lineageos_updater.donation_link": "",
 
 	# Library - libadmin
+	"libadmin.admin_user_ids": [],
 	"libadmin.approved_user_ids": [],
 
 	# Library - libupload
