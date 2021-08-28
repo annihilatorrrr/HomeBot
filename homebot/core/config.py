@@ -1,10 +1,20 @@
 from homebot import config
 
-def get_config(name, default=None):
-	if not name in config:
+def get_config(name: str, default=None):
+	if not '.' in name:
+		if name in config:
+			value = config[name]
+		else:
+			value = default
+	else:
+		value = config
+		for key in name.split('.'):
+			if not key in value:
+				value = default
+				break
+			value = value[key]
+
+	if value == "":
 		return default
 
-	if config[name] == "":
-		return default
-
-	return config[name]
+	return value

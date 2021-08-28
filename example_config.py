@@ -1,34 +1,83 @@
 config = {
-	# Add here your HTTP API bot token, get it from @BotFather
-	"bot.api_token": "",
+	"bot": {
+		# Add here your HTTP API bot token, get it from @BotFather
+		# type: str
+		"api_token": "",
+	},
 
 	# Module - CI
 	# Read this before continuing: https://github.com/SebaUbuntu/HomeBot/wiki/Module-%7C-CI#variables
-	"ci.main_dir": "",
-	"ci.channel_id": "",
-	"ci.upload_artifacts": False,
-	"ci.github_username": "",
-	"ci.github_token": "",
-	# twrpdtgen script
-	"ci.twrpdtgen.github_org": "",
-	"ci.twrpdtgen.channel_id": "",
+	"ci": {
+		# type: str
+		"main_dir": "",
+
+		# type: str
+		"channel_id": "",
+
+		# type: bool
+		"upload_artifacts": False,
+
+		# type: str
+		"github_username": "",
+
+		# type: str
+		"github_token": "",
+
+		# twrpdtgen script
+		"twrpdtgen": {
+			# type: str
+			"github_org": "",
+
+			# type: str
+			"channel_id": "",
+		}
+	},
 
 	# Module - LineageOS updater
-	"lineageos_updater.enable": False,
-	"lineageos_updater.devices": [],
-	"lineageos_updater.chat_id": "",
-	"lineageos_updater.photo_url_base": "",
-	"lineageos_updater.donation_link": "",
+	"lineageos_updater": {
+		# type: bool
+		"enable": False,
+
+		# type: list[str]
+		"devices": [],
+
+		# type: str
+		"chat_id": "",
+
+		# type: str
+		"photo_url_base": "",
+
+		# type: str
+		"donation_link": "",
+	},
 
 	# Library - libadmin
-	"libadmin.admin_user_ids": [],
-	"libadmin.approved_user_ids": [],
+	"libadmin": {
+		# type: list[int]
+		"admin_user_ids": [],
+
+		# type: list[int]
+		"approved_user_ids": [],
+	},
 
 	# Library - libupload
-	"libupload.method": "",
-	"libupload.base_dir": "",
-	"libupload.host": "",
-	"libupload.port": "",
-	"libupload.username": "",
-	"libupload.password": "",
+	"libupload": {
+		# type: str
+		"method": "",
+
+		# type: str
+		"base_dir": "",
+
+		# type: str
+		"host": "",
+
+		# type: str
+		"port": "",
+
+		# type: str
+		"username": "",
+
+		# type: str
+		"password": "",
+	},
 }
