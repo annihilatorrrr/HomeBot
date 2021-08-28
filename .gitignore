@@ -90,3 +90,6 @@ dmypy.json
 
 # Allow lib directory
 !/homebot/lib/
+
+# Homebot database
+/data.pkl
