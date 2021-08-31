@@ -45,11 +45,10 @@ def lineageos_updater(update: Update, context: CallbackContext):
 			reply = f"The next build for {device} will be on {day}"
 	elif command == "info":
 		alive = observer.thread.is_alive()
-		reply = f"Enabled: {str(alive)}\n"
+		reply = f"Enabled: {str(alive)}\n\n"
 		if alive:
 			reply += (
 				f"Observed devices:\n"
-				f"\n"
 				f"Device | Last update\n"
 			)
 			for device in observer.last_device_update:
