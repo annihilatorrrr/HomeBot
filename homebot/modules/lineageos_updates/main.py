@@ -9,6 +9,11 @@ from telegram.bot import Bot
 from telegram.ext import CallbackContext
 from telegram.update import Update
 
+ADMIN_COMMANDS = [
+	"enable",
+	"disable",
+]
+
 def add_user(bot: Bot):
 	posters[bot] = Poster(bot)
 
@@ -17,15 +22,15 @@ def remove_user(bot: Bot):
 		del posters[bot]
 
 def lineageos_updater(update: Update, context: CallbackContext):
-	if not user_is_admin(update.message.from_user.id):
-		update.message.reply_text("Error: You are not authorized to interact with LineageOS updater")
-		return
-
 	if not context.args:
 		update.message.reply_text("Error: No argument provided")
-		return	
+		return
 
 	command = context.args[0]
+
+	if command in ADMIN_COMMANDS and not user_is_admin(update.message.from_user.id):
+		update.message.reply_text("Error: You are not authorized to interact with LineageOS updater")
+		return
 
 	if command == "when":
 		if len(context.args) < 2:
