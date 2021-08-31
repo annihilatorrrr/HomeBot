@@ -2,45 +2,13 @@
 
 from ftplib import FTP, error_perm
 from homebot.core.config import get_config
-from homebot.core.logging import LOGI
+from homebot.core.logging import LOGI, LOGW
 import os.path
 import paramiko
 from pathlib import Path
 import shutil
 
-ALLOWED_METHODS = ["localcopy", "ftp", "sftp"]
-
-def ftp_chdir(ftp: FTP, remote_directory: Path):
-	if remote_directory == '/':
-		ftp.cwd('/')
-		return
-	if remote_directory == '':
-		return
-	try:
-		ftp.cwd(str(remote_directory))
-	except error_perm:
-		dirname, basename = os.path.split(str(remote_directory).rstrip('/'))
-		ftp_chdir(ftp, dirname)
-		ftp.mkd(basename)
-		ftp.cwd(basename)
-		return True
-
-def sftp_chdir(sftp: paramiko.SFTPClient, remote_directory: Path):
-	if remote_directory == '/':
-		sftp.chdir('/')
-		return
-	if remote_directory == '':
-		return
-	try:
-		sftp.chdir(str(remote_directory))
-	except IOError:
-		dirname, basename = os.path.split(str(remote_directory).rstrip('/'))
-		sftp_chdir(sftp, dirname)
-		sftp.mkdir(basename)
-		sftp.chdir(basename)
-		return True
-
-class Uploader:
+class UploaderBase:
 	def __init__(self):
 		"""Initialize the uploader variables."""
 		self.method = get_config("libupload.method")
@@ -50,9 +18,6 @@ class Uploader:
 		self.server = self.host if self.port is None else f"{self.host}:{self.port}"
 		self.username = get_config("libupload.username")
 		self.password = get_config("libupload.password")
-
-		if self.method not in ALLOWED_METHODS:
-			raise NotImplementedError("Upload method not valid")
 
 	def upload(self, file: Path, destination: Path):
 		"""Upload an artifact using settings from config.env."""
@@ -66,25 +31,73 @@ class Uploader:
 
 		LOGI(f"Started uploading of {file.name}")
 
-		if self.method == "localcopy":
-			os.makedirs(destination_path, exist_ok=True)
-			shutil.copy(file, destination_path)
-		elif self.method == "ftp":
-			ftp = FTP(self.server)
-			ftp.login(self.username, self.password)
-			ftp_chdir(ftp, destination_path)
-			with open(file, 'rb') as f:
-				ftp.storbinary('STOR %s' % file.name, f)
-				f.close()
-			ftp.close()
-		elif self.method == "sftp":
-			transport = paramiko.Transport(self.server)
-			transport.connect(username=self.username, password=self.password)
-			sftp = paramiko.SFTPClient.from_transport(transport)
-			sftp_chdir(sftp, destination_path)
-			sftp.put(file, file.name)
-			sftp.close()
-			transport.close()
+		self._upload(file, destination_path)
 
 		LOGI(f"Finished uploading of {file.name}")
 		return True
+
+	def _upload(self, file: Path, destination_path: Path):
+		LOGW("Trying to upload with UploaderBase class won't do anything")
+
+class UploaderLocalcopy(UploaderBase):
+	def _upload(self, file: Path, destination_path: Path):
+		os.makedirs(destination_path, exist_ok=True)
+		shutil.copy(file, destination_path)
+
+class UploaderFTP(UploaderBase):
+	def _upload(self, file: Path, destination_path: Path):
+		ftp = FTP(self.server)
+		ftp.login(self.username, self.password)
+		self.chdir(ftp, destination_path)
+		with open(file, 'rb') as f:
+			ftp.storbinary('STOR %s' % file.name, f)
+			f.close()
+		ftp.close()
+
+	def chdir(self, ftp: FTP, remote_directory: Path):
+		if remote_directory == '/':
+			ftp.cwd('/')
+			return
+		if remote_directory == '':
+			return
+		try:
+			ftp.cwd(str(remote_directory))
+		except error_perm:
+			dirname, basename = os.path.split(str(remote_directory).rstrip('/'))
+			self.chdir(ftp, dirname)
+			ftp.mkd(basename)
+			ftp.cwd(basename)
+			return True
+
+class UploaderSFTP(UploaderBase):
+	def _upload(self, file: Path, destination_path: Path):
+		transport = paramiko.Transport(self.server)
+		transport.connect(username=self.username, password=self.password)
+		sftp = paramiko.SFTPClient.from_transport(transport)
+		self.chdir(sftp, destination_path)
+		sftp.put(file, file.name)
+		sftp.close()
+		transport.close()
+
+	def chdir(self, sftp: paramiko.SFTPClient, remote_directory: Path):
+		if remote_directory == '/':
+			sftp.chdir('/')
+			return
+		if remote_directory == '':
+			return
+		try:
+			sftp.chdir(str(remote_directory))
+		except IOError:
+			dirname, basename = os.path.split(str(remote_directory).rstrip('/'))
+			self.chdir(sftp, dirname)
+			sftp.mkdir(basename)
+			sftp.chdir(basename)
+			return True
+
+METHODS: dict[str, UploaderBase] = {
+	"localcopy": UploaderLocalcopy,
+	"ftp": UploaderFTP,
+	"sftp": UploaderSFTP,
+}
+
+Uploader: UploaderBase = METHODS.get(get_config("libupload.method"), UploaderBase)
