@@ -7,7 +7,6 @@ from homebot.core.logging import LOGE
 from homebot.lib.libupload import Uploader
 from homebot.modules.ci.artifacts import STATUS_NOT_UPLOADED, STATUS_UPLOADED, STATUS_UPLOADING, Artifacts
 from homebot.modules.ci.parser import CIParser
-from homebot.modules.ci.project import ProjectBase
 from homebot.modules.ci.projects.aosp.post import PostManager
 from homebot.modules.ci.projects.aosp.returncode import ERROR_CODES, NEEDS_LOGS_UPLOAD, SUCCESS
 import re
@@ -15,7 +14,7 @@ import subprocess
 from telegram.ext import CallbackContext
 from telegram.update import Update
 
-class AOSPProject(ProjectBase):
+class AOSPProject:
 	"""
 	This class represent an AOSP project.
 	"""
@@ -37,7 +36,9 @@ class AOSPProject(ProjectBase):
 
 	def __init__(self, update: Update, context: CallbackContext, args: list[str]):
 		"""Initialize AOSP project class."""
-		super().__init__(update, context, args)
+		self.update = update
+		self.context = context
+		self.args = args
 		parser = CIParser(prog="/ci")
 		parser.set_output(self.update.message.reply_text)
 		parser.add_argument('device', help='device codename')

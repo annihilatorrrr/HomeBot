@@ -3,7 +3,6 @@
 from datetime import date
 from homebot.core.config import get_config
 from homebot.modules.ci.parser import CIParser
-from homebot.modules.ci.project import ProjectBase
 from git.exc import GitCommandError
 from github import Github, GithubException
 from pathlib import Path
@@ -16,12 +15,14 @@ from twrpdtgen.info_extractors.buildprop import PARTITIONS
 
 BUILD_DESCRIPTION = ["ro.build.description"] + [f"ro.{partition}.build.description" for partition in PARTITIONS]
 
-class Project(ProjectBase):
+class Project:
 	name = "twrpdtgen"
 
 	def __init__(self, update: Update, context: CallbackContext, args: list[str]):
 		"""Init twrpdtgen project class."""
-		super().__init__(update, context, args)
+		self.update = update
+		self.context = context
+		self.args = args
 		parser = CIParser(prog="/ci twrpdtgen")
 		parser.set_output(self.update.message.reply_text)
 		parser.add_argument('url', help='URL of the image')
