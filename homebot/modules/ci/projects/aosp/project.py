@@ -5,14 +5,21 @@ from homebot.core.config import get_config
 from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGE
 from homebot.lib.libupload import Uploader
-from homebot.modules.ci.artifacts import STATUS_NOT_UPLOADED, STATUS_UPLOADED, STATUS_UPLOADING, Artifacts
+from homebot.modules.ci.artifacts import STATUS_ERROR, STATUS_SUCCESS, STATUS_UPLOADING, Artifacts
 from homebot.modules.ci.parser import CIParser
-from homebot.modules.ci.projects.aosp.post import PostManager
+from homebot.modules.ci.projects.aosp.post import PostManager, chat_id
 from homebot.modules.ci.projects.aosp.returncode import ERROR_CODES, NEEDS_LOGS_UPLOAD, SUCCESS
 import re
 import subprocess
 from telegram.ext import CallbackContext
 from telegram.update import Update
+
+ADDITIONAL_ARTIFACTS = [
+	"boot.img",
+	"vendor_boot.img",
+	"dtbo.img",
+	"recovery.img",
+]
 
 class AOSPProject:
 	"""
@@ -31,8 +38,8 @@ class AOSPProject:
 	lunch_suffix: str
 	# Target to build (e.g. to build a ROM's OTA package, use "bacon" or "otapackage", for a recovery project, use "recoveryimage")
 	build_target: str
-	# Filename of the output. You can also use wildcards if the name isn't fixed
-	artifacts: str
+	# Filename of the zip. You can also use wildcards if the name isn't fixed
+	zip_name: str
 
 	def __init__(self, update: Update, context: CallbackContext, args: list[str]):
 		"""Initialize AOSP project class."""
@@ -49,9 +56,9 @@ class AOSPProject:
 
 	def build(self):
 		project_dir = Path(f"{get_config('ci.main_dir', '')}/{self.name}-{self.version}")
-		device_out_dir = project_dir / "out" / "target" / "product" / self.parsed_args.device
+		device_out_dir: Path = project_dir / "out" / "target" / "product" / self.parsed_args.device
 
-		artifacts = Artifacts(device_out_dir, self.artifacts)
+		artifacts = Artifacts(device_out_dir, [self.zip_name] + ADDITIONAL_ARTIFACTS)
 		post_manager = PostManager(self, self.parsed_args.device, artifacts)
 
 		if self.parsed_args.clean is True:
@@ -64,16 +71,16 @@ class AOSPProject:
 		post_manager.update("Building")
 
 		command = [bot_path / "modules" / "ci" / "projects" / "aosp" / "tools" / "building.sh",
-				"--sources", project_dir,
-				"--lunch_prefix", self.lunch_prefix,
-				"--lunch_suffix", self.lunch_suffix,
-				"--build_target", self.build_target,
-				"--clean", clean_type,
-				"--device", self.parsed_args.device]
+		           "--sources", project_dir,
+		           "--lunch_prefix", self.lunch_prefix,
+		           "--lunch_suffix", self.lunch_suffix,
+		           "--build_target", self.build_target,
+		           "--clean", clean_type,
+		           "--device", self.parsed_args.device]
 
 		last_edit = datetime.now()
 		process = subprocess.Popen(command, encoding="UTF-8",
-								stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		while True:
 			output = process.stdout.readline()
 			if output == '' and process.poll() is not None:
@@ -107,7 +114,7 @@ class AOSPProject:
 		needs_logs_upload = NEEDS_LOGS_UPLOAD.get(returncode, False)
 		if needs_logs_upload != False:
 			log_file = open(project_dir / needs_logs_upload, "rb")
-			self.context.bot.send_document(get_config("ci.channel_id"), log_file)
+			self.context.bot.send_document(chat_id, log_file)
 			log_file.close()
 
 		if returncode != SUCCESS or get_config("ci.upload_artifacts", False) is not True:
@@ -118,24 +125,30 @@ class AOSPProject:
 			uploader = Uploader()
 		except Exception as e:
 			post_manager.update(f"{build_result}\n"
-								f"Upload failed: {type(e)}: {e}")
+			                    f"Upload failed: {type(e)}: {e}")
 			return
 
 		artifacts.update()
 
-		post_manager.update(build_result)
+		zip_filename = list(device_out_dir.glob(self.zip_name))
+		if not zip_filename:
+			return
 
-		for artifact in artifacts.artifacts:
-			artifact.status = STATUS_UPLOADING
-			post_manager.update(build_result)
+		zip_filename = zip_filename[0].name
+
+		post_manager.update()
+		upload_path = Path() / self.parsed_args.device / zip_filename.removesuffix(".zip")
+		for artifact in artifacts.keys():
+			artifacts[artifact] = STATUS_UPLOADING
+			post_manager.update()
 
 			try:
-				uploader.upload(artifact.path, Path(self.category) / self.parsed_args.device / self.name / self.android_version)
+				uploader.upload(artifact, upload_path)
 			except Exception as e:
-				artifact.status = f"{STATUS_NOT_UPLOADED}: {type(e)}: {e}"
+				artifacts[artifact] = STATUS_ERROR
 				LOGE(f"Error while uploading artifact {artifact.name}:\n"
-					 f"{format_exception(e)}")
+			         f"{format_exception(e)}")
 			else:
-				artifact.status = STATUS_UPLOADED
+				artifacts[artifact] = STATUS_SUCCESS
 
-			post_manager.update(build_result)
+			post_manager.update()

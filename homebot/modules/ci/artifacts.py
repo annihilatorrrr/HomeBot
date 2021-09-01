@@ -1,35 +1,40 @@
 from pathlib import Path
 
-STATUS_ON_QUEUE = "On queue"
-STATUS_UPLOADING = "Uploading"
-STATUS_UPLOADED = "Uploaded"
-STATUS_NOT_UPLOADED = "Error while uploading"
+(
+	STATUS_ON_QUEUE,
+	STATUS_UPLOADING,
+	STATUS_SUCCESS,
+	STATUS_ERROR,
+) = range(4)
 
-class Artifact:
-	def __init__(self, path: Path):
-		"""Initialize the artifact class."""
-		self.name = path.name
-		self.path = path
-		self.status = "On queue"
+STATUS_MESSAGE = {
+	STATUS_ON_QUEUE: "On queue",
+	STATUS_UPLOADING: "Uploading",
+	STATUS_SUCCESS: "Uploaded",
+	STATUS_ERROR: "Error while uploading",
+}
 
-class Artifacts:
-	def __init__(self, path: Path, pattern: str):
+class Artifacts(dict):
+	def __init__(self, path: Path, patterns: str):
 		"""Find the artifacts."""
-		self.pattern = pattern
+		super().__init__()
 		self.path = path
-		self.artifacts = []
+		self.patterns = patterns
 
 	def update(self):
-		self.artifacts = [Artifact(artifact) for artifact in list(self.path.glob(self.pattern))]
+		self.clear()
+		files = [list(self.path.glob(pattern)) for pattern in self.patterns]
+		for artifact in [artifact for sublist in files for artifact in sublist]:
+			self[artifact] = STATUS_ON_QUEUE
 
-	def get_artifacts_on_status(self, status: str):
-		return [i for i in self.artifacts if i.status == status]
+	def get_artifacts_on_status(self, status: int):
+		return [k for k, v in self.items() if v == status]
 
 	def get_readable_artifacts_list(self):
-		artifact_total = len(self.artifacts)
-		artifact_uploaded = len(self.get_artifacts_on_status(STATUS_UPLOADED))
+		artifact_total = len(self)
+		artifact_uploaded = len(self.get_artifacts_on_status(STATUS_SUCCESS))
 
 		text = f"Uploaded {artifact_uploaded} out of {artifact_total} artifact(s)\n"
-		for artifact in self.artifacts:
-			text += f"{self.artifacts.index(artifact) + 1}) {artifact.name}: {artifact.status}\n"
+		for i, artifact in enumerate(self.keys(), 1):
+			text += f"{i}) {artifact.name}: {STATUS_MESSAGE[self[artifact]]}\n"
 		return text

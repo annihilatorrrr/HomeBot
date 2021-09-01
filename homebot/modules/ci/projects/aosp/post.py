@@ -13,19 +13,21 @@ class PostManager:
 		self.artifacts = artifacts
 		self.base_message_text = self.get_base_message_text()
 		self.message = self.project.context.bot.send_message(chat_id, self.base_message_text)
+		self.build_status = "Starting up"
 
 	def get_base_message_text(self):
-		text =  f"🛠 CI | {self.project.name} {self.project.version} ({self.project.android_version})\n"
-		text += f"Device: {self.device}\n"
-		text += f"Lunch flavor: {self.project.lunch_prefix}_{self.device}-{self.project.lunch_suffix}\n"
-		text += "\n"
-		return text
+		return (f"🛠 CI | {self.project.name} {self.project.version} ({self.project.android_version})\n"
+		        f"Device: {self.device}\n"
+		        f"Lunch flavor: {self.project.lunch_prefix}_{self.device}-{self.project.lunch_suffix}")
 
-	def update(self, status: str):
-		text = self.base_message_text
-		text += f"Status: {status}\n"
-		text += "\n"
-		if self.artifacts.artifacts:
+	def update(self, status: str = None):
+		if status is not None:
+			self.build_status = status
+		text = (f"{self.base_message_text}\n"
+		        "\n"
+		        f"Status: {self.build_status}\n"
+		        "\n")
+		if self.artifacts:
 			text += self.artifacts.get_readable_artifacts_list()
 		self.edit_text(text)
 
