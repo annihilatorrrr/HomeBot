@@ -9,15 +9,14 @@ from pathlib import Path
 import shutil
 
 class UploaderBase:
-	def __init__(self):
+	def __init__(self, profile):
 		"""Initialize the uploader variables."""
-		self.method = get_config("libupload.method")
-		self.destination_path_base = Path(get_config("libupload.base_dir"))
-		self.host = get_config("libupload.host")
-		self.port = get_config("libupload.port")
+		self.destination_path_base = Path(get_config(f"libupload.{profile}.base_dir"))
+		self.host = get_config(f"libupload.{profile}.host")
+		self.port = get_config(f"libupload.{profile}.port")
 		self.server = self.host if self.port is None else f"{self.host}:{self.port}"
-		self.username = get_config("libupload.username")
-		self.password = get_config("libupload.password")
+		self.username = get_config(f"libupload.{profile}.username")
+		self.password = get_config(f"libupload.{profile}.password")
 
 	def upload(self, file: Path, destination: Path):
 		"""Upload an artifact using settings from config.env."""
@@ -37,7 +36,7 @@ class UploaderBase:
 		return True
 
 	def _upload(self, file: Path, destination_path: Path):
-		LOGW("Trying to upload with UploaderBase class won't do anything")
+		raise NotImplementedError("Trying to upload with UploaderBase")
 
 class UploaderLocalcopy(UploaderBase):
 	def _upload(self, file: Path, destination_path: Path):
@@ -100,4 +99,18 @@ METHODS: dict[str, UploaderBase] = {
 	"sftp": UploaderSFTP,
 }
 
-Uploader: UploaderBase = METHODS.get(get_config("libupload.method"), UploaderBase)
+profiles = get_config("libupload", {}).keys()
+uploaders: dict[str, UploaderBase] = {
+	profile: METHODS.get(get_config(f"libupload.{profile}.method"), UploaderBase)(profile)
+	for profile in profiles
+}
+
+def Uploader(profile: str = "default", fallback_to_default: bool = False) -> UploaderBase:
+	if fallback_to_default:
+		if not profile in uploaders:
+			profile = "default"
+
+	if not profile in uploaders:
+		raise AssertionError(f"Profile {profile} not found")
+
+	return uploaders[profile]

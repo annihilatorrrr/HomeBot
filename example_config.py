@@ -62,22 +62,24 @@ config = {
 
 	# Library - libupload
 	"libupload": {
-		# type: str
-		"method": "",
+		"default": {
+			# type: str
+			"method": "",
 
-		# type: str
-		"base_dir": "",
+			# type: str
+			"base_dir": "",
 
-		# type: str
-		"host": "",
+			# type: str
+			"host": "",
 
-		# type: str
-		"port": "",
+			# type: str
+			"port": "",
 
-		# type: str
-		"username": "",
+			# type: str
+			"username": "",
 
-		# type: str
-		"password": "",
+			# type: str
+			"password": "",
+		},
 	},
 }
