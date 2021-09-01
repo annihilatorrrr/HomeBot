@@ -16,7 +16,7 @@ from homebot.modules.lineageos_updates.main import (
 register_module(
 	ModuleInterface(
 		name = "lineageos_updater",
-		version = "1.0.0",
+		version = "1.0",
 		module_type = MODULE_TYPE_EXTERNAL,
 		add_user = add_user,
 		remove_user = remove_user,

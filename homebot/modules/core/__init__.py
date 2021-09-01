@@ -17,7 +17,7 @@ from homebot.modules.core.main import (
 register_module(
 	ModuleInterface(
 		name = "core",
-		version = "1.0.0",
+		version = "1.0",
 		module_type = MODULE_TYPE_CORE,
 		commands = {
 			ModuleCommand(start, ['start', 'help']),

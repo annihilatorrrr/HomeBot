@@ -14,7 +14,7 @@ from homebot.modules.speedtest.main import (
 register_module(
 	ModuleInterface(
 		name = "speedtest",
-		version = "1.0.0",
+		version = "1.0",
 		module_type = MODULE_TYPE_EXTERNAL,
 		commands = {
 			ModuleCommand(speedtest, ['speedtest']),

@@ -14,7 +14,7 @@ from homebot.modules.shell.main import (
 register_module(
 	ModuleInterface(
 		name = "shell",
-		version = "1.0.0",
+		version = "1.0",
 		module_type = MODULE_TYPE_CORE,
 		commands = {
 			ModuleCommand(shell, ['shell']),
