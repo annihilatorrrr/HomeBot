@@ -51,7 +51,8 @@ class AOSPProject:
 		parser.add_argument('device', help='device codename')
 		parser.add_argument('-ic', '--installclean', help='make installclean before building', action='store_true')
 		parser.add_argument('-c', '--clean', help='make clean before building', action='store_true')
-		parser.set_defaults(clean=False, installclean=False)
+		parser.add_argument('--release', help='upload build to release profile', action='store_true')
+		parser.set_defaults(clean=False, installclean=False, release=False)
 		self.parsed_args = parser.parse_args(args)
 
 	def build(self):
@@ -121,8 +122,13 @@ class AOSPProject:
 			return
 
 		# Upload artifacts
+		if self.parsed_args.release:
+			uploader_profile = "release"
+		else:
+			uploader_profile = "ci"
+
 		try:
-			uploader = Uploader()
+			uploader = Uploader(uploader_profile)
 		except Exception as e:
 			post_manager.update(f"{build_result}\n"
 			                    f"Upload failed: {type(e)}: {e}")
