@@ -3,7 +3,7 @@
 #
 
 from homebot.core.error_handler import format_exception
-from homebot.core.logging import LOGE, LOGI, LOGW
+from homebot.core.logging import LOGD, LOGE, LOGI, LOGW
 from importlib import import_module
 from pathlib import Path
 from pkgutil import iter_modules
@@ -11,12 +11,10 @@ from telegram.bot import Bot
 from telegram.ext import CommandHandler, CallbackContext
 from telegram.update import Update
 from threading import Lock
-from typing import Any, Callable, Union
+from typing import Any, Callable
 
 def register_modules(modules_path: Path):
-	"""
-	Import all the modules and let them execute register_module()
-	"""
+	"""Import all the modules and let them execute register_module()."""
 	for module_name in [name for _, name, _ in iter_modules([str(modules_path)])]:
 		try:
 			import_module(f'homebot.modules.{module_name}')
@@ -114,6 +112,7 @@ class ModuleInterface:
 				 commands: list[ModuleCommand] = [],
 				 ioctl: Callable[[IOCTLData], int] = lambda data: MODULE_IOCTL_RESULT_NO_IOCTL,
 				):
+		"""Initialize the interface."""
 		self.name = name
 		self.version = version
 		self.type = module_type
@@ -141,7 +140,7 @@ def get_module(module_name: str):
 			try:
 				import_module(f'homebot.modules.{module_name}')
 			except Exception:
-				pass
+				LOGD(f"Tried to import module {module_name} but failed")
 
 		if module_name in _mdlbinder:
 			return _mdlbinder[module_name]

@@ -5,6 +5,7 @@ DATABASE_FILE_NAME = "data.pkl"
 
 class HomeBotDatabase:
 	def __init__(self):
+		"""Initialize the database."""
 		self.fd = open(DATABASE_FILE_NAME, 'wb')
 
 		self.data = pickle.load(self.fd)

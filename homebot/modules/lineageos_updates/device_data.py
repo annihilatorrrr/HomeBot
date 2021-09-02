@@ -5,6 +5,7 @@ DEVICES_DATA = "https://raw.githubusercontent.com/LineageOS/lineage_wiki/master/
 
 class DeviceData:
     def __init__(self, codename: str):
+        """Get device data from LineageOS wiki data."""
         self.codename = codename
         self.yaml_url = DEVICES_DATA.format(device=self.codename)
         self.response = requests.get(url=self.yaml_url).text

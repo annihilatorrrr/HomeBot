@@ -34,9 +34,9 @@ def lineageos_updater(update: Update, context: CallbackContext):
 
 	if command == "when":
 		if len(context.args) < 2:
-			reply = f"Device codename not specified"
+			reply = "Device codename not specified"
 		elif which("python2") is None:
-			reply = f"Python 2.x isn't installed, it is required to get the random int"
+			reply = "Python 2.x isn't installed, it is required to get the random int"
 		else:
 			device = context.args[1]
 			command = f'from random import Random; print(Random("{device}").randint(1, 7))'
@@ -48,8 +48,8 @@ def lineageos_updater(update: Update, context: CallbackContext):
 		reply = f"Enabled: {str(alive)}\n\n"
 		if alive:
 			reply += (
-				f"Observed devices:\n"
-				f"Device | Last update\n"
+				"Observed devices:\n"
+				"Device | Last update\n"
 			)
 			for device in observer.last_device_update:
 				date = datetime.fromtimestamp(observer.last_device_update[device])

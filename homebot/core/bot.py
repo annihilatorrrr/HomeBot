@@ -46,7 +46,7 @@ def enable_module(self: Dispatcher, module_name: str):
 			for command in module.commands:
 				self.add_handler(command.handler)
 			module.add_user(self.bot)
-		except:
+		except Exception:
 			LOGE(f"Failed to add handler for module {module_name}")
 			self.modules_status[module_name] = MODULE_STATUS_ERROR
 		else:
@@ -77,7 +77,7 @@ def disable_module(self: Dispatcher, module_name: str):
 			for command in module.commands:
 				self.add_handler(command.handler)
 			module.remove_user(self.bot)
-		except:
+		except Exception:
 			LOGE(f"Failed to add handler for module {module_name}")
 			self.modules_status[module_name] = MODULE_STATUS_ERROR
 		else:
@@ -86,6 +86,7 @@ def disable_module(self: Dispatcher, module_name: str):
 
 class HomeBot(Updater):
 	def __init__(self, token: str):
+		"""Initialize the bot."""
 		super().__init__(token=token)
 
 		self.dispatcher.add_error_handler(error_handler, True)
