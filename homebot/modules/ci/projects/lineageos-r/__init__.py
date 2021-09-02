@@ -11,3 +11,4 @@ class Project(AOSPProject):
 	lunch_suffix = "userdebug"
 	build_target = "bacon"
 	zip_name = "lineage-*.zip"
+	date_regex = "lineage-[0-9.]+-(.+?)-.*.zip"

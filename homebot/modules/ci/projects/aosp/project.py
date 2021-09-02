@@ -40,6 +40,8 @@ class AOSPProject:
 	build_target: str
 	# Filename of the zip. You can also use wildcards if the name isn't fixed
 	zip_name: str
+	# Regex to extract date from zip name, empty string to just use full name minus ".zip"
+	date_regex: str
 
 	def __init__(self, update: Update, context: CallbackContext, args: list[str]):
 		"""Initialize AOSP project class."""
@@ -141,9 +143,14 @@ class AOSPProject:
 			return
 
 		zip_filename = zip_filename[0].name
+		date_match = re.search(self.date_regex, zip_filename)
+		if date_match and self.date_regex != "":
+			folder_name = date_match.group(1)
+		else:
+			folder_name = zip_filename.removesuffix(".zip")
 
 		post_manager.update()
-		upload_path = Path() / self.parsed_args.device / zip_filename.removesuffix(".zip")
+		upload_path = Path() / self.parsed_args.device / folder_name
 		for artifact in artifacts.keys():
 			artifacts[artifact] = STATUS_UPLOADING
 			post_manager.update()
