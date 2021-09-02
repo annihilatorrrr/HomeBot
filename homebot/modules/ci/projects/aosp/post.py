@@ -18,7 +18,8 @@ class PostManager:
 	def get_base_message_text(self):
 		return (f"🛠 CI | {self.project.name} {self.project.version} ({self.project.android_version})\n"
 		        f"Device: {self.device}\n"
-		        f"Lunch flavor: {self.project.lunch_prefix}_{self.device}-{self.project.lunch_suffix}")
+		        f"Lunch flavor: {self.project.lunch_prefix}_{self.device}-{self.project.lunch_suffix}\n"
+				f"Build type: {'Release' if self.project.parsed_args.release else 'CI'}")
 
 	def update(self, status: str = None):
 		if status is not None:
