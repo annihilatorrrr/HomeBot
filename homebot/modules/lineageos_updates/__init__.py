@@ -10,7 +10,7 @@ from homebot.core.mdlintf import (
 from homebot.modules.lineageos_updates.main import (
 	add_user,
 	remove_user,
-	lineageos_updater,
+	lineageos_updates,
 )
 
 register_module(
@@ -21,7 +21,7 @@ register_module(
 		add_user = add_user,
 		remove_user = remove_user,
 		commands = {
-			ModuleCommand(lineageos_updater, ['lineageos_updater']),
+			ModuleCommand(lineageos_updates, ['lineageos_updates']),
 		},
 	)
 )

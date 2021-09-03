@@ -21,7 +21,7 @@ def remove_user(bot: Bot):
 	if bot in posters:
 		del posters[bot]
 
-def lineageos_updater(update: Update, context: CallbackContext):
+def lineageos_updates(update: Update, context: CallbackContext):
 	if not context.args:
 		update.message.reply_text("Error: No argument provided")
 		return
