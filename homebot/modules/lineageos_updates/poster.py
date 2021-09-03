@@ -1,5 +1,5 @@
 from datetime import datetime
-from homebot.modules.lineageos_updates.device_data import DeviceData
+from homebot.modules.lineageos_updates.device_data import get_device_data
 from homebot.core.config import get_config
 from telegram.bot import Bot
 
@@ -25,14 +25,15 @@ class Poster:
 
 		self.donation_link = get_config("lineageos_updater.donation_link", "")
 
-	def post(self, device_data: DeviceData, build_date: int, version: str):
+	def post(self, codename: str, build_date: int, version: str):
 		date = datetime.fromtimestamp(build_date)
+		device_data = get_device_data(codename)
 		caption = (
-			f"#{device_data.codename} #lineageos #{LINEAGEOS_TO_ANDROID_VERSION[version]}\n"
-			f"LineageOS {version} Official for {device_data.name} ({device_data.codename})\n"
+			f"#{codename} #lineageos #{LINEAGEOS_TO_ANDROID_VERSION[version]}\n"
+			f"LineageOS {version} Official for {device_data['name']} ({codename})\n"
 			f"\n"
-			f"⚡️Build date: {str(date.year)}/{str(date.month)}/{str(date.day)}\n"
-			f"⚡️Download: [ROM & Recovery](https://download.lineageos.org/{device_data.codename})\n"
+			f"⚡️Build date: {date.strftime('%Y/%m/%d')}\n"
+			f"⚡️Download: [ROM & Recovery](https://download.lineageos.org/{codename})\n"
 			f"\n"
 			f"Sources: https://github.com/LineageOS\n"
 			f"\n"
@@ -41,6 +42,6 @@ class Poster:
 			caption += f"Wanna buy me a coffee? {self.donation_link}"
 
 		self.bot.send_photo(chat_id=self.chat_id,
-		                    photo=f"{self.photo_url_base}/{device_data.codename}.png",
+		                    photo=f"{self.photo_url_base}/{codename}.png",
 		                    caption=caption,
 							parse_mode="Markdown")

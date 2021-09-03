@@ -1,19 +1,21 @@
+from datetime import datetime
+from homebot.modules.lineageos_updates.device_data import get_device_updates
+from homebot.core.logging import LOGE, LOGI
 from homebot.core.config import get_config
-from homebot.modules.lineageos_updates.device_data import DeviceData
 from homebot.modules.lineageos_updates.poster import posters
-import requests
 from threading import Event, Thread
-from time import sleep, time
+from time import sleep
 
 API_URL = "https://download.lineageos.org/api/v1/{device}/nightly/1"
 
 class Observer:
 	def __init__(self):
 		self.devices = get_config("lineageos_updater.devices", [])
-		self.last_device_update = {}
+		self.last_device_post = {}
 
+		now = int(datetime.now().timestamp())
 		for device in self.devices:
-			self.last_device_update[device] = int(time())
+			self.last_device_post[device] = now
 
 		self.event = Event()
 		if get_config("lineageos_updater.enable", False) and self.devices:
@@ -26,23 +28,27 @@ class Observer:
 		while True:
 			self.event.wait()
 			for device in self.devices:
-				api_url = API_URL.format(device=device)
-				response = requests.get(url=api_url).json()["response"]
+				response = get_device_updates(device)
 				if not response:
 					continue
 
 				last_update = response[-1]
 
-				if last_update["datetime"] <= self.last_device_update[device]:
+				build_date = last_update["datetime"]
+				if build_date <= self.last_device_post[device]:
 					continue
-				self.last_device_update[device] = last_update["datetime"]
 
-				device_data = DeviceData(device)
+				self.last_device_post[device] = build_date
 
 				for poster in posters.values():
-					poster.post(device_data, last_update["datetime"], last_update["version"])
+					try:
+						poster.post(device, build_date, last_update["version"])
+					except Exception:
+						LOGE(f"Failed to post {device} {build_date} build")
+					else:
+						LOGI(f"Build {device} {build_date} posted successfully")
 
-			# Wait 30 minutes
-			sleep(30 * 60)
+			# Wait 10 minutes
+			sleep(10 * 60)
 
 observer = Observer()
