@@ -28,7 +28,11 @@ class Observer:
 		while True:
 			self.event.wait()
 			for device in self.devices:
-				response = get_device_updates(device)
+				try:
+					response = get_device_updates(device)
+				except Exception:
+					response = {}
+
 				if not response:
 					continue
 
