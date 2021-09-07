@@ -9,9 +9,9 @@ def format_exception(exception):
 												   limit=None, chain=True))
 
 def error_handler(update: Update, context: CallbackContext):
-	formatted_error =   "HomeBot: Error encountered!\n"
-	formatted_error += f"Command sent: {update.message.text}\n\n"
-	formatted_error +=  format_exception(context.error)
+	formatted_error = ("HomeBot: Error encountered!\n"
+	                   f"Command sent: {update.message.text}\n\n"
+	                   f"{format_exception(context.error)}")
 	LOGE(formatted_error)
 	update.message.reply_text(formatted_error)
 	LOGE("End error handling")
