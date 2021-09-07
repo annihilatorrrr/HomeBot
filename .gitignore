@@ -92,4 +92,4 @@ dmypy.json
 !/homebot/lib/
 
 # Homebot database
-/data.pkl
+/data.json
