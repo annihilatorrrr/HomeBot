@@ -6,7 +6,7 @@ authors = ["Sebastiano Barezzi <barezzisebastiano@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-GitPython = "^3.1.23"
+GitPython = "^3.1.24"
 paramiko = "^2.7.2"
 PyGithub = "^1.55"
 python-telegram-bot = "^13.7"
