@@ -135,13 +135,16 @@ def get_all_modules_list():
 
 def get_module(module_name: str):
 	with _mdlbinder_lock:
-		if not module_name in _mdlbinder:
-			# New module added while running? Try to import it
-			try:
-				import_module(f'homebot.modules.{module_name}')
-			except Exception:
-				LOGD(f"Tried to import module {module_name} but failed")
+		module_found = module_name in _mdlbinder
 
+	if not module_found:
+		# New module added while running? Try to import it
+		try:
+			import_module(f'homebot.modules.{module_name}')
+		except Exception:
+			LOGD(f"Tried to import module {module_name} but failed")
+
+	with _mdlbinder_lock:
 		if module_name in _mdlbinder:
 			return _mdlbinder[module_name]
 		else:
