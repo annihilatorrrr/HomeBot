@@ -2,6 +2,7 @@ from homebot.lib.libadmin import user_is_admin
 import subprocess
 from telegram.ext import CallbackContext
 from telegram.update import Update
+from tempfile import TemporaryFile
 
 def shell(update: Update, context: CallbackContext):
 	if not user_is_admin(update.message.from_user.id):
@@ -23,7 +24,12 @@ def shell(update: Update, context: CallbackContext):
 		returncode = 0
 		output = process
 
-	update.message.reply_text(f"Command: {command}\n"
-							  f"Return code: {returncode}\n\n"
-							  f"Output:\n"
-							  f"{output}\n")
+	fd = TemporaryFile(mode='r+')
+	fd.write(output)
+	fd.seek(0)
+	update.message.reply_document(document=fd, filename="output.txt", caption=(
+		f"Command: {command}\n"
+		f"Return code: {returncode}\n\n"
+		"Output: sent as document\n"
+	))
+	fd.close()
