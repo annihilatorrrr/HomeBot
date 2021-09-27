@@ -1,17 +1,20 @@
 """twrpdtgen CI project."""
 
 from datetime import date
-from homebot.core.config import get_config
-from homebot.modules.ci.parser import CIParser
+from git import Repo
 from git.exc import GitCommandError
 from github import Github, GithubException
+from twrpdtgen.utils.logging import LOGE
+from homebot.core.config import get_config
+from homebot.core.error_handler import format_exception
+from homebot.modules.ci.parser import CIParser
 from pathlib import Path
 import requests
 from telegram import Update
 from telegram.ext import CallbackContext
 from tempfile import TemporaryDirectory
-from twrpdtgen.device_tree import DeviceTree
-from twrpdtgen.info_extractors.buildprop import PARTITIONS
+from twrpdtgen.devicetree import DeviceTree
+from twrpdtgen.utils.deviceinfo import PARTITIONS
 
 BUILD_DESCRIPTION = ["ro.build.description"] + [f"ro.{partition}.build.description" for partition in PARTITIONS]
 
@@ -41,19 +44,19 @@ class Project:
 		# Generate device tree
 		status_message.edit_text("Generating device tree...")
 		try:
-			devicetree = DeviceTree(path / "working", recovery_image=file)
+			devicetree = DeviceTree(file)
+			devicetree_folder = devicetree.dump_to_folder(path / "working", git=True)
 		except Exception as e:
 			status_message.edit_text("Device tree generation failed\n"
 									f"Error: {e}")
 			return
 
-		try:
-			build_description = devicetree.build_prop_reader.get_prop(BUILD_DESCRIPTION, "build description")
+		today = date.today()
+		build_description = devicetree.deviceinfo.get_prop(BUILD_DESCRIPTION, raise_exception=False)
+		if build_description is not None:
 			branch = build_description.replace(" ", "-")
-		except AssertionError:
+		else:
 			status_message.edit_text("Failed to get build description prop, using date as a branch")
-			today = date.today()
-			build_description = None
 			branch = f"{today.year}-{today.month}-{today.day}"
 
 		# Upload to GitHub
@@ -61,7 +64,7 @@ class Project:
 		gh_username = get_config("ci.github_username")
 		gh_token = get_config("ci.github_token")
 		gh_org_name = get_config("ci.twrpdtgen.github_org")
-		repo_name = f"android_device_{devicetree.manufacturer}_{devicetree.codename}"
+		repo_name = f"android_device_{devicetree.deviceinfo.manufacturer}_{devicetree.deviceinfo.codename}"
 		git_repo_url = f"https://{gh_username}:{gh_token}@github.com/{gh_org_name}/{repo_name}"
 
 		# Get organization
@@ -86,10 +89,12 @@ class Project:
 
 		status_message.edit_text("Pushing...")
 		try:
-			devicetree.git_repo.git.push(git_repo_url, f"HEAD:refs/heads/{branch}")
+			Repo(devicetree_folder).git.push(git_repo_url, f"HEAD:refs/heads/{branch}")
 			devicetree_repo.edit(default_branch=branch)
-		except GitCommandError:
+		except GitCommandError as e:
 			status_message.edit_text("Error: Push to remote failed!")
+			LOGE("Push to GitHub failed:\n"
+			     f"{format_exception(e)}")
 			return
 
 		status_message.edit_text("Done")
@@ -97,8 +102,8 @@ class Project:
 		channel_id = get_config("ci.twrpdtgen.channel_id")
 		self.context.bot.send_message(channel_id,
 									  "TWRP device tree generated\n"
-									  f"Codename: {devicetree.codename}\n"
-									  f"Manufacturer: {devicetree.manufacturer}\n"
+									  f"Codename: {devicetree.deviceinfo.codename}\n"
+									  f"Manufacturer: {devicetree.deviceinfo.manufacturer}\n"
 									  f"Build description: {build_description}\n"
 									  f"Device tree: {devicetree_repo.html_url}/tree/{branch}",
 									  disable_web_page_preview=True)
