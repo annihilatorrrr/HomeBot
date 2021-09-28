@@ -8,7 +8,7 @@ After=network.target
 WorkingDirectory=/home/seba/Scrivania/HomeBot
 ExecStart=/usr/bin/python3 -m homebot
 Type=simple
-Restart=on-failure
+Restart=always
 # If you want to execute it as non-root (recommended)
 User=seba
 
