@@ -1,0 +1,16 @@
+[Unit]
+Description=HomeBot Service
+Requires=network.target
+After=network.target
+
+[Service]
+# Change WorkingDirectory with the directory where you have HomeBot configs
+WorkingDirectory=/home/seba/Scrivania/HomeBot
+ExecStart=/usr/bin/python3 -m homebot
+Type=simple
+Restart=on-failure
+# If you want to execute it as non-root (recommended)
+User=seba
+
+[Install]
+WantedBy=multi-user.target
