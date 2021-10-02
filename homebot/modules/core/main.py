@@ -15,8 +15,9 @@ def modules(update: Update, context: CallbackContext):
 	for module_name in get_all_modules_list():
 		module = get_module(module_name)
 		message += f"{module_name}\n"
-		if module_name in context.dispatcher.modules_status:
-			message += f"Status: {MODULE_STATUS_MESSAGE[context.dispatcher.modules_status[module_name]]}\n"
+		modules = context.dispatcher.modules_manager.modules
+		if module_name in modules:
+			message += f"Status: {MODULE_STATUS_MESSAGE[modules[module_name]]}\n"
 		else:
 			message += f"Status: {MODULE_STATUS_MESSAGE[MODULE_STATUS_DISABLED]}\n"
 		message += f"Commands: {', '.join([command.name for command in module.commands])}\n\n"
@@ -44,7 +45,7 @@ def enable(update: Update, context: CallbackContext):
 			continue
 
 		try:
-			context.dispatcher.enable_module(module_name)
+			context.dispatcher.modules_manager.enable_module(module_name)
 		except AttributeError:
 			result[module_name] = "Module already enabled"
 			continue
@@ -75,7 +76,7 @@ def disable(update: Update, context: CallbackContext):
 			continue
 
 		try:
-			context.dispatcher.disable_module(module_name)
+			context.dispatcher.modules_manager.disable_module(module_name)
 		except AttributeError:
 			result[module_name] = "Module already disabled"
 			continue
