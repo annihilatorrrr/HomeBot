@@ -3,7 +3,6 @@ from homebot.core.logging import LOGE, LOGI
 from homebot.core.mdlintf import get_all_modules_list, get_module
 from telegram.ext import Dispatcher, Updater
 from threading import Lock
-from types import MethodType
 
 # Module status
 (
@@ -22,67 +21,77 @@ MODULE_STATUS_MESSAGE = {
 	MODULE_STATUS_ERROR: "Error",
 }
 
-def enable_module(self: Dispatcher, module_name: str):
+class DispatcherModulesManager:
 	"""
-	Load a provided module and add its command handler
-	to the bot's dispatcher.
+	Class that manages mdlintf modules for a dispatcher.
 	"""
-	LOGI(f"Loading module {module_name}")
+	def __init__(self, dispatcher: Dispatcher):
+		self.dispatcher = dispatcher
 
-	module = get_module(module_name)
-	if module is None:
-		raise ModuleNotFoundError(f"Module {module_name} not found")
+		self.modules = {}
+		self.modules_lock = Lock()
 
-	with self.modules_status_lock:
-		if not module_name in self.modules_status:
-			self.modules_status[module_name] = MODULE_STATUS_DISABLED
+	def enable_module(self, module_name: str):
+		"""
+		Load a provided module and add its command handler
+		to the bot's dispatcher.
+		"""
+		LOGI(f"Loading module {module_name}")
 
-		if self.modules_status[module_name] == MODULE_STATUS_ENABLED:
-			raise AttributeError("Module is already enabled")
+		module = get_module(module_name)
+		if module is None:
+			raise ModuleNotFoundError(f"Module {module_name} not found")
 
-		self.modules_status[module_name] = MODULE_STATUS_ENABLING
+		with self.modules_lock:
+			if not module_name in self.modules:
+				self.modules[module_name] = MODULE_STATUS_DISABLED
 
-		try:
-			for command in module.commands:
-				self.add_handler(command.handler)
-			module.add_user(self.bot)
-		except Exception:
-			LOGE(f"Failed to add handler for module {module_name}")
-			self.modules_status[module_name] = MODULE_STATUS_ERROR
-		else:
-			self.modules_status[module_name] = MODULE_STATUS_ENABLED
-			LOGI(f"Module {module_name} enabled")
+			if self.modules[module_name] == MODULE_STATUS_ENABLED:
+				raise AttributeError("Module is already enabled")
 
-def disable_module(self: Dispatcher, module_name: str):
-	"""
-	Unload a provided module and remove its command handler
-	from the bot's dispatcher.
-	"""
-	LOGI(f"Loading module {module_name}")
+			self.modules[module_name] = MODULE_STATUS_ENABLING
 
-	module = get_module(module_name)
-	if module is None:
-		raise ModuleNotFoundError(f"Module {module_name} not found")
+			try:
+				for command in module.commands:
+					self.dispatcher.add_handler(command.handler)
+				module.add_user(self.dispatcher.bot)
+			except Exception:
+				LOGE(f"Failed to add handler for module {module_name}")
+				self.modules[module_name] = MODULE_STATUS_ERROR
+			else:
+				self.modules[module_name] = MODULE_STATUS_ENABLED
+				LOGI(f"Module {module_name} enabled")
 
-	with self.modules_status_lock:
-		if not module_name in self.modules_status:
-			self.modules_status[module_name] = MODULE_STATUS_DISABLED
+	def disable_module(self, module_name: str):
+		"""
+		Unload a provided module and remove its command handler
+		from the bot's dispatcher.
+		"""
+		LOGI(f"Loading module {module_name}")
 
-		if self.modules_status[module_name] == MODULE_STATUS_DISABLED:
-			raise AttributeError("Module is already disabled")
+		module = get_module(module_name)
+		if module is None:
+			raise ModuleNotFoundError(f"Module {module_name} not found")
 
-		self.modules_status[module_name] = MODULE_STATUS_DISABLING
+		with self.modules_lock:
+			if not module_name in self.modules:
+				self.modules[module_name] = MODULE_STATUS_DISABLED
 
-		try:
-			for command in module.commands:
-				self.add_handler(command.handler)
-			module.remove_user(self.bot)
-		except Exception:
-			LOGE(f"Failed to add handler for module {module_name}")
-			self.modules_status[module_name] = MODULE_STATUS_ERROR
-		else:
-			self.modules_status[module_name] = MODULE_STATUS_DISABLED
-			LOGI(f"Module {module_name} disabled")
+			if self.modules[module_name] == MODULE_STATUS_DISABLED:
+				raise AttributeError("Module is already disabled")
+
+			self.modules[module_name] = MODULE_STATUS_DISABLING
+
+			try:
+				for command in module.commands:
+					self.dispatcher.add_handler(command.handler)
+				module.remove_user(self.dispatcher.bot)
+			except Exception:
+				LOGE(f"Failed to add handler for module {module_name}")
+				self.modules[module_name] = MODULE_STATUS_ERROR
+			else:
+				self.modules[module_name] = MODULE_STATUS_DISABLED
+				LOGI(f"Module {module_name} disabled")
 
 class HomeBot(Updater):
 	def __init__(self, token: str):
@@ -91,11 +100,7 @@ class HomeBot(Updater):
 
 		self.dispatcher.add_error_handler(error_handler, True)
 
-		self.dispatcher.modules_status = {}
-		self.dispatcher.modules_status_lock = Lock()
-
-		self.dispatcher.enable_module = MethodType(enable_module, self.dispatcher)
-		self.dispatcher.disable_module = MethodType(disable_module, self.dispatcher)
+		self.dispatcher.modules_manager = DispatcherModulesManager(self.dispatcher)
 
 		for module_name in get_all_modules_list():
-			self.dispatcher.enable_module(module_name)
+			self.dispatcher.modules_manager.enable_module(module_name)
