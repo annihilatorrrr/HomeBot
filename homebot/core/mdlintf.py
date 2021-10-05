@@ -2,13 +2,16 @@
 # Module Interface core
 #
 
+# TODO: Remove with Python 3.10
+from __future__ import annotations
+
 from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGD, LOGE, LOGI, LOGW
 from importlib import import_module
 from pathlib import Path
 from pkgutil import iter_modules
 from telegram.bot import Bot
-from telegram.ext import CommandHandler, CallbackContext
+from telegram.ext import CallbackContext, CommandHandler
 from telegram.update import Update
 from threading import Lock
 from typing import Any, Callable
@@ -20,29 +23,7 @@ def register_modules(modules_path: Path):
 			import_module(f'homebot.modules.{module_name}')
 		except Exception as e:
 			LOGE(f"Error importing module {module_name}:\n"
-							f"{format_exception(e)}")
-
-# Module type
-(
-	MODULE_TYPE_CORE,
-	MODULE_TYPE_EXTERNAL,
-) = range(2)
-
-MODULE_TYPE_MESSAGE = {
-	MODULE_TYPE_CORE: "Core",
-	MODULE_TYPE_EXTERNAL: "External",
-}
-
-class ModuleCommand:
-	"""
-	A class representing a HomeBot module command
-	"""
-	def __init__(self, function: Callable[[Update, CallbackContext], Any], commands: list) -> None:
-		"""
-		Initialize the command class.
-		"""
-		self.name = function.__name__
-		self.handler = CommandHandler(commands, function, run_async=True)
+			     f"{format_exception(e)}")
 
 #
 # Module IOCTL
@@ -102,32 +83,34 @@ def mdlintf_ioctl(module_name: str, data: IOCTLData):
 
 	return module.ioctl(data)
 
+def get_command_handler(module, commands, function):
+	new_function = lambda update, context: function(module, update, context)
+	new_function.__name__ = function.__name__
+	return CommandHandler(commands, new_function, run_async=True)
+
 class ModuleInterface:
-	def __init__(self,
-				 name: str,
-				 version: str,
-				 module_type: int,
-				 add_user: Callable[[Bot], Any] = lambda bot: None,
-				 remove_user: Callable[[Bot], Any] = lambda bot: None,
-				 commands: list[ModuleCommand] = [],
-				 ioctl: Callable[[IOCTLData], int] = lambda data: MODULE_IOCTL_RESULT_NO_IOCTL,
-				):
-		"""Initialize the interface."""
-		self.name = name
-		self.version = version
-		self.type = module_type
-		self.add_user = add_user
-		self.remove_user = remove_user
-		self.commands = commands
-		self.ioctl = ioctl
+	name: str = "none"
+	version: str = "0.0"
+	core: bool = False
+	module_init: Callable[[ModuleInterface], None] = lambda self: None
+	add_user: Callable[[ModuleInterface, Bot], None] = lambda self, bot: None
+	remove_user: Callable[[ModuleInterface, Bot], None] = lambda self, bot: None
+	commands: dict[Callable[[ModuleInterface, Update, CallbackContext], None], list[str]] = []
+	ioctl: Callable[[ModuleInterface, IOCTLData], int] = lambda self, data: MODULE_IOCTL_RESULT_NO_IOCTL
+
+	def __init__(self):
+		self.handlers = [
+			get_command_handler(self, commands, function)
+			for function, commands in self.commands.items()
+		]
+
+		self.module_init()
 
 #
 # Module Binder IPC
 #
-_mdlbinder = {}
+_mdlbinder: dict[str, ModuleInterface] = {}
 _mdlbinder_lock = Lock()
-
-_mdlbinder: dict[str, ModuleInterface]
 
 def get_all_modules_list():
 	with _mdlbinder_lock:
@@ -159,6 +142,8 @@ def register_module(mdlintf: ModuleInterface):
 							f'old ID: {id(_mdlbinder[name])}, new ID: {id(mdlintf)}')
 			del _mdlbinder[name]
 
-		_mdlbinder[name] = mdlintf
+		_mdlbinder[name] = mdlintf()
 
 		LOGI(f'Registered module "{name}" with ID {id(_mdlbinder[name])}')
+
+		return mdlintf

@@ -1,4 +1,5 @@
-from homebot.core.error_handler import error_handler
+from telegram.ext.commandhandler import CommandHandler
+from homebot.core.error_handler import error_handler, format_exception
 from homebot.core.logging import LOGE, LOGI
 from homebot.core.mdlintf import get_all_modules_list, get_module
 from telegram.ext import Dispatcher, Updater
@@ -52,11 +53,12 @@ class DispatcherModulesManager:
 			self.modules[module_name] = MODULE_STATUS_ENABLING
 
 			try:
-				for command in module.commands:
-					self.dispatcher.add_handler(command.handler)
+				for command in module.handlers:
+					self.dispatcher.add_handler(command)
 				module.add_user(self.dispatcher.bot)
-			except Exception:
-				LOGE(f"Failed to add handler for module {module_name}")
+			except Exception as e:
+				LOGE(f"Failed to add handler for module {module_name}\n"
+				     f"{format_exception(e)}")
 				self.modules[module_name] = MODULE_STATUS_ERROR
 			else:
 				self.modules[module_name] = MODULE_STATUS_ENABLED
@@ -83,11 +85,12 @@ class DispatcherModulesManager:
 			self.modules[module_name] = MODULE_STATUS_DISABLING
 
 			try:
-				for command in module.commands:
-					self.dispatcher.add_handler(command.handler)
+				for command in module.handlers:
+					self.dispatcher.remove_handler(command)
 				module.remove_user(self.dispatcher.bot)
-			except Exception:
-				LOGE(f"Failed to add handler for module {module_name}")
+			except Exception as e:
+				LOGE(f"Failed to remove handler for module {module_name}\n"
+				     f"{format_exception(e)}")
 				self.modules[module_name] = MODULE_STATUS_ERROR
 			else:
 				self.modules[module_name] = MODULE_STATUS_DISABLED
