@@ -1,8 +1,6 @@
 """HomeBot LineageOS updates module."""
 
 from homebot.core.mdlintf import (
-	MODULE_TYPE_EXTERNAL,
-	ModuleCommand,
 	ModuleInterface,
 	register_module,
 )
@@ -13,15 +11,12 @@ from homebot.modules.lineageos_updates.main import (
 	lineageos_updates,
 )
 
-register_module(
-	ModuleInterface(
-		name = "lineageos_updater",
-		version = "1.0",
-		module_type = MODULE_TYPE_EXTERNAL,
-		add_user = add_user,
-		remove_user = remove_user,
-		commands = {
-			ModuleCommand(lineageos_updates, ['lineageos_updates']),
-		},
-	)
-)
+@register_module
+class LineageosUpdatesModule(ModuleInterface):
+	name = "lineageos_updater"
+	version = "1.0"
+	add_user = add_user
+	remove_user = remove_user
+	commands = {
+		lineageos_updates: ["lineageos_updates"],
+	}

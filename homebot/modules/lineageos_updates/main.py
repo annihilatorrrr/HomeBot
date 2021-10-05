@@ -11,22 +11,22 @@ from telegram.ext import CallbackContext
 from telegram.update import Update
 from typing import Callable
 
-def add_user(bot: Bot):
+def add_user(self, bot: Bot):
 	posters[bot] = Poster(bot)
 
-def remove_user(bot: Bot):
+def remove_user(self, bot: Bot):
 	if bot in posters:
 		del posters[bot]
 
-def disable(update: Update, context: CallbackContext):
+def disable(self, update: Update, context: CallbackContext):
 	observer.event.clear()
 	update.message.reply_text("Observer disabled")
 
-def enable(update: Update, context: CallbackContext):
+def enable(self, update: Update, context: CallbackContext):
 	observer.event.set()
 	update.message.reply_text("Observer enabled")
 
-def info(update: Update, context: CallbackContext):
+def info(self, update: Update, context: CallbackContext):
 	alive = observer.thread.is_alive()
 	text = f"Enabled: {str(alive)}\n"
 	if alive:
@@ -40,7 +40,7 @@ def info(update: Update, context: CallbackContext):
 
 	update.message.reply_text(text)
 
-def last(update: Update, context: CallbackContext):
+def last(self, update: Update, context: CallbackContext):
 	if len(context.args) < 2:
 		update.message.reply_text("Device codename not specified")
 		return
@@ -57,7 +57,7 @@ def last(update: Update, context: CallbackContext):
 	                          f"Version: {last_update['version']}\n"
 	                          f"Download: {last_update['url']}")
 
-def when(update: Update, context: CallbackContext):
+def when(self, update: Update, context: CallbackContext):
 	if len(context.args) < 2:
 		update.message.reply_text("Device codename not specified")
 		return
@@ -72,8 +72,8 @@ def when(update: Update, context: CallbackContext):
 	day = day_name[day_int - 1]
 	update.message.reply_text(f"The next build for {device} will be on {day}")
 
-# name: [function, admin_only]
-COMMANDS: dict[str, list[Callable[[Update, CallbackContext], None], bool]] = {
+# name: [self, function, admin_only]
+COMMANDS: dict[None, str, list[Callable[[Update, CallbackContext], None], bool]] = {
 	"disable": [disable, True],
 	"enable": [enable, True],
 	"info": [info, False],
@@ -86,7 +86,7 @@ HELP_TEXT = (
 	"\n".join(COMMANDS.keys())
 )
 
-def lineageos_updates(update: Update, context: CallbackContext):
+def lineageos_updates(self, update: Update, context: CallbackContext):
 	if not context.args:
 		update.message.reply_text(
 			"Error: No argument provided\n\n"
@@ -109,4 +109,4 @@ def lineageos_updates(update: Update, context: CallbackContext):
 		update.message.reply_text("Error: You are not authorized to use this function")
 		return
 
-	func(update, context)
+	func(self, update, context)
