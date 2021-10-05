@@ -4,7 +4,7 @@ from telegram.ext import CallbackContext
 from telegram.update import Update
 from tempfile import TemporaryFile
 
-def shell(update: Update, context: CallbackContext):
+def shell(self, update: Update, context: CallbackContext):
 	if not user_is_admin(update.message.from_user.id):
 		update.message.reply_text("Error: You are not authorized to use the shell")
 		return
