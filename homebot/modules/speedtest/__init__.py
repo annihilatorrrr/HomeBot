@@ -1,8 +1,6 @@
 """HomeBot speedtest module."""
 
 from homebot.core.mdlintf import (
-	MODULE_TYPE_EXTERNAL,
-	ModuleCommand,
 	ModuleInterface,
 	register_module,
 )
@@ -11,13 +9,10 @@ from homebot.modules.speedtest.main import (
 	speedtest,
 )
 
-register_module(
-	ModuleInterface(
-		name = "speedtest",
-		version = "1.0",
-		module_type = MODULE_TYPE_EXTERNAL,
-		commands = {
-			ModuleCommand(speedtest, ['speedtest']),
-		},
-	)
-)
+@register_module
+class SpeedtestModule(ModuleInterface):
+	name = "speedtest"
+	version = "1.0"
+	commands = {
+		speedtest: ["speedtest"],
+	}

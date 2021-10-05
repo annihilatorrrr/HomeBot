@@ -20,7 +20,7 @@ class SpeedtestResult:
 
 last_speedtest = SpeedtestResult()
 
-def speedtest(update: Update, context: CallbackContext):
+def speedtest(self, update: Update, context: CallbackContext):
 	now = datetime.now()
 	# Use cached values if < 5 minutes
 	if last_speedtest.date is not None and (now - last_speedtest.date).seconds < 5 * 60:
