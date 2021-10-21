@@ -1,6 +1,16 @@
 HomeBot's documentation
 =======================
 
+Guides and tutorials
+--------------------
+
+.. toctree::
+    :titlesonly:
+    :name: Guides
+    :glob:
+
+    guides/*
+
 Reference
 ---------
 
