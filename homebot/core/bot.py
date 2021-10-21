@@ -26,6 +26,7 @@ class DispatcherModulesManager:
 	Class that manages mdlintf modules for a dispatcher.
 	"""
 	def __init__(self, dispatcher: Dispatcher):
+		"""Initialize the modules manager."""
 		self.dispatcher = dispatcher
 
 		self.modules = {}
