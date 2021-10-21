@@ -21,7 +21,7 @@ class Observer:
 		if get_config("lineageos_updater.enable", False) and self.devices:
 			self.event.set()
 
-		self.thread = Thread(target=self.daemon, name="LineageOS updater observer")
+		self.thread = Thread(target=self.daemon, name="LineageOS updater observer", daemon=True)
 		self.thread.start()
 
 	def daemon(self):
