@@ -1,4 +1,3 @@
-from telegram.ext.commandhandler import CommandHandler
 from homebot.core.error_handler import error_handler, format_exception
 from homebot.core.logging import LOGE, LOGI
 from homebot.core.mdlintf import get_all_modules_list, get_module
