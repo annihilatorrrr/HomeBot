@@ -1,6 +1,7 @@
 # HomeBot, a modular Telegram bot, written in Python
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2cadab25a04c42779f3203b4a61bd6ef)](https://app.codacy.com/gh/SebaUbuntu/HomeBot?utm_source=github.com&utm_medium=referral&utm_content=SebaUbuntu/HomeBot&utm_campaign=Badge_Grade)
+[![Documentation Status](https://readthedocs.org/projects/homebot/badge/?version=latest)](https://homebot.readthedocs.io/en/latest/?badge=latest)
 
 ## How to use it
 
@@ -22,4 +23,4 @@ python3 -m homebot
 
 ## Wiki
 
-Head over to [the wiki](https://github.com/SebaUbuntu/HomeBot/wiki) for more informations
+Head over to [HomeBot Read the Docs page](https://homebot.readthedocs.io) for more informations
