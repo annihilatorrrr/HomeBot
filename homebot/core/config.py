@@ -1,6 +1,7 @@
 from homebot import config
 
 def get_config(name: str, default=None):
+	"""Get a property from config.py."""
 	if not '.' in name:
 		if name in config:
 			value = config[name]
