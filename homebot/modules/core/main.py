@@ -20,7 +20,7 @@ def modules(self, update: Update, context: CallbackContext):
 			message += f"Status: {MODULE_STATUS_MESSAGE[modules[module_name]]}\n"
 		else:
 			message += f"Status: {MODULE_STATUS_MESSAGE[MODULE_STATUS_DISABLED]}\n"
-		message += f"Commands: {', '.join([command.callback.__name__ for command in module.commands])}\n\n"
+		message += f"Commands: {', '.join([command.__name__ for command in module.commands])}\n\n"
 
 	update.message.reply_text(message)
 
