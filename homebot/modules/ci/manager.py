@@ -11,7 +11,7 @@ class CIManager(Queue):
 		"""Initialize the QueueManager class."""
 		super().__init__()
 		self.current_workflow = None
-		self.thread = Thread(target=self.daemon, name="CI daemon")
+		self.thread = Thread(target=self.daemon, name="CI daemon", daemon=True)
 		self.thread.start()
 
 	def daemon(self):
