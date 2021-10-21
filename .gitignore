@@ -49,7 +49,9 @@ coverage.xml
 .pytest_cache/
 
 # Sphinx documentation
-docs/_build/
+docs/build/
+docs/source/homebot/
+docs/data.json
 
 # PyBuilder
 target/
