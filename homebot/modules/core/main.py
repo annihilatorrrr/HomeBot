@@ -57,7 +57,7 @@ def enable(self, update: Update, context: CallbackContext):
 
 def disable(self, update: Update, context: CallbackContext):
 	if not user_is_admin(update.message.from_user.id):
-		update.message.reply_text("Error: You are not authorized to load modules")
+		update.message.reply_text("Error: You are not authorized to unload modules")
 		return
 
 	if len(context.args) < 1:
