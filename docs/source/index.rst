@@ -22,6 +22,12 @@ Reference
     homebot.lib
     homebot.modules
 
+.. toctree::
+    :titlesonly:
+    :name: Configuration properties
+
+    config
+
 Indices and tables
 ------------------
 

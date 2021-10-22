@@ -1,4 +1,5 @@
 config = {
+	# [START]
 	"bot": {
 		# Add here your HTTP API bot token, get it from @BotFather
 		# type: str
@@ -82,4 +83,5 @@ config = {
 			"password": "",
 		},
 	},
+	# [END]
 }
