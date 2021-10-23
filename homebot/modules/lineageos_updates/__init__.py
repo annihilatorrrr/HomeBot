@@ -13,7 +13,7 @@ from homebot.modules.lineageos_updates.main import (
 
 @register_module
 class LineageosUpdatesModule(ModuleInterface):
-	name = "lineageos_updater"
+	name = "lineageos_updates"
 	version = "1.0"
 	add_user = add_user
 	remove_user = remove_user

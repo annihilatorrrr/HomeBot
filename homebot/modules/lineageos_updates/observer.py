@@ -10,7 +10,7 @@ API_URL = "https://download.lineageos.org/api/v1/{device}/nightly/1"
 
 class Observer:
 	def __init__(self):
-		self.devices = get_config("lineageos_updater.devices", [])
+		self.devices = get_config("lineageos_updates.devices", [])
 		self.last_device_post = {}
 
 		now = int(datetime.now().timestamp())
@@ -18,10 +18,10 @@ class Observer:
 			self.last_device_post[device] = now
 
 		self.event = Event()
-		if get_config("lineageos_updater.enable", False) and self.devices:
+		if get_config("lineageos_updates.enable", False) and self.devices:
 			self.event.set()
 
-		self.thread = Thread(target=self.daemon, name="LineageOS updater observer", daemon=True)
+		self.thread = Thread(target=self.daemon, name="LineageOS updates observer", daemon=True)
 		self.thread.start()
 
 	def daemon(self):

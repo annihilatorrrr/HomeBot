@@ -15,15 +15,15 @@ class Poster:
 	def __init__(self, bot: Bot):
 		self.bot = bot
 
-		self.chat_id = get_config("lineageos_updater.chat_id", "")
+		self.chat_id = get_config("lineageos_updates.chat_id", "")
 		if self.chat_id == "":
 			raise AssertionError("No chat ID defined")
 
-		self.photo_url_base = get_config("lineageos_updater.photo_url_base", "")
+		self.photo_url_base = get_config("lineageos_updates.photo_url_base", "")
 		if self.chat_id == "":
 			raise AssertionError("No photo URL base defined")
 
-		self.donation_link = get_config("lineageos_updater.donation_link", "")
+		self.donation_link = get_config("lineageos_updates.donation_link", "")
 
 	def post(self, codename: str, build_date: int, version: str):
 		date = datetime.fromtimestamp(build_date)

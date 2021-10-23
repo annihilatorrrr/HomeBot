@@ -34,8 +34,8 @@ config = {
 		}
 	},
 
-	# Module - LineageOS updater
-	"lineageos_updater": {
+	# Module - LineageOS updates
+	"lineageos_updates": {
 		# type: bool
 		"enable": False,
 
