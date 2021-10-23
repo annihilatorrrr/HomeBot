@@ -2,7 +2,6 @@ from datetime import datetime
 from homebot.modules.lineageos_updates.device_data import get_device_updates
 from homebot.core.logging import LOGE, LOGI
 from homebot.core.config import get_config
-from homebot.modules.lineageos_updates.poster import posters
 from threading import Event, Thread
 from time import sleep
 
@@ -12,6 +11,7 @@ class Observer:
 	def __init__(self):
 		self.devices = get_config("lineageos_updates.devices", [])
 		self.last_device_post = {}
+		self.posters = {}
 
 		now = int(datetime.now().timestamp())
 		for device in self.devices:
@@ -44,7 +44,7 @@ class Observer:
 
 				self.last_device_post[device] = build_date
 
-				for poster in posters.values():
+				for poster in self.posters.values():
 					try:
 						poster.post(device, build_date, last_update["version"])
 					except Exception:
@@ -54,5 +54,3 @@ class Observer:
 
 			# Wait 10 minutes
 			sleep(10 * 60)
-
-observer = Observer()

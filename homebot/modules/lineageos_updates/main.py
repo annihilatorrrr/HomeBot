@@ -1,9 +1,9 @@
 from calendar import day_name
 from datetime import datetime
-from homebot.modules.lineageos_updates.device_data import get_device_updates
 from homebot.lib.libadmin import user_is_admin
-from homebot.modules.lineageos_updates.observer import observer
-from homebot.modules.lineageos_updates.poster import Poster, posters
+from homebot.modules.lineageos_updates.device_data import get_device_updates
+from homebot.modules.lineageos_updates.observer import Observer
+from homebot.modules.lineageos_updates.poster import Poster
 from shutil import which
 from subprocess import check_output
 from telegram.bot import Bot
@@ -11,31 +11,34 @@ from telegram.ext import CallbackContext
 from telegram.update import Update
 from typing import Callable
 
+def module_init(self):
+	self.observer = Observer()
+
 def add_user(self, bot: Bot):
-	posters[bot] = Poster(bot)
+	self.observer.posters[bot] = Poster(bot)
 
 def remove_user(self, bot: Bot):
-	if bot in posters:
-		del posters[bot]
+	if bot in self.observer.posters:
+		del self.observer.posters[bot]
 
 def disable(self, update: Update, context: CallbackContext):
-	observer.event.clear()
+	self.observer.event.clear()
 	update.message.reply_text("Observer disabled")
 
 def enable(self, update: Update, context: CallbackContext):
-	observer.event.set()
+	self.observer.event.set()
 	update.message.reply_text("Observer enabled")
 
 def info(self, update: Update, context: CallbackContext):
-	alive = observer.thread.is_alive()
+	alive = self.observer.thread.is_alive()
 	text = f"Enabled: {str(alive)}\n"
 	if alive:
 		text += (
 			"Observed devices:\n"
 			"Device | Last post\n"
 		)
-		for device in observer.last_device_post:
-			date = datetime.fromtimestamp(observer.last_device_post[device])
+		for device in self.observer.last_device_post:
+			date = datetime.fromtimestamp(self.observer.last_device_post[device])
 			text += f"{device} | {date.strftime('%Y/%m/%d, %H:%M:%S')}\n"
 
 	update.message.reply_text(text)

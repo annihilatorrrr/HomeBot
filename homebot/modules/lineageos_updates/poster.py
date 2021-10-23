@@ -9,8 +9,6 @@ LINEAGEOS_TO_ANDROID_VERSION = {
 	"18.1": "r",
 }
 
-posters = {}
-
 class Poster:
 	def __init__(self, bot: Bot):
 		self.bot = bot

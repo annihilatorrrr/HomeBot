@@ -6,6 +6,7 @@ from homebot.core.mdlintf import (
 )
 
 from homebot.modules.lineageos_updates.main import (
+	module_init,
 	add_user,
 	remove_user,
 	lineageos_updates,
@@ -15,6 +16,7 @@ from homebot.modules.lineageos_updates.main import (
 class LineageosUpdatesModule(ModuleInterface):
 	name = "lineageos_updates"
 	version = "1.0"
+	module_init = module_init
 	add_user = add_user
 	remove_user = remove_user
 	commands = {
