@@ -1,5 +1,6 @@
 from homebot.lib.libadmin import user_is_admin
 import subprocess
+from telegram.constants import MAX_MESSAGE_LENGTH, PARSEMODE_HTML
 from telegram.ext import CallbackContext
 from telegram.update import Update
 from tempfile import TemporaryFile
@@ -16,7 +17,8 @@ def shell(self, update: Update, context: CallbackContext):
 	command = update.message.text.split(' ', 1)[1]
 	try:
 		process = subprocess.check_output(command, shell=True, executable="/bin/bash",
-										  stderr=subprocess.STDOUT, universal_newlines=True)
+										  stderr=subprocess.STDOUT, universal_newlines=True,
+										  encoding="utf-8")
 	except subprocess.CalledProcessError as e:
 		returncode = e.returncode
 		output = e.output
@@ -24,12 +26,27 @@ def shell(self, update: Update, context: CallbackContext):
 		returncode = 0
 		output = process
 
-	fd = TemporaryFile(mode='r+')
-	fd.write(output)
-	fd.seek(0)
-	update.message.reply_document(document=fd, filename="output.txt", caption=(
-		f"Command: {command}\n"
-		f"Return code: {returncode}\n\n"
-		"Output: sent as document\n"
-	))
-	fd.close()
+	text = (
+		f"Command: <pre>{command}</pre>\n"
+		f"Return code: {returncode}\n"
+		"\n"
+	)
+
+	text_message = (
+		"Output:\n"
+		f"<pre>{output}</pre>"
+	)
+
+	text_document = "Output: sent as document"
+
+	if len(text) + len(text_message) < MAX_MESSAGE_LENGTH:
+		text += text_message
+		update.message.reply_text(text, parse_mode=PARSEMODE_HTML)
+	else:
+		text += text_document
+		fd = TemporaryFile(mode='r+')
+		fd.write(output)
+		fd.seek(0)
+		update.message.reply_document(document=fd, filename="output.txt",
+		                              caption=text, parse_mode=PARSEMODE_HTML)
+		fd.close()
