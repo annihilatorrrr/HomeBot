@@ -2,7 +2,7 @@
 
 __version__ = "4.0.0"
 
-from homebot.core.mdlintf import register_modules
+from homebot.core.mdlintf import import_modules
 from pathlib import Path
 
 # I'm sorry
@@ -14,4 +14,4 @@ except ModuleNotFoundError:
 bot_path = Path(__file__).parent
 modules_path = bot_path / "modules"
 
-register_modules(modules_path)
+import_modules(modules_path)
