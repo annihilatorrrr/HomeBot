@@ -1,19 +1,18 @@
 """HomeBot shell module."""
 
-from homebot.core.mdlintf import (
-	ModuleInterface,
-	register_module,
-)
+from homebot.core.mdlintf import ModuleInterface, mdlbinder
+from telegram.ext import CommandHandler
 
 from homebot.modules.shell.main import (
 	shell,
 )
 
-@register_module
-class Shell(ModuleInterface):
+class ShellModule(ModuleInterface):
 	name = "shell"
 	version = "1.0"
 	core: True
 	commands = {
-		shell: ["shell"],
+		CommandHandler(["shell"], shell),
 	}
+
+mdlbinder.register_interface(ShellModule())
