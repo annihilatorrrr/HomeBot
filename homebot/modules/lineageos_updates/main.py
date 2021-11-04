@@ -11,39 +11,38 @@ from telegram.ext import CallbackContext
 from telegram.update import Update
 from typing import Callable
 
-def module_init(self):
-	self.observer = Observer()
+_observer = Observer()
 
 def add_user(self, bot: Bot):
-	self.observer.posters[bot] = Poster(bot)
+	_observer.posters[bot] = Poster(bot)
 
 def remove_user(self, bot: Bot):
-	if bot in self.observer.posters:
-		del self.observer.posters[bot]
+	if bot in _observer.posters:
+		del _observer.posters[bot]
 
-def disable(self, update: Update, context: CallbackContext):
-	self.observer.event.clear()
+def disable(update: Update, context: CallbackContext):
+	_observer.event.clear()
 	update.message.reply_text("Observer disabled")
 
-def enable(self, update: Update, context: CallbackContext):
-	self.observer.event.set()
+def enable(update: Update, context: CallbackContext):
+	_observer.event.set()
 	update.message.reply_text("Observer enabled")
 
-def info(self, update: Update, context: CallbackContext):
-	alive = self.observer.thread.is_alive()
+def info(update: Update, context: CallbackContext):
+	alive = _observer.thread.is_alive()
 	text = f"Enabled: {str(alive)}\n"
 	if alive:
 		text += (
 			"Observed devices:\n"
 			"Device | Last post\n"
 		)
-		for device in self.observer.last_device_post:
-			date = datetime.fromtimestamp(self.observer.last_device_post[device])
+		for device in _observer.last_device_post:
+			date = datetime.fromtimestamp(_observer.last_device_post[device])
 			text += f"{device} | {date.strftime('%Y/%m/%d, %H:%M:%S')}\n"
 
 	update.message.reply_text(text)
 
-def last(self, update: Update, context: CallbackContext):
+def last(update: Update, context: CallbackContext):
 	if len(context.args) < 2:
 		update.message.reply_text("Device codename not specified")
 		return
@@ -60,7 +59,7 @@ def last(self, update: Update, context: CallbackContext):
 	                          f"Version: {last_update['version']}\n"
 	                          f"Download: {last_update['url']}")
 
-def when(self, update: Update, context: CallbackContext):
+def when(update: Update, context: CallbackContext):
 	if len(context.args) < 2:
 		update.message.reply_text("Device codename not specified")
 		return
@@ -75,8 +74,8 @@ def when(self, update: Update, context: CallbackContext):
 	day = day_name[day_int - 1]
 	update.message.reply_text(f"The next build for {device} will be on {day}")
 
-# name: [self, function, admin_only]
-COMMANDS: dict[None, str, list[Callable[[Update, CallbackContext], None], bool]] = {
+# name: [function, admin_only]
+COMMANDS: dict[str, list[Callable[[Update, CallbackContext], None], bool]] = {
 	"disable": [disable, True],
 	"enable": [enable, True],
 	"info": [info, False],
@@ -89,7 +88,7 @@ HELP_TEXT = (
 	"\n".join(COMMANDS.keys())
 )
 
-def lineageos_updates(self, update: Update, context: CallbackContext):
+def lineageos_updates(update: Update, context: CallbackContext):
 	if not context.args:
 		update.message.reply_text(
 			"Error: No argument provided\n\n"
@@ -112,4 +111,4 @@ def lineageos_updates(self, update: Update, context: CallbackContext):
 		update.message.reply_text("Error: You are not authorized to use this function")
 		return
 
-	func(self, update, context)
+	func(update, context)
