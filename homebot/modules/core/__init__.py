@@ -1,9 +1,7 @@
 """HomeBot core module."""
 
-from homebot.core.mdlintf import (
-	ModuleInterface,
-	register_module,
-)
+from homebot.core.mdlintf import ModuleInterface, mdlbinder
+from telegram.ext import CommandHandler
 
 from homebot.modules.core.main import (
 	start,
@@ -12,14 +10,15 @@ from homebot.modules.core.main import (
 	disable,
 )
 
-@register_module
 class CoreModule(ModuleInterface):
 	name = "core"
 	version = "1.0"
 	core: True
-	commands = {
-		start: ["start", "help"],
-		modules: ["modules"],
-		enable: ["enable"],
-		disable: ["disable"],
-	}
+	handlers = [
+		CommandHandler(["start", "help"], start, run_async=True),
+		CommandHandler(["modules"], modules, run_async=True),
+		CommandHandler(["enable"], enable, run_async=True),
+		CommandHandler(["disable"], disable, run_async=True),
+	]
+
+mdlbinder.register_interface(CoreModule())
