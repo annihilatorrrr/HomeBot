@@ -11,8 +11,8 @@ class ShellModule(ModuleInterface):
 	name = "shell"
 	version = "1.0"
 	core: True
-	commands = {
+	handlers = [
 		CommandHandler(["shell"], shell),
-	}
+	]
 
 mdlbinder.register_interface(ShellModule())

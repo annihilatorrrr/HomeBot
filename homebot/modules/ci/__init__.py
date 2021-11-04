@@ -10,7 +10,7 @@ from homebot.modules.ci.main import (
 class CiModule(ModuleInterface):
 	name = "ci"
 	version = "1.0"
-	commands = [
+	handlers = [
 		CommandHandler(["ci"], ci),
 	]
 

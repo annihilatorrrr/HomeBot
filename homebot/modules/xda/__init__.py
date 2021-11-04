@@ -10,8 +10,8 @@ from homebot.modules.xda.main import (
 class XdaModule(ModuleInterface):
 	name = "xda"
 	version = "1.0"
-	commands = {
+	handlers = [
 		CommandHandler(["xda"], xda),
-	}
+	]
 
 mdlbinder.register_interface(XdaModule())

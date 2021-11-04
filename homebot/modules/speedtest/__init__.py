@@ -10,8 +10,8 @@ from homebot.modules.speedtest.main import (
 class SpeedtestModule(ModuleInterface):
 	name = "speedtest"
 	version = "1.0"
-	commands = {
+	handlers = [
 		CommandHandler(["speedtest"], speedtest),
-	}
+	]
 
 mdlbinder.register_interface(SpeedtestModule())
