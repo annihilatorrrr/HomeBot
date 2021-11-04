@@ -5,7 +5,7 @@ from homebot.modules.ci.parser import CIParser
 from telegram.ext import CallbackContext
 from telegram.update import Update
 
-def ci(self, update: Update, context: CallbackContext):
+def ci(update: Update, context: CallbackContext):
 	if not user_is_approved(update.message.from_user.id):
 		update.message.reply_text("Error: You are not authorized to use CI function of this bot.\n"
 								  "Ask to who host this bot to add you to the authorized people list")
