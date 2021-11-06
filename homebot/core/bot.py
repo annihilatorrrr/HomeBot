@@ -52,7 +52,7 @@ class HomeBot(Updater):
 	It is a subclass of telegram.ext.Updater with the addition of:
 	- A basic error handler that send the traceback to
 	  the user and to the console
-	- mdlintf modules loading on init
+	- mdlintf modules loading on init (each module's handlers will have a shared unique group)
 	"""
 	def __init__(self, token: str):
 		"""Initialize the bot."""
@@ -62,6 +62,7 @@ class HomeBot(Updater):
 		self.dispatcher.add_error_handler(error_handler, True)
 
 		self.modules: dict[str, ModuleStatus] = {}
+		self.modules_group: list[str] = []
 		self.modules_lock = Lock()
 
 		for module_name in mdlbinder.get_registered_interfaces():
@@ -88,8 +89,12 @@ class HomeBot(Updater):
 			self.modules[module_name] = ModuleStatus.ENABLING
 
 			try:
+				if not module_name in self.modules_group:
+					self.modules_group.append(module_name)
+				module_group = self.modules_group.index(module_name)
+
 				for command in module.handlers:
-					self.dispatcher.add_handler(command)
+					self.dispatcher.add_handler(command, module_group)
 				module.add_user(self.dispatcher.bot)
 			except Exception as e:
 				LOGE(f"Failed to add handler for module {module_name}\n"
@@ -120,8 +125,10 @@ class HomeBot(Updater):
 			self.modules[module_name] = ModuleStatus.DISABLING
 
 			try:
+				module_group = self.modules_group.index(module_name)
+
 				for command in module.handlers:
-					self.dispatcher.remove_handler(command)
+					self.dispatcher.remove_handler(command, module_group)
 				module.remove_user(self.dispatcher.bot)
 			except Exception as e:
 				LOGE(f"Failed to remove handler for module {module_name}\n"
