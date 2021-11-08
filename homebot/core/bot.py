@@ -93,8 +93,8 @@ class HomeBot(Updater):
 					self.modules_group.append(module_name)
 				module_group = self.modules_group.index(module_name)
 
-				for command in module.handlers:
-					self.dispatcher.add_handler(command, module_group)
+				for handler in module.handlers:
+					self.dispatcher.add_handler(handler, module_group)
 				module.add_user(self.dispatcher.bot)
 			except Exception as e:
 				LOGE(f"Failed to add handler for module {module_name}\n"
@@ -127,8 +127,8 @@ class HomeBot(Updater):
 			try:
 				module_group = self.modules_group.index(module_name)
 
-				for command in module.handlers:
-					self.dispatcher.remove_handler(command, module_group)
+				for handler in module.handlers:
+					self.dispatcher.remove_handler(handler, module_group)
 				module.remove_user(self.dispatcher.bot)
 			except Exception as e:
 				LOGE(f"Failed to remove handler for module {module_name}\n"
