@@ -1,6 +1,6 @@
 """Homebot module."""
 
-__version__ = "5.0.0"
+__version__ = "5.1.0"
 
 from homebot.core.mdlintf import import_modules
 from pathlib import Path
