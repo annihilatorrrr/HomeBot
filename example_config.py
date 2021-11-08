@@ -6,6 +6,42 @@ config = {
 		"api_token": "",
 	},
 
+	# Module - Bridgey
+	"bridgey": {
+		# Enable the module
+		# type: bool
+		"enable": False,
+
+		# Discord bridge
+		"discord": {
+			# Enable the bridge
+			# type: bool
+			"enable": False,
+
+			# ID of the channel to bridge
+			# type: int
+			"channel_id": None,
+
+			# Bot token
+			# type: str
+			"token": "",
+
+			# Channel webhook URL
+			# type: str
+			"webhook_url": "",
+		},
+
+		"telegram": {
+			# Enable the bridge
+			# type: bool
+			"enable": False,
+
+			# ID or username of the chat to bridge
+			# type: int | str
+			"chat_id": "",
+		},
+	},
+
 	# Module - CI
 	# Read this before continuing: https://github.com/SebaUbuntu/HomeBot/wiki/Module-%7C-CI#variables
 	"ci": {

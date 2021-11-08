@@ -16,6 +16,7 @@ twrpdtgen = "^2.1.0"
 natsort = "^8.0.0"
 PyYAML = "^6.0"
 sphinx-rtd-theme = "^1.0.0"
+py-cord = "^1.7.3"
 
 [tool.poetry.dev-dependencies]
 
