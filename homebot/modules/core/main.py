@@ -20,7 +20,7 @@ def modules(update: Update, context: CallbackContext):
 			message += f"Status: {modules[module_name]}\n"
 		else:
 			message += f"Status: {ModuleStatus.DISABLED}\n"
-		message += f"Commands: {', '.join([command.__name__ for command in module.commands])}\n\n"
+		message += f"Handlers: {', '.join([handler.callback.__name__ for handler in module.handlers])}\n\n"
 
 	update.message.reply_text(message)
 
