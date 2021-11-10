@@ -4,8 +4,7 @@ if TYPE_CHECKING:
 	from homebot.modules.bridgey.platform import PlatformBase
 
 class User:
-	"""
-	A class representing a user.
+	"""A class representing a user.
 
 	Attributes:
 	- platform (PlatformBase): The platform this user is from
@@ -15,10 +14,10 @@ class User:
 	"""
 	def __init__(self,
 	             platform: PlatformBase,
-				 name: str,
-				 username: str = "",
-				 avatar_url: str = "",
-				):
+	             name: str,
+	             username: str = "",
+	             avatar_url: str = "",
+	            ):
 		self.platform = platform
 		self.name = name
 		self.username = username

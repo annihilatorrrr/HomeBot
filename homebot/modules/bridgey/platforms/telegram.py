@@ -5,7 +5,6 @@ from homebot.modules.bridgey.platform import PlatformBase
 from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message, MessageType
 from homebot.modules.bridgey.types.user import User
-from io import BytesIO
 import requests
 from telegram import File as TelegramFile
 from telegram.bot import Bot
@@ -25,7 +24,7 @@ class TelegramPlatform(PlatformBase):
 	MESSAGE_TYPE = TelegramMessage
 	USER_TYPE = TelegramUser
 
-	@property	
+	@property
 	def running(self) -> bool:
 		return ENABLE and bool(CHAT_ID)
 
@@ -80,7 +79,7 @@ class TelegramPlatform(PlatformBase):
 			message_type = MessageType.UNKNOWN
 
 		return Message(platform=TelegramPlatform,
-		               type=message_type,
+		               message_type=message_type,
 		               user=self.user_to_generic(message.from_user),
 		               timestamp=message.date,
 		               text=text if text else "",
@@ -91,7 +90,7 @@ class TelegramPlatform(PlatformBase):
 		text = f"[{message.platform.NAME}] {message.user}:"
 		if message.text:
 			text += f"\n{message.text}"
-		
+
 		if message.file:
 			try:
 				r = requests.get(message.file.url)
@@ -101,22 +100,22 @@ class TelegramPlatform(PlatformBase):
 
 		for bot in posters:
 			try:
-				if message.type == MessageType.TEXT:
+				if message.message_type == MessageType.TEXT:
 					bot.send_message(chat_id=CHAT_ID, text=text)
-				elif message.type == MessageType.IMAGE:
+				elif message.message_type == MessageType.IMAGE:
 					bot.send_photo(chat_id=CHAT_ID, photo=r.content, filename=message.file.name, caption=text)
-				elif message.type == MessageType.VIDEO:
+				elif message.message_type == MessageType.VIDEO:
 					bot.send_video(chat_id=CHAT_ID, video=r.content, filename=message.file.name, caption=text)
-				elif message.type == MessageType.AUDIO:
+				elif message.message_type == MessageType.AUDIO:
 					bot.send_audio(chat_id=CHAT_ID, audio=r.content, filename=message.file.name, caption=text)
-				elif message.type == MessageType.DOCUMENT:
+				elif message.message_type == MessageType.DOCUMENT:
 					bot.send_document(chat_id=CHAT_ID, document=r.content, filename=message.file.name, caption=text)
-				elif message.type == MessageType.STICKER:
+				elif message.message_type == MessageType.STICKER:
 					bot.send_sticker(chat_id=CHAT_ID, sticker=r.content)
-				elif message.type == MessageType.ANIMATION:
+				elif message.message_type == MessageType.ANIMATION:
 					bot.send_animation(chat_id=CHAT_ID, animation=r.content, filename=message.file.name, caption=text)
 				else:
-					LOGI(f"Unknown message type: {message.type}")
+					LOGI(f"Unknown message type: {message.message_type}")
 			except Exception as e:
 				LOGI(f"Failed to send message: {format_exception(e)}, retrying with different bot")
 				print(message.file_url)

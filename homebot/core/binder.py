@@ -6,8 +6,7 @@ from homebot.core.logging import LOGI, LOGW
 from threading import Lock
 
 class BinderInterface:
-	"""
-	Generic Binder interface.
+	"""Generic Binder interface.
 
 	It is used as a superclass of other interfaces.
 
@@ -21,8 +20,7 @@ class BinderInterface:
 	core: bool = False
 
 class Binder:
-	"""
-	A class simulating Android Binder IPC.
+	"""A class simulating Android Binder IPC.
 
 	It allows safe interfaces management and interaction.
 
@@ -32,7 +30,7 @@ class Binder:
 	def __init__(self, interface_type: type):
 		"""
 		Initialize the class.
-		
+
 		interface_type must be a subclass of BinderInterface, raises AssertionError otherwise.
 		"""
 		self.interface_type = interface_type
@@ -44,7 +42,7 @@ class Binder:
 		self.__lock = Lock()
 
 	def get_registered_interfaces(self):
-		"""Return the list of all registered interfaces' names"""
+		"""Return the list of all registered interfaces' names."""
 		with self.__lock:
 			return self.__interfaces.keys()
 

@@ -18,7 +18,9 @@ TOKEN = get_config("bridgey.discord.token", "")
 WEBHOOK_URL = get_config("bridgey.discord.webhook_url", "")
 
 class BridgeyDiscordClient(Client):
+	"""Discord client that pass the message to DiscordPlatform."""
 	def __init__(self, *, loop=None, **options):
+		"""Initialize the client."""
 		super().__init__(loop=loop, **options)
 
 		self.platform = None
@@ -49,6 +51,7 @@ def start_daemon():
 	return thread
 
 class DiscordPlatform(PlatformBase):
+	"""Discord platform."""
 	NAME = "Discord"
 	ICON_URL = "https://discord.com/assets/f9bb9c4af2b9c32a2c5ee0014661546d.png"
 	FILE_TYPE = Attachment
@@ -56,6 +59,7 @@ class DiscordPlatform(PlatformBase):
 	USER_TYPE = DiscordUser
 
 	def __init__(self, coordinator):
+		"""Initialize the platform."""
 		super().__init__(coordinator)
 
 		self.webhook = None
@@ -111,7 +115,7 @@ class DiscordPlatform(PlatformBase):
 					text += f"\n - {attachment.url}"
 
 		return Message(platform=DiscordPlatform,
-		               type=message_type,
+		               message_type=message_type,
 		               user=self.user_to_generic(message.author),
 					   timestamp=message.created_at,
 		               text=text,
@@ -119,14 +123,14 @@ class DiscordPlatform(PlatformBase):
 
 	def send_message(self, message: Message) -> None:
 		if not self.webhook:
-			LOGE(f"Webhook is None")
+			LOGE("Webhook is None")
 			return
 
 		title = ""
 		description = message.text
 		file = None
 
-		if message.type is MessageType.STICKER:
+		if message.message_type is MessageType.STICKER:
 			title = "Sticker"
 			description = message.sticker_emoji
 
@@ -136,9 +140,9 @@ class DiscordPlatform(PlatformBase):
 		if message.file:
 			# This thing leaks bot token...
 			# This way Discord keeps the original URL that contains the token
-			#if message.type is MessageType.IMAGE:
+			#if message.message_type is MessageType.IMAGE:
 			#	embed.set_image(url=message.file.url)
-			#elif message.type is MessageType.STICKER:
+			#elif message.message_type is MessageType.STICKER:
 			#	embed.set_thumbnail(url=message.file.url)
 			#else:
 				try:

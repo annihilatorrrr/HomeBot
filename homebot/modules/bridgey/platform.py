@@ -41,7 +41,7 @@ class PlatformBase:
 		raise NotImplementedError
 
 	def on_message(self, message) -> None:
-		"""A new message has been received and must be sent to other bridges"""
+		"""A new message has been received and must be sent to other bridges."""
 		self.coordinator.handle_message(self.message_to_generic(message))
 
 	def send_message(self, message: Message) -> None:

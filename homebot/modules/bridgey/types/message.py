@@ -35,18 +35,17 @@ class _MessageType:
 		_UNKNOWN: "unknown",
 	}
 
-	def __init__(self, type):
-		self.type = type
+	def __init__(self, message_type):
+		self.message_type = message_type
 
 	def __int__(self) -> int:
-		return self.type
+		return self.message_type
 
 	def __str__(self) -> str:
-		return self.STRINGS[self.type]
+		return self.STRINGS[self.message_type]
 
 class MessageType(_MessageType):
-	"""
-	Class representing a message type.
+	"""Class representing a message type.
 
 	Available types:
 	- TEXT: A simple text message, only text attribute must be filled.
@@ -77,12 +76,11 @@ class MessageType(_MessageType):
 	UNKNOWN = _MessageType(_MessageType._UNKNOWN)
 
 class Message:
-	"""
-	Class representing a message.
+	"""Class representing a message.
 
 	Attributes:
 	- platform: The platform where the message comes from
-	- type: The type of the message (see MessageType class)
+	- message_type: The type of the message (see MessageType class)
 	- user: The user that sent the message (see User class)
 	- timestamp: datetime object representing when the message has been sent
 	- text: The text of the message, can be empty
@@ -91,15 +89,16 @@ class Message:
 	"""
 	def __init__(self,
 	             platform: PlatformBase,
-	             type: MessageType,
-		         user: User,
-		         timestamp: datetime,
+	             message_type: MessageType,
+	             user: User,
+	             timestamp: datetime,
 	             text: str = "",
-				 file: File = None,
-				 sticker_emoji: str = "",
-				):
+	             file: File = None,
+	             sticker_emoji: str = "",
+	            ):
+		"""Initialize the message."""
 		self.platform = platform
-		self.type = type
+		self.message_type = message_type
 		self.user = user
 		self.timestamp = timestamp
 		self.text = text

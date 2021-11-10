@@ -6,8 +6,7 @@ if TYPE_CHECKING:
 from os.path import basename
 
 class File:
-	"""
-	Class representing a file.
+	"""Class representing a file.
 
 	Attributes:
 	- platform: The platform this file is from.
@@ -19,6 +18,7 @@ class File:
 	             url: str,
 	             name: str = "",
 	            ) -> None:
+		"""Initialize file class."""
 		self.platform = platform
 		self.url = url
 		self.name = name
