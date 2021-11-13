@@ -80,7 +80,7 @@ class DiscordPlatform(PlatformBase):
 
 	@property
 	def running(self) -> bool:
-		return self.thread.is_alive() and self.webhook
+		return self.thread.is_alive() and self.webhook is not None
 
 	def file_to_generic(self, file: FILE_TYPE) -> Message:
 		return File(platform=DiscordPlatform,
