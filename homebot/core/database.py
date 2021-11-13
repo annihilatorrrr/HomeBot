@@ -28,38 +28,72 @@ class HomeBotDatabase:
 
 		self._dump()
 
-	def get(self, k: str):
+	def _has(self, k: str):
 		if type(k) is not str:
 			raise TypeError("Key isn't a string")
 
+		if not '.' in k:
+			value = k in self.dict
+		else:
+			value = self.dict
+			for subkey in k.split('.'):
+				if subkey not in value:
+					value = False
+					break
+
+				value = value[subkey]
+
+		return value
+
+	def has(self, k: str):
 		with self.data_lock:
-			if not '.' in k:
-				value = self.dict[k]
-			else:
-				value = dict(self.dict)
-				for subkey in k.split('.'):
-					value = value[subkey]
+			return self._has(k)
 
-			return value
+	def _get(self, k: str):
+		if type(k) is not str:
+			raise TypeError("Key isn't a string")
 
-	def set(self, k: str, v):
+		if not '.' in k:
+			value = self.dict[k]
+		else:
+			value = self.dict
+			for subkey in k.split('.'):
+				value = value[subkey]
+
+		return value
+
+	def get(self, k: str):
+		with self.data_lock:
+			return self._get(k)
+
+	def _set(self, k: str, v):
 		if type(k) is not str:
 			raise TypeError("Key isn't a string")
 
 		if type(v) not in ALLOWED_DATA_TYPES:
 			raise TypeError("Value data type not allowed")
 
-		with self.data_lock:
-			if not '.' in k:
-				self.dict[k] = v
+		if not '.' in k:
+			if self._has(k) and isinstance(self._get(k), dict):
+					self._get(k).update(v)
 			else:
-				d = v
-				for subkey in k.split('.')[::-1]:
-					d = {subkey: d}
+				self.dict[k] = v
+		else:
+			d = v
+			for subkey in k.split('.')[::-1]:
+				d = {subkey: d}
+				subkey_full = k.removesuffix(f".{subkey}")
+				if self._has(subkey_full) and isinstance(self._get(subkey_full), dict):
+					self._get(subkey_full).update(d)
+					d = self._get(subkey_full)
 
-				self.dict.update(d)
+			self.dict.update(d)
 
-			self._dump()
+		self._dump()
+
+	def set(self, k: str, v):
+		with self.data_lock:
+			return self._set(k, v)
 
 	def _load(self):
 		with self.file_lock:
