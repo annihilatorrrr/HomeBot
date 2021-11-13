@@ -15,7 +15,7 @@ class PlatformBase:
 	# The "native" user type of the platform
 	USER_TYPE: type = User
 
-	def __init__(self, coordinator) -> None:
+	def __init__(self, coordinator):
 		"""Initialize the platform."""
 		self.coordinator = coordinator
 
