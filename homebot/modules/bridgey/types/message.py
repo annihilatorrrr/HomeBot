@@ -16,11 +16,9 @@ class _MessageType:
 		_AUDIO,
 		_DOCUMENT,
 		_STICKER,
-		_CONTACT,
-		_LOCATION,
 		_ANIMATION,
 		_UNKNOWN,
-	) = range(10)
+	) = range(8)
 
 	STRINGS = {
 		_TEXT: "text",
@@ -29,8 +27,6 @@ class _MessageType:
 		_AUDIO: "audio",
 		_DOCUMENT: "document",
 		_STICKER: "sticker",
-		_CONTACT: "contact",
-		_LOCATION: "location",
 		_ANIMATION: "animation",
 		_UNKNOWN: "unknown",
 	}
