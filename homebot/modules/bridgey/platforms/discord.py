@@ -122,6 +122,9 @@ class DiscordPlatform(PlatformBase):
 					   file=self.file_to_generic(file) if file else None)
 
 	def send_message(self, message: Message) -> None:
+		if not self.running:
+			return
+
 		if not self.webhook:
 			LOGE("Webhook is None")
 			return
