@@ -31,6 +31,15 @@ class _MessageType:
 		_UNKNOWN: "unknown",
 	}
 
+	_IS_FILE = [
+		_IMAGE,
+		_VIDEO,
+		_AUDIO,
+		_DOCUMENT,
+		_STICKER,
+		_ANIMATION,
+	]
+
 	def __init__(self, message_type):
 		self.message_type = message_type
 
@@ -39,6 +48,9 @@ class _MessageType:
 
 	def __str__(self) -> str:
 		return self._STRINGS[self.message_type]
+
+	def is_file(self) -> bool:
+		return self.message_type in self._IS_FILE
 
 class MessageType(_MessageType):
 	"""Class representing a message type.
