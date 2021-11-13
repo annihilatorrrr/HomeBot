@@ -20,7 +20,7 @@ class _MessageType:
 		_UNKNOWN,
 	) = range(8)
 
-	STRINGS = {
+	_STRINGS = {
 		_TEXT: "text",
 		_IMAGE: "image",
 		_VIDEO: "video",
@@ -38,7 +38,7 @@ class _MessageType:
 		return self.message_type
 
 	def __str__(self) -> str:
-		return self.STRINGS[self.message_type]
+		return self._STRINGS[self.message_type]
 
 class MessageType(_MessageType):
 	"""Class representing a message type.
