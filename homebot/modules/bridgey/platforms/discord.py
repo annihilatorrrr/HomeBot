@@ -39,7 +39,7 @@ class BridgeyDiscordClient(Client):
 			return
 
 		if self.platform is not None:
-			self.platform.on_message(message)
+			self.platform.on_message(self.platform.message_to_generic(message))
 
 client = BridgeyDiscordClient()
 

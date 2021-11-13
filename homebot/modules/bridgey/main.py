@@ -21,7 +21,7 @@ def handle_telegram_update(update: Update, context: CallbackContext):
 	if (update.message.chat.username != CHAT_ID) and (update.message.chat.id != CHAT_ID):
 		return
 
-	telegramplatform.on_message(update.message)
+	telegramplatform.on_message(telegramplatform.message_to_generic(update.message))
 
 def bridgey(update: Update, context: CallbackContext):
 	reply = "Bridgey status:"
