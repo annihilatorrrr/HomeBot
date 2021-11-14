@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 
 # Platforms
 from homebot.modules.bridgey.platforms.discord import DiscordPlatform
+from homebot.modules.bridgey.platforms.matrix import MatrixPlatform
 from homebot.modules.bridgey.platforms.telegram import TelegramPlatform
 
 class _Coordinator:
@@ -13,6 +14,7 @@ class _Coordinator:
 	def __init__(self):
 		self.platforms: dict[PlatformBase, PlatformBase] = {
 			DiscordPlatform: DiscordPlatform(self),
+			MatrixPlatform: MatrixPlatform(self),
 			TelegramPlatform: TelegramPlatform(self),
 		}
 

@@ -31,6 +31,28 @@ config = {
 			"webhook_url": "",
 		},
 
+		"matrix": {
+			# Enable the bridge
+			# type: bool
+			"enable": False,
+
+			# User ID of the bot account (e.g. @user:matrix.org)
+			# type: str
+			"username": "",
+
+			# Password of the bot account
+			# type: str
+			"password": "",
+
+			# URL of the Matrix server (e.g. https://matrix.org)
+			# type: str
+			"homeserver_url": "",
+
+			# The alias of the room you want to bridge (e.g. #room:matrix.org)
+			# type: str
+			"room_alias": "",
+		},
+
 		"telegram": {
 			# Enable the bridge
 			# type: bool
