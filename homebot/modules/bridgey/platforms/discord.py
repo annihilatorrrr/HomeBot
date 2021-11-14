@@ -1,5 +1,6 @@
 from __future__ import annotations
 import asyncio
+from asyncio.events import AbstractEventLoop
 from discord import Client, Embed, File as DiscordFile, RequestsWebhookAdapter, Webhook
 from discord import Attachment, Message as DiscordMessage, User as DiscordUser
 from homebot.core.config import get_config
@@ -9,6 +10,7 @@ from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message, MessageType
 from homebot.modules.bridgey.types.user import User
 from io import BytesIO
+from platform import system
 import requests
 from threading import Thread
 
@@ -43,10 +45,19 @@ class BridgeyDiscordClient(Client):
 
 client = BridgeyDiscordClient()
 
+async def bot_async_start():
+	await client.start(TOKEN)
+
+def bot_loop_start(loop: AbstractEventLoop):
+	loop.run_forever()
+
 def start_daemon():
+	if system() != 'Windows':
+		asyncio.get_child_watcher()
+
 	loop = asyncio.get_event_loop()
-	loop.create_task(client.start(TOKEN))
-	thread = Thread(target=loop.run_forever, daemon=True)
+	loop.create_task(bot_async_start())
+	thread = Thread(target=bot_loop_start, args=(loop,), daemon=True)
 	thread.start()
 	return thread
 
