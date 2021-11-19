@@ -27,20 +27,8 @@ class CIManager(Queue):
 			self.current_workflow = None
 
 	def add(self, name: str, update: Update, context: CallbackContext, args: list):
-		try:
-			project = import_module(f"homebot.modules.ci.projects.{name}", package="Project").Project
-		except (ModuleNotFoundError, AttributeError):
-			return "Error: Project script not found"
-		except Exception as e:
-			return ("Error: Error while importing project:\n"
-					f"{format_exception(e)}")
-
-		try:
-			workflow = project(update, context, args)
-		except Exception as e:
-			return ("Error: Project class initialization failed:\n"
-					f"{format_exception(e)}")
-
+		project = import_module(f"homebot.modules.ci.projects.{name}", package="Project").Project
+		workflow = project(update, context, args)
 		self.put(workflow)
 
 	def get_list(self):
