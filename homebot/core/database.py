@@ -16,6 +16,10 @@ ALLOWED_DATA_TYPES = [
 ]
 
 class HomeBotDatabase:
+	"""HomeBot database class.
+
+	This class is used to save persistent data.
+	"""
 	def __init__(self):
 		"""Initialize the database."""
 		self.dict = {}
@@ -29,6 +33,7 @@ class HomeBotDatabase:
 		self._dump()
 
 	def _has(self, k: str):
+		"""Unprotected self.has implementation."""
 		if type(k) is not str:
 			raise TypeError("Key isn't a string")
 
@@ -46,10 +51,12 @@ class HomeBotDatabase:
 		return value
 
 	def has(self, k: str):
+		"""Check if a key is inside the database."""
 		with self.data_lock:
 			return self._has(k)
 
 	def _get(self, k: str):
+		"""Unprotected self.get implementation."""
 		if type(k) is not str:
 			raise TypeError("Key isn't a string")
 
@@ -63,10 +70,12 @@ class HomeBotDatabase:
 		return value
 
 	def get(self, k: str):
+		"""Get a value from the database."""
 		with self.data_lock:
 			return self._get(k)
 
 	def _set(self, k: str, v):
+		"""Unprotected self.set implementation."""
 		if type(k) is not str:
 			raise TypeError("Key isn't a string")
 
@@ -92,6 +101,7 @@ class HomeBotDatabase:
 		self._dump()
 
 	def set(self, k: str, v):
+		"""Save a value to the database."""
 		with self.data_lock:
 			return self._set(k, v)
 
