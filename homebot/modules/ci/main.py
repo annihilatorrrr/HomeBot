@@ -1,4 +1,3 @@
-from argparse import ArgumentError
 from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGI
 from homebot.lib.libadmin import user_is_approved
@@ -22,7 +21,7 @@ def ci(update: Update, context: CallbackContext):
 
 	try:
 		args, project_args = parser.parse_known_args(context.args)
-	except ArgumentError:
+	except AssertionError:
 		return
 
 	if args.status:
@@ -32,16 +31,14 @@ def ci(update: Update, context: CallbackContext):
 	if args.project is None:
 		try:
 			parser.error("Please specify a project")
-		except ArgumentError:
-			pass
-
-		return
+		except AssertionError:
+			return
 
 	try:
 		manager.add(args.project, update, context, project_args)
 	except (ModuleNotFoundError, AttributeError):
 		text = "Error: Project script not found"
-	except ArgumentError:
+	except AssertionError:
 		return
 	except Exception as e:
 		text = ("Error: Failed to add workflow to queue:\n"

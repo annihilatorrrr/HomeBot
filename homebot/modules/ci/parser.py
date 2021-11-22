@@ -1,4 +1,5 @@
-from argparse import ArgumentParser, ArgumentError
+from argparse import ArgumentParser
+from gettext import gettext
 from telegram import Message
 
 class CIParser(ArgumentParser):
@@ -12,5 +13,9 @@ class CIParser(ArgumentParser):
 	def exit(self, status=0, message=None):
 		if message:
 			self._print_message(message)
+		raise AssertionError(message)
 
-		raise ArgumentError(None, message)
+	def error(self, message):
+		self.print_usage()
+		args = {'prog': self.prog, 'message': message}
+		self.exit(2, gettext('%(prog)s: error: %(message)s\n') % args)
