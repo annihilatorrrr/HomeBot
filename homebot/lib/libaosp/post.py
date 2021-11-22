@@ -10,6 +10,7 @@ class PostManager:
 		self.device = device
 		self.artifacts = artifacts
 
+		self.with_gms = project.parsed_args.with_gms
 		self.chat_id = get_config("ci.channel_id")
 		self.base_message_text = self.get_base_message_text()
 		self.message = self.project.context.bot.send_message(self.chat_id, self.base_message_text)
@@ -19,7 +20,8 @@ class PostManager:
 		return (f"🛠 CI | {self.project.name} {self.project.version} ({self.project.android_version})\n"
 		        f"Device: {self.device}\n"
 		        f"Lunch flavor: {self.project.lunch_prefix}_{self.device}-{self.project.lunch_suffix}\n"
-				f"Build type: {'Release' if self.project.parsed_args.release else 'CI'}")
+				f"Build type: {'Release' if self.project.parsed_args.release else 'CI'}\n"
+				f"With GMS: {str(self.with_gms)}")
 
 	def update(self, status: str = None):
 		if status is not None:

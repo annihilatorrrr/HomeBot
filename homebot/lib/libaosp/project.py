@@ -52,6 +52,7 @@ class AOSPProject:
 		parser.add_argument('-ic', '--installclean', help='make installclean before building', action='store_true')
 		parser.add_argument('-c', '--clean', help='make clean before building', action='store_true')
 		parser.add_argument('--release', help='upload build to release profile', action='store_true')
+		parser.add_argument('--with_gms', help='include gapps', action='store_true')
 		self.parsed_args = parser.parse_args(args)
 
 	def build(self):
@@ -76,6 +77,7 @@ class AOSPProject:
 		           "--lunch_suffix", self.lunch_suffix,
 		           "--build_target", self.build_target,
 		           "--clean", clean_type,
+				   "--with_gms", str(self.parsed_args.with_gms),
 		           "--device", self.parsed_args.device]
 
 		last_edit = datetime.now()
