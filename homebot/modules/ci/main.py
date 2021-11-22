@@ -20,7 +20,10 @@ def ci(update: Update, context: CallbackContext):
 	parser.add_argument('-s', '--status',
 						action='store_true', help='show queue status')
 
-	args, project_args = parser.parse_known_args(context.args)
+	try:
+		args, project_args = parser.parse_known_args(context.args)
+	except ArgumentError:
+		return
 
 	if args.status:
 		update.message.reply_text(manager.get_formatted_list())
