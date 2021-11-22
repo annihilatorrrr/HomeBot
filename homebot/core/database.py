@@ -15,7 +15,7 @@ ALLOWED_DATA_TYPES = [
 	str,
 ]
 
-class HomeBotDatabase:
+class _HomeBotDatabase:
 	"""HomeBot database class.
 
 	This class is used to save persistent data.
@@ -116,4 +116,5 @@ class HomeBotDatabase:
 # Only one database is allowed for now
 # TODO: Set custom names for bot instances and
 # allow to have one database per bot
-database = HomeBotDatabase()
+class HomeBotDatabase(_HomeBotDatabase):
+	DEFAULT = _HomeBotDatabase()
