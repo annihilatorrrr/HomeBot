@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 from homebot.core.config import get_config
-from homebot.core.database import database
+from homebot.core.database import HomeBotDatabase
 from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGE
 from homebot.modules.bridgey.platform import PlatformBase
@@ -39,10 +39,10 @@ class MatrixPlatform(PlatformBase):
 			LOGE("Missing or invalid Matrix configuration")
 			return
 
-		if database.has("bridgey.matrix.logged_in") and database.get("bridgey.matrix.logged_in"):
-			self.client = MatrixClient(HOMESERVER_URL, token=database.get("bridgey.matrix.token"),
-			                           user_id=database.get("bridgey.matrix.user_id"))
-			self.client.device_id = database.get("bridgey.matrix.device_id")
+		if HomeBotDatabase.DEFAULT.has("bridgey.matrix.logged_in") and HomeBotDatabase.DEFAULT.get("bridgey.matrix.logged_in"):
+			self.client = MatrixClient(HOMESERVER_URL, token=HomeBotDatabase.DEFAULT.get("bridgey.matrix.token"),
+			                           user_id=HomeBotDatabase.DEFAULT.get("bridgey.matrix.user_id"))
+			self.client.device_id = HomeBotDatabase.DEFAULT.get("bridgey.matrix.device_id")
 		else:
 			self.client = MatrixClient(HOMESERVER_URL)
 			try:
@@ -51,10 +51,10 @@ class MatrixPlatform(PlatformBase):
 				LOGE(f"Failed to login: {format_exception(e)}")
 				return
 
-			database.set("bridgey.matrix.token", token)
-			database.set("bridgey.matrix.device_id", self.client.device_id)
-			database.set("bridgey.matrix.user_id", self.client.user_id)
-			database.set("bridgey.matrix.logged_in", True)
+			HomeBotDatabase.DEFAULT.set("bridgey.matrix.token", token)
+			HomeBotDatabase.DEFAULT.set("bridgey.matrix.device_id", self.client.device_id)
+			HomeBotDatabase.DEFAULT.set("bridgey.matrix.user_id", self.client.user_id)
+			HomeBotDatabase.DEFAULT.set("bridgey.matrix.logged_in", True)
 
 		try:
 			self.room: Room = self.client.join_room(ROOM_ALIAS)
