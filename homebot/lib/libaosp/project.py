@@ -1,14 +1,14 @@
 from datetime import datetime
-from pathlib import Path
 from homebot import bot_path
 from homebot.core.config import get_config
 from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGE
+from homebot.lib.libaosp.post import PostManager
+from homebot.lib.libaosp.returncode import AOSPReturnCode
 from homebot.lib.libupload import Uploader
-from homebot.modules.ci.artifacts import STATUS_ERROR, STATUS_SUCCESS, STATUS_UPLOADING, Artifacts
+from homebot.modules.ci.artifacts import Artifacts, ArtifactStatus
 from homebot.modules.ci.parser import CIParser
-from homebot.modules.ci.projects.aosp.post import PostManager, chat_id
-from homebot.modules.ci.projects.aosp.returncode import ERROR_CODES, NEEDS_LOGS_UPLOAD, SUCCESS
+from pathlib import Path
 import re
 import subprocess
 from telegram.ext import CallbackContext
@@ -31,17 +31,15 @@ class AOSPProject:
 	version: str
 	# Android version to display on Telegram post
 	android_version: str
-	# Name of the parent folder used when uploading
-	category: str
-	# These next 2 values are needed for lunch (e.g. "lineage"_whyred-"userdebug")
-	lunch_prefix: str
-	lunch_suffix: str
-	# Target to build (e.g. to build a ROM's OTA package, use "bacon" or "otapackage", for a recovery project, use "recoveryimage")
-	build_target: str
 	# Filename of the zip. You can also use wildcards if the name isn't fixed
 	zip_name: str
+	# These next 2 values are needed for lunch (e.g. "lineage"_whyred-"userdebug")
+	lunch_prefix: str
+	lunch_suffix: str = "userdebug"
+	# Target to build (e.g. to build a ROM's OTA package, use "bacon" or "otapackage", for a recovery project, use "recoveryimage")
+	build_target: str = "bacon"
 	# Regex to extract date from zip name, empty string to just use full name minus ".zip"
-	date_regex: str
+	date_regex: str = None
 
 	def __init__(self, update: Update, context: CallbackContext, args: list[str]):
 		"""Initialize AOSP project class."""
@@ -54,7 +52,6 @@ class AOSPProject:
 		parser.add_argument('-ic', '--installclean', help='make installclean before building', action='store_true')
 		parser.add_argument('-c', '--clean', help='make clean before building', action='store_true')
 		parser.add_argument('--release', help='upload build to release profile', action='store_true')
-		parser.set_defaults(clean=False, installclean=False, release=False)
 		self.parsed_args = parser.parse_args(args)
 
 	def build(self):
@@ -73,7 +70,7 @@ class AOSPProject:
 
 		post_manager.update("Building")
 
-		command = [bot_path / "modules" / "ci" / "projects" / "aosp" / "tools" / "building.sh",
+		command = [bot_path / "lib" / "libaosp" / "tools" / "building.sh",
 		           "--sources", project_dir,
 		           "--lunch_prefix", self.lunch_prefix,
 		           "--lunch_suffix", self.lunch_suffix,
@@ -110,24 +107,21 @@ class AOSPProject:
 		returncode = process.poll()
 
 		# Process return code
-		build_result = ERROR_CODES.get(returncode, "Build failed: Unknown error")
+		build_result = AOSPReturnCode(returncode)
 
 		post_manager.update(build_result)
 
-		needs_logs_upload = NEEDS_LOGS_UPLOAD.get(returncode, False)
-		if needs_logs_upload != False:
+		needs_logs_upload = build_result.needs_logs_upload()
+		if needs_logs_upload:
 			log_file = open(project_dir / needs_logs_upload, "rb")
-			self.context.bot.send_document(chat_id, log_file)
+			post_manager.send_document(log_file)
 			log_file.close()
 
-		if returncode != SUCCESS or get_config("ci.upload_artifacts", False) is not True:
+		if returncode is not AOSPReturnCode.SUCCESS or get_config("ci.upload_artifacts", False) is not True:
 			return
 
 		# Upload artifacts
-		if self.parsed_args.release:
-			uploader_profile = "release"
-		else:
-			uploader_profile = "ci"
+		uploader_profile = "release" if self.parsed_args.release else "ci"
 
 		try:
 			uploader = Uploader(uploader_profile)
@@ -143,25 +137,25 @@ class AOSPProject:
 			return
 
 		zip_filename = zip_filename[0].name
-		date_match = re.search(self.date_regex, zip_filename)
-		if date_match and self.date_regex != "":
-			folder_name = date_match.group(1)
-		else:
-			folder_name = zip_filename.removesuffix(".zip")
+		folder_name = zip_filename.removesuffix(".zip")
+		if self.date_regex:
+			date_match = re.search(self.date_regex, zip_filename)
+			if date_match:
+				folder_name = date_match.group(1)
 
 		post_manager.update()
 		upload_path = Path() / self.parsed_args.device / folder_name
 		for artifact in artifacts.keys():
-			artifacts[artifact] = STATUS_UPLOADING
+			artifacts[artifact] = ArtifactStatus.UPLOADING
 			post_manager.update()
 
 			try:
 				uploader.upload(artifact, upload_path)
 			except Exception as e:
-				artifacts[artifact] = STATUS_ERROR
+				artifacts[artifact] = ArtifactStatus.ERROR
 				LOGE(f"Error while uploading artifact {artifact.name}:\n"
 			         f"{format_exception(e)}")
 			else:
-				artifacts[artifact] = STATUS_SUCCESS
+				artifacts[artifact] = ArtifactStatus.SUCCESS
 
 			post_manager.update()

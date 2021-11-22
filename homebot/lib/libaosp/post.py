@@ -3,16 +3,16 @@ from homebot.modules.ci.artifacts import Artifacts
 from telegram.error import TimedOut, RetryAfter
 from time import sleep
 
-chat_id = get_config("ci.channel_id")
-
 class PostManager:
 	def __init__(self, project, device: str, artifacts: Artifacts):
 		"""Initialize PostManager class."""
 		self.project = project
 		self.device = device
 		self.artifacts = artifacts
+
+		self.chat_id = get_config("ci.channel_id")
 		self.base_message_text = self.get_base_message_text()
-		self.message = self.project.context.bot.send_message(chat_id, self.base_message_text)
+		self.message = self.project.context.bot.send_message(self.chat_id, self.base_message_text)
 		self.build_status = "Starting up"
 
 	def get_base_message_text(self):
@@ -45,3 +45,6 @@ class PostManager:
 			return self.edit_text(text)
 		except TimedOut:
 			pass
+
+	def send_document(self, document):
+		self.project.context.bot.send_document(self.chat_id, document)
