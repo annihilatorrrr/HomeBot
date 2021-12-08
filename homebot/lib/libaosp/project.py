@@ -109,17 +109,16 @@ class AOSPProject:
 		returncode = process.poll()
 
 		# Process return code
-		build_result = AOSPReturnCode(returncode)
+		build_result = AOSPReturnCode.from_code(returncode)
 
 		post_manager.update(build_result)
 
-		needs_logs_upload = build_result.needs_logs_upload()
-		if needs_logs_upload:
-			log_file = open(project_dir / needs_logs_upload, "rb")
+		if build_result.needs_logs_upload():
+			log_file = open(project_dir / build_result.log_file, "rb")
 			post_manager.send_document(log_file)
 			log_file.close()
 
-		if returncode is not AOSPReturnCode.SUCCESS or get_config("ci.upload_artifacts", False) is not True:
+		if build_result is not AOSPReturnCode.SUCCESS or get_config("ci.upload_artifacts", False) is False:
 			return
 
 		# Upload artifacts
