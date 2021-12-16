@@ -4,6 +4,7 @@ from homebot.lib.libadmin import user_is_admin
 from homebot.modules.lineageos_updates.device_data import get_device_updates
 from homebot.modules.lineageos_updates.observer import Observer
 from homebot.modules.lineageos_updates.poster import Poster
+from re import match
 from shutil import which
 from subprocess import check_output
 from telegram.bot import Bot
@@ -64,11 +65,16 @@ def when(update: Update, context: CallbackContext):
 		update.message.reply_text("Device codename not specified")
 		return
 
+	device = context.args[1]
+
+	if not match('^[a-zA-Z0-9\-_]+$', device):
+		update.message.reply_text("Invalid codename")
+		return
+
 	if which("python2") is None:
 		update.message.reply_text("Python 2.x isn't installed, it's required to parse the day")
 		return
 
-	device = context.args[1]
 	command = f'from random import Random; print(Random("{device}").randint(1, 7))'
 	day_int = int(check_output(f"python2 -c '{command}'", shell=True))
 	day = day_name[day_int - 1]
