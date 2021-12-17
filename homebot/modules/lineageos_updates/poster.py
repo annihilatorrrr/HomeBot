@@ -28,7 +28,7 @@ class Poster:
 		device_data = get_device_data(codename)
 		caption = (
 			f"#{codename} #lineageos #{LINEAGEOS_TO_ANDROID_VERSION[version]}\n"
-			f"LineageOS {version} Official for {device_data['name']} ({codename})\n"
+			f"LineageOS {version} for {device_data['name']} ({codename})\n"
 			f"\n"
 			f"⚡️Build date: {date.strftime('%Y/%m/%d')}\n"
 			f"⚡️Download: [ROM & Recovery](https://download.lineageos.org/{codename})\n"
