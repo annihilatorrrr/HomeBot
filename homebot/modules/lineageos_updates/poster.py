@@ -7,6 +7,7 @@ LINEAGEOS_TO_ANDROID_VERSION = {
 	"16.0": "p",
 	"17.1": "q",
 	"18.1": "r",
+	"19.0": "s",
 }
 
 class Poster:
