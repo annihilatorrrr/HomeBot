@@ -272,7 +272,7 @@ class DeviceData:
 				f"GPU: {escape_markdown(self.gpu, 2)}\n"
 				f"Install method: {escape_markdown(self.install_method, 2)}\n"
 				f"Kernel repository: {escape_markdown(f'{GITHUB_ORG}/{self.kernel}', 2)}\n"
-				f"Maintainers: {escape_markdown(', '.join(self.maintainers), 2)}\n"
+				f"Maintainers: {escape_markdown(', '.join(self.maintainers), 2) if self.maintainers else escape_markdown('None (unmaintained)', 2)}\n"
 				f"Peripherals: {escape_markdown(', '.join(self.peripherals), 2)}\n"
 				f"Release: {escape_markdown(str(self.release), 2) if not isinstance(self.release, dict) else escape_markdown(', '.join([f'{device}: {date}' for device, date in self.release.items()]), 2)}\n"
 				f"Screen: {escape_markdown(str(self.screen), 2) if not isinstance(self.screen, dict) else escape_markdown(', '.join([f'{device}: {screen_data}' for device, screen_data in self.screen.items()]), 2)}\n"
