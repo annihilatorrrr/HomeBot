@@ -1,11 +1,9 @@
 from datetime import datetime
-from homebot.modules.lineageos_updates.device_data import get_device_updates
 from homebot.core.logging import LOGE, LOGI
 from homebot.core.config import get_config
+from homebot.lib.liblineage.ota import get_nightlies
 from threading import Event, Thread
 from time import sleep
-
-API_URL = "https://download.lineageos.org/api/v1/{device}/nightly/1"
 
 class Observer:
 	def __init__(self):
@@ -13,7 +11,7 @@ class Observer:
 		self.last_device_post = {}
 		self.posters = {}
 
-		now = int(datetime.now().timestamp())
+		now = datetime.now()
 		for device in self.devices:
 			self.last_device_post[device] = now
 
@@ -29,16 +27,16 @@ class Observer:
 			self.event.wait()
 			for device in self.devices:
 				try:
-					response = get_device_updates(device)
+					response = get_nightlies(device)
 				except Exception:
-					response = {}
+					response = []
 
 				if not response:
 					continue
 
 				last_update = response[-1]
 
-				build_date = last_update["datetime"]
+				build_date = last_update.datetime
 				if build_date <= self.last_device_post[device]:
 					continue
 
@@ -46,7 +44,7 @@ class Observer:
 
 				for poster in self.posters.values():
 					try:
-						poster.post(device, build_date, last_update["version"])
+						poster.post(device, last_update)
 					except Exception:
 						LOGE(f"Failed to post {device} {build_date} build")
 					else:

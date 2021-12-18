@@ -1,12 +1,7 @@
-from calendar import day_name
 from datetime import datetime
 from homebot.lib.libadmin import user_is_admin
-from homebot.modules.lineageos_updates.device_data import get_device_updates
 from homebot.modules.lineageos_updates.observer import Observer
 from homebot.modules.lineageos_updates.poster import Poster
-from re import match
-from shutil import which
-from subprocess import check_output
 from telegram.bot import Bot
 from telegram.ext import CallbackContext
 from telegram.update import Update
@@ -43,50 +38,11 @@ def info(update: Update, context: CallbackContext):
 
 	update.message.reply_text(text)
 
-def last(update: Update, context: CallbackContext):
-	if len(context.args) < 2:
-		update.message.reply_text("Device codename not specified")
-		return
-
-	device = context.args[1]
-	response = get_device_updates(device)
-	if not response:
-		update.message.reply_text(f"Error: no updates found for {device}")
-		return
-
-	last_update = response[-1]
-	update.message.reply_text(f"Last update for {device}:\n"
-	                          f"Filename: {last_update['filename']}\n"
-	                          f"Version: {last_update['version']}\n"
-	                          f"Download: {last_update['url']}")
-
-def when(update: Update, context: CallbackContext):
-	if len(context.args) < 2:
-		update.message.reply_text("Device codename not specified")
-		return
-
-	device = context.args[1]
-
-	if not match('^[a-zA-Z0-9\-_]+$', device):
-		update.message.reply_text("Invalid codename")
-		return
-
-	if which("python2") is None:
-		update.message.reply_text("Python 2.x isn't installed, it's required to parse the day")
-		return
-
-	command = f'from random import Random; print(Random("{device}").randint(1, 7))'
-	day_int = int(check_output(f"python2 -c '{command}'", shell=True))
-	day = day_name[day_int - 1]
-	update.message.reply_text(f"The next build for {device} will be on {day}")
-
-# name: [function, admin_only]
-COMMANDS: dict[str, list[Callable[[Update, CallbackContext], None], bool]] = {
-	"disable": [disable, True],
-	"enable": [enable, True],
-	"info": [info, False],
-	"last": [last, False],
-	"when": [when, False],
+# name: function
+COMMANDS: dict[str, Callable[[Update, CallbackContext], None]] = {
+	"disable": disable,
+	"enable": enable,
+	"info": info,
 }
 
 HELP_TEXT = (
@@ -95,6 +51,10 @@ HELP_TEXT = (
 )
 
 def lineageos_updates(update: Update, context: CallbackContext):
+	if not user_is_admin(update.message.from_user.id):
+		update.message.reply_text("Error: You are not authorized to use this command")
+		return
+
 	if not context.args:
 		update.message.reply_text(
 			"Error: No argument provided\n\n"
@@ -111,10 +71,6 @@ def lineageos_updates(update: Update, context: CallbackContext):
 		)
 		return
 
-	func, admin_only = COMMANDS[command]
-
-	if admin_only and not user_is_admin(update.message.from_user.id):
-		update.message.reply_text("Error: You are not authorized to use this function")
-		return
+	func = COMMANDS[command]
 
 	func(update, context)

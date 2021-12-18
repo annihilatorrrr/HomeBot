@@ -1,7 +1,10 @@
-from datetime import datetime
-from homebot.modules.lineageos_updates.device_data import get_device_data
+from homebot.core.database import HomeBotDatabase
+from homebot.lib.liblineage.ota import FullUpdateInfo
+from homebot.lib.liblineage.wiki import get_device_data
 from homebot.core.config import get_config
 from telegram.bot import Bot
+from telegram.parsemode import ParseMode
+from telegram.utils.helpers import escape_markdown
 
 LINEAGEOS_TO_ANDROID_VERSION = {
 	"16.0": "p",
@@ -24,23 +27,36 @@ class Poster:
 
 		self.donation_link = get_config("lineageos_updates.donation_link", "")
 
-	def post(self, codename: str, build_date: int, version: str):
-		date = datetime.fromtimestamp(build_date)
+	def post(self, codename: str, update: FullUpdateInfo):
 		device_data = get_device_data(codename)
 		caption = (
-			f"#{codename} #lineageos #{LINEAGEOS_TO_ANDROID_VERSION[version]}\n"
-			f"LineageOS {version} for {device_data['name']} ({codename})\n"
+			f"#{escape_markdown(codename, 2)} #lineageos #{escape_markdown(LINEAGEOS_TO_ANDROID_VERSION[update.version], 2)}\n"
+			f"LineageOS {escape_markdown(update.version)} for {escape_markdown(device_data.name)} ({escape_markdown(codename, 2)})\n"
 			f"\n"
-			f"⚡️Build date: {date.strftime('%Y/%m/%d')}\n"
+			f"⚡️Build date: {update.datetime.strftime('%Y/%m/%d')}\n"
 			f"⚡️Download: [ROM & Recovery](https://download.lineageos.org/{codename})\n"
 			f"\n"
 			f"Sources: https://github.com/LineageOS\n"
 			f"\n"
 		)
 		if self.donation_link != "":
-			caption += f"Wanna buy me a coffee? {self.donation_link}"
+			caption += f"Wanna buy me a coffee? {escape_markdown(self.donation_link, 2)}"
 
-		self.bot.send_photo(chat_id=self.chat_id,
-		                    photo=f"{self.photo_url_base}/{codename}.png",
-		                    caption=caption,
-							parse_mode="Markdown")
+		message = self.bot.send_photo(chat_id=self.chat_id,
+		                              photo=f"{self.photo_url_base}/{codename}.png",
+		                              caption=caption,
+		                              parse_mode=ParseMode.MARKDOWN_V2)
+
+		if HomeBotDatabase.DEFAULT.has(f"lineageos_updates.{codename}.last_message_id"):
+			message_id = HomeBotDatabase.DEFAULT.get(f"lineageos_updates.{codename}.last_message_id")
+			try:
+				self.bot.unpin_chat_message(chat_id=self.chat_id, message_id=message_id)
+			except Exception:
+				pass
+
+		try:
+			message.pin(disable_notification=True)
+		except Exception:
+			pass
+
+		HomeBotDatabase.DEFAULT.set(f"lineageos_updates.{codename}.last_message_id", message.message_id)
