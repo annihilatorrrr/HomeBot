@@ -200,7 +200,8 @@ class DeviceData:
 		else:
 			dimensions = None
 
-		def convert_release_date(date: str):
+		def convert_release_date(date: Union[int, str]):
+			date = str(date)
 			# YYYY-MM-DD
 			try:
 				return datetime.fromisoformat(date)
