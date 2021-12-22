@@ -4,6 +4,10 @@ config = {
 		# Add here your HTTP API bot token, get it from @BotFather
 		# type: str
 		"api_token": "",
+
+		# Logging channel/group ID, exceptions will be sent there
+		# type: int | str
+		"logging_chat_id": "",
 	},
 
 	# Module - Bridgey
