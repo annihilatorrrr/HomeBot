@@ -1,15 +1,10 @@
 from homebot.core.config import get_config
 from homebot.core.logging import LOGE
+from homebot.lib.libexception import format_exception
 from telegram.ext import CallbackContext
 from telegram.update import Update
-import traceback
 
 LOGGING_CHAT_ID = get_config("bot.logging_chat_id")
-
-def format_exception(exception):
-	return ''.join(traceback.format_exception(type(exception), exception,
-												   exception.__traceback__,
-												   limit=None, chain=True))
 
 def error_handler(update: Update, context: CallbackContext):
 	formatted_error = "HomeBot: Error encountered!\n"

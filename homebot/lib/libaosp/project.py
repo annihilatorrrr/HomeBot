@@ -1,10 +1,10 @@
 from datetime import datetime
 from homebot import bot_path
 from homebot.core.config import get_config
-from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGE
 from homebot.lib.libaosp.post import PostManager
 from homebot.lib.libaosp.returncode import AOSPReturnCode
+from homebot.lib.libexception import format_exception
 from homebot.lib.libupload import Uploader
 from homebot.modules.ci.artifacts import Artifacts, ArtifactStatus
 from homebot.modules.ci.parser import CIParser

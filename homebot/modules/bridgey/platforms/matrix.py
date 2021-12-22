@@ -2,8 +2,8 @@ from __future__ import annotations
 from datetime import datetime
 from homebot.core.config import get_config
 from homebot.core.database import HomeBotDatabase
-from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGE
+from homebot.lib.libexception import format_exception
 from homebot.modules.bridgey.platform import PlatformBase
 from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message, MessageType

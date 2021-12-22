@@ -1,6 +1,6 @@
-from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGI
 from homebot.lib.libadmin import user_is_approved
+from homebot.lib.libexception import format_exception
 from homebot.modules.ci.manager import manager
 from homebot.modules.ci.parser import CIParser
 from telegram.ext import CallbackContext

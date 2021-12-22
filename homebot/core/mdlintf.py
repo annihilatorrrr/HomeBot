@@ -6,8 +6,8 @@
 from __future__ import annotations
 
 from homebot.core.binder import Binder, BinderInterface
-from homebot.core.error_handler import format_exception
 from homebot.core.logging import LOGE
+from homebot.lib.libexception import format_exception
 from importlib import import_module
 from pathlib import Path
 from pkgutil import iter_modules

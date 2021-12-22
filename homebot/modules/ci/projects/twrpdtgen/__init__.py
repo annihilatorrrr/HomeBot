@@ -6,7 +6,7 @@ from git.exc import GitCommandError
 from github import Github, GithubException
 from twrpdtgen.utils.logging import LOGE
 from homebot.core.config import get_config
-from homebot.core.error_handler import format_exception
+from homebot.lib.libexception import format_exception
 from homebot.modules.ci.parser import CIParser
 from pathlib import Path
 import requests
