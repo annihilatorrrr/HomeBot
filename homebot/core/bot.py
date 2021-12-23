@@ -1,7 +1,7 @@
 from homebot.core.error_handler import error_handler
-from homebot.core.logging import LOGE, LOGI
 from homebot.core.mdlintf import mdlbinder
 from homebot.lib.libexception import format_exception
+from homebot.lib.liblogging import LOGE, LOGI
 from telegram.ext import ContextTypes, Updater
 from threading import Lock
 

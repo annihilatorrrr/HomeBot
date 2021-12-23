@@ -1,9 +1,5 @@
-from logging import basicConfig, debug, info, error, warning, INFO
+from logging import basicConfig, INFO
 
-basicConfig(format='[%(asctime)s] [%(filename)s:%(lineno)s %(levelname)s] %(funcName)s: %(message)s',
-					level=INFO)
-
-LOGD = debug
-LOGI = info
-LOGE = error
-LOGW = warning
+def setup_logging(level: int = INFO):
+	basicConfig(format='[%(asctime)s] [%(filename)s:%(lineno)s %(levelname)s] %(funcName)s: %(message)s',
+	            level=level)

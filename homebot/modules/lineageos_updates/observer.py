@@ -1,7 +1,7 @@
 from datetime import datetime
-from homebot.core.logging import LOGE, LOGI
 from homebot.core.config import get_config
 from homebot.lib.liblineage.ota import get_nightlies
+from homebot.lib.liblogging import LOGE, LOGI
 from threading import Event, Thread
 from time import sleep
 

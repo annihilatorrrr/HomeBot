@@ -4,7 +4,7 @@ from asyncio.events import AbstractEventLoop
 from discord import Client, Embed, File as DiscordFile, RequestsWebhookAdapter, Webhook
 from discord import Attachment, Message as DiscordMessage, User as DiscordUser
 from homebot.core.config import get_config
-from homebot.core.logging import LOGE
+from homebot.lib.liblogging import LOGE
 from homebot.modules.bridgey.platform import PlatformBase
 from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message, MessageType

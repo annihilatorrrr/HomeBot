@@ -2,7 +2,7 @@
 # Module Binder IPC
 #
 
-from homebot.core.logging import LOGI, LOGW
+from homebot.lib.liblogging import LOGI, LOGW
 from threading import Lock
 
 class BinderInterface:

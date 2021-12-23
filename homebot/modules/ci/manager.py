@@ -1,5 +1,5 @@
-from homebot.core.logging import LOGE, LOGI
 from homebot.lib.libexception import format_exception
+from homebot.lib.liblogging import LOGE, LOGI
 from importlib import import_module
 from queue import Queue
 from telegram.ext.callbackcontext import CallbackContext

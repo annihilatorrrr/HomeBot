@@ -2,7 +2,7 @@
 
 from ftplib import FTP, error_perm
 from homebot.core.config import get_config
-from homebot.core.logging import LOGI, LOGW
+from homebot.lib.liblogging import LOGI
 import os.path
 import paramiko
 from pathlib import Path

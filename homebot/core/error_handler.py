@@ -1,6 +1,6 @@
 from homebot.core.config import get_config
-from homebot.core.logging import LOGE
 from homebot.lib.libexception import format_exception
+from homebot.lib.liblogging import LOGE
 from telegram.ext import CallbackContext
 from telegram.update import Update
 
