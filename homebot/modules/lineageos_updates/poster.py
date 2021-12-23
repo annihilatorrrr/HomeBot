@@ -47,8 +47,8 @@ class Poster:
 		                              caption=caption,
 		                              parse_mode=ParseMode.MARKDOWN_V2)
 
-		if HomeBotDatabase.DEFAULT.has(f"lineageos_updates.{codename}.last_message_id"):
-			message_id = HomeBotDatabase.DEFAULT.get(f"lineageos_updates.{codename}.last_message_id")
+		if HomeBotDatabase.has(f"lineageos_updates.{codename}.last_message_id"):
+			message_id = HomeBotDatabase.get(f"lineageos_updates.{codename}.last_message_id")
 			try:
 				self.bot.unpin_chat_message(chat_id=self.chat_id, message_id=message_id)
 			except Exception:
@@ -59,4 +59,4 @@ class Poster:
 		except Exception:
 			pass
 
-		HomeBotDatabase.DEFAULT.set(f"lineageos_updates.{codename}.last_message_id", message.message_id)
+		HomeBotDatabase.set(f"lineageos_updates.{codename}.last_message_id", message.message_id)
