@@ -18,7 +18,7 @@ class BridgeyModule(ModuleInterface):
 	remove_user = remove_user
 	handlers = [
 		CommandHandler(["bridgey"], bridgey, run_async=True),
-		MessageHandler(Filters.update, handle_telegram_update, run_async=True),
+		MessageHandler(Filters.update.message, handle_telegram_update, run_async=True),
 	]
 
 mdlbinder.register_interface(BridgeyModule())
