@@ -44,7 +44,7 @@ class HomeBotDatabase:
 	__dict_lock = Lock()
 
 	@classmethod
-	def _has(cls, k: str):
+	def __has(cls, k: str):
 		"""Unprotected cls.has implementation."""
 		if type(k) is not str:
 			raise TypeError("Key isn't a string")
@@ -66,10 +66,10 @@ class HomeBotDatabase:
 	def has(cls, k: str):
 		"""Check if a key is inside the database."""
 		with cls.__dict_lock:
-			return cls._has(k)
+			return cls.__has(k)
 
 	@classmethod
-	def _get(cls, k: str):
+	def __get(cls, k: str):
 		"""Unprotected cls.get implementation."""
 		if type(k) is not str:
 			raise TypeError("Key isn't a string")
@@ -87,10 +87,10 @@ class HomeBotDatabase:
 	def get(cls, k: str):
 		"""Get a value from the database."""
 		with cls.__dict_lock:
-			return cls._get(k)
+			return cls.__get(k)
 
 	@classmethod
-	def _set(cls, k: str, v):
+	def __set(cls, k: str, v):
 		"""Unprotected cls.set implementation."""
 		if type(k) is not str:
 			raise TypeError("Key isn't a string")
@@ -99,8 +99,8 @@ class HomeBotDatabase:
 			raise TypeError("Value data type not allowed")
 
 		if not '.' in k:
-			if cls._has(k) and isinstance(cls._get(k), dict):
-					cls._get(k).update(v)
+			if cls.__has(k) and isinstance(cls.__get(k), dict):
+					cls.__get(k).update(v)
 			else:
 				cls.__dict[k] = v
 		else:
@@ -108,21 +108,21 @@ class HomeBotDatabase:
 			for subkey in k.split('.')[::-1]:
 				d = {subkey: d}
 				subkey_full = k.removesuffix(f".{subkey}")
-				if cls._has(subkey_full) and isinstance(cls._get(subkey_full), dict):
-					cls._get(subkey_full).update(d)
-					d = cls._get(subkey_full)
+				if cls.__has(subkey_full) and isinstance(cls.__get(subkey_full), dict):
+					cls.__get(subkey_full).update(d)
+					d = cls.__get(subkey_full)
 
 			cls.__dict.update(d)
 
-		cls._dump()
+		cls.__dump()
 
 	@classmethod
 	def set(cls, k: str, v):
 		"""Save a value to the database."""
 		with cls.__dict_lock:
-			return cls._set(k, v)
+			return cls.__set(k, v)
 
 	@classmethod
-	def _dump(cls):
+	def __dump(cls):
 		"""Dump the database to file."""
 		_DatabaseFile.dump(cls.__dict)
