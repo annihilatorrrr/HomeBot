@@ -1,5 +1,6 @@
 from datetime import datetime
 from homebot.core.config import get_config
+from homebot.lib.libexception import format_exception
 from homebot.lib.liblineage.ota import get_nightlies
 from homebot.lib.liblogging import LOGE, LOGI
 from threading import Event, Thread
@@ -45,8 +46,9 @@ class Observer:
 				for poster in self.posters.values():
 					try:
 						poster.post(device, last_update)
-					except Exception:
-						LOGE(f"Failed to post {device} {build_date} build")
+					except Exception as e:
+						LOGE(f"Failed to post {device} {build_date} build\n"
+						     f"{format_exception(e)}")
 					else:
 						LOGI(f"Build {device} {build_date} posted successfully")
 
