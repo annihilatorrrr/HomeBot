@@ -1,18 +1,11 @@
 from homebot.core.database import HomeBotDatabase
-from homebot.lib.liblineage import GITHUB_ORG
+from homebot.lib.liblineage import GITHUB_ORG, LINEAGEOS_TO_ANDROID_VERSION
 from homebot.lib.liblineage.ota import FullUpdateInfo
 from homebot.lib.liblineage.wiki import get_device_data
 from homebot.core.config import get_config
 from telegram.bot import Bot
 from telegram.parsemode import ParseMode
 from telegram.utils.helpers import escape_markdown
-
-LINEAGEOS_TO_ANDROID_VERSION = {
-	"16.0": "p",
-	"17.1": "q",
-	"18.1": "r",
-	"19.0": "s",
-}
 
 class Poster:
 	def __init__(self, bot: Bot):
@@ -31,7 +24,7 @@ class Poster:
 	def post(self, codename: str, update: FullUpdateInfo):
 		device_data = get_device_data(codename)
 		caption = (
-			f"{escape_markdown(f'#{codename}', 2)} \#lineageos {escape_markdown(f'#{LINEAGEOS_TO_ANDROID_VERSION[update.version]}', 2)}\n"
+			f"{escape_markdown(f'#{codename}', 2)} \#lineageos {escape_markdown(f'#{LINEAGEOS_TO_ANDROID_VERSION[update.version].version_short.lower()}', 2)}\n"
 			f"LineageOS {escape_markdown(update.version, 2)} for {escape_markdown(device_data.name, 2)} {escape_markdown(f'({codename})', 2)}\n"
 			f"\n"
 			f"⚡️Build date: {escape_markdown(update.datetime.strftime('%Y/%m/%d'), 2)}\n"
