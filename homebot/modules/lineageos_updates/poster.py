@@ -1,4 +1,5 @@
 from homebot.core.database import HomeBotDatabase
+from homebot.lib.liblineage import GITHUB_ORG
 from homebot.lib.liblineage.ota import FullUpdateInfo
 from homebot.lib.liblineage.wiki import get_device_data
 from homebot.core.config import get_config
@@ -36,7 +37,7 @@ class Poster:
 			f"⚡️Build date: {escape_markdown(update.datetime.strftime('%Y/%m/%d'), 2)}\n"
 			f"⚡️Download: [ROM & Recovery]({escape_markdown(f'https://download.lineageos.org/{codename}', 2)})\n"
 			f"\n"
-			f"Sources: {escape_markdown('https://github.com/LineageOS', 2)}\n"
+			f"Sources: {escape_markdown(GITHUB_ORG, 2)}\n"
 			f"\n"
 		)
 		if self.donation_link != "":
