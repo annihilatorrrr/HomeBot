@@ -30,13 +30,13 @@ class Poster:
 	def post(self, codename: str, update: FullUpdateInfo):
 		device_data = get_device_data(codename)
 		caption = (
-			f"#{escape_markdown(codename, 2)} #lineageos #{escape_markdown(LINEAGEOS_TO_ANDROID_VERSION[update.version], 2)}\n"
-			f"LineageOS {escape_markdown(update.version)} for {escape_markdown(device_data.name)} \({escape_markdown(codename, 2)}\)\n"
+			f"{escape_markdown(f'#{codename}', 2)} \#lineageos {escape_markdown(f'#{LINEAGEOS_TO_ANDROID_VERSION[update.version]}', 2)}\n"
+			f"LineageOS {escape_markdown(update.version, 2)} for {escape_markdown(device_data.name, 2)} {escape_markdown(f'({codename})', 2)}\n"
 			f"\n"
-			f"⚡️Build date: {update.datetime.strftime('%Y/%m/%d')}\n"
-			f"⚡️Download: [ROM & Recovery](https://download.lineageos.org/{escape_markdown(codename, 2)})\n"
+			f"⚡️Build date: {escape_markdown(update.datetime.strftime('%Y/%m/%d'), 2)}\n"
+			f"⚡️Download: [ROM & Recovery]({escape_markdown(f'https://download.lineageos.org/{codename}', 2)})\n"
 			f"\n"
-			f"Sources: https://github.com/LineageOS\n"
+			f"Sources: {escape_markdown('https://github.com/LineageOS', 2)}\n"
 			f"\n"
 		)
 		if self.donation_link != "":
