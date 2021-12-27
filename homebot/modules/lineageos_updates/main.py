@@ -1,4 +1,3 @@
-from datetime import datetime
 from homebot.lib.libadmin import user_is_admin
 from homebot.modules.lineageos_updates.observer import Observer
 from homebot.modules.lineageos_updates.poster import Poster
@@ -33,7 +32,7 @@ def info(update: Update, context: CallbackContext):
 			"Device | Last post\n"
 		)
 		for device in _observer.last_device_post:
-			date = datetime.fromtimestamp(_observer.last_device_post[device])
+			date = _observer.last_device_post[device]
 			text += f"{device} | {date.strftime('%Y/%m/%d, %H:%M:%S')}\n"
 
 	update.message.reply_text(text)
