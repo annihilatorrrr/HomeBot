@@ -11,7 +11,7 @@ import shutil
 class UploaderBase:
 	def __init__(self, profile):
 		"""Initialize the uploader variables."""
-		self.destination_path_base = Path(get_config(f"libupload.{profile}.base_dir"))
+		self.destination_path_base = Path(get_config(f"libupload.{profile}.base_dir", ""))
 		self.host = get_config(f"libupload.{profile}.host")
 		self.port = get_config(f"libupload.{profile}.port")
 		self.server = self.host if self.port is None else f"{self.host}:{self.port}"
