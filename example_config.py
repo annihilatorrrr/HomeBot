@@ -69,7 +69,7 @@ config = {
 	},
 
 	# Module - CI
-	# Read this before continuing: https://github.com/SebaUbuntu/HomeBot/wiki/Module-%7C-CI#variables
+	# Read this before continuing: https://github.com/SebaUbuntu/HomeBot/wiki/Modules-%7C-ci#variables
 	"ci": {
 		# type: str
 		"main_dir": "",
