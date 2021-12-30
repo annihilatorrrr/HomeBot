@@ -1,10 +1,26 @@
 from homebot.core.config import get_config
 from homebot.lib.libexception import format_exception
 from homebot.lib.liblogging import LOGE
+from telegram.bot import Bot
 from telegram.ext import CallbackContext
 from telegram.update import Update
 
 LOGGING_CHAT_ID = get_config("bot.logging_chat_id")
+
+def log_to_logging_chat(bot: Bot, text: str):
+	"""Send a message to the logging chat.
+
+	Returns True if the message was sent successfully, False otherwise."""
+	if not LOGGING_CHAT_ID:
+		return False
+
+	try:
+		bot.send_message(chat_id=LOGGING_CHAT_ID, text=text)
+	except Exception as e:
+		LOGE(f"Failed to send message to logging chat: {e}")
+		return False
+	else:
+		return True
 
 def error_handler(update: Update, context: CallbackContext):
 	formatted_error = "HomeBot: Error encountered!\n"
@@ -18,10 +34,6 @@ def error_handler(update: Update, context: CallbackContext):
 
 	LOGE(formatted_error)
 
-	if LOGGING_CHAT_ID:
-		try:
-			context.bot.send_message(chat_id=LOGGING_CHAT_ID, text=formatted_error)
-		except Exception as e:
-			LOGE(f"Failed to send error to logging chat: {e}")
+	log_to_logging_chat(context.bot, formatted_error)
 
 	LOGE("End error handling")
