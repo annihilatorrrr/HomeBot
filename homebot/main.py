@@ -10,3 +10,7 @@ def main():
 	LOGI(f"HomeBot started, version {__version__}")
 	LOGI(f"Bot username: @{updater.bot.get_me().username}")
 	updater.start_polling()
+	updater.idle()
+
+	LOGI("Stopping HomeBot...")
+	exit()
