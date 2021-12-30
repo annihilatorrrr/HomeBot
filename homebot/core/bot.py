@@ -2,6 +2,9 @@ from homebot.core.error_handler import error_handler
 from homebot.core.mdlintf import mdlbinder
 from homebot.lib.libexception import format_exception
 from homebot.lib.liblogging import LOGE, LOGI
+from os import execl
+from signal import SIGTERM
+import sys
 from telegram.ext import ContextTypes, Updater
 from threading import Lock
 
@@ -138,3 +141,15 @@ class HomeBot(Updater):
 			else:
 				self.modules[module_name] = ModuleStatus.DISABLED
 				LOGI(f"Module {module_name} disabled")
+
+	def restart(self):
+		"""Restart the bot."""
+		LOGI("Restarting")
+
+		execl(sys.executable, sys.executable, *["-m", "homebot"])
+
+	def shutdown(self):
+		"""Shutdown the bot."""
+		LOGI("Shutting down")
+
+		self._signal_handler(SIGTERM, None)

@@ -8,6 +8,8 @@ from homebot.modules.core.main import (
 	modules,
 	enable,
 	disable,
+	restart,
+	shutdown,
 )
 
 class CoreModule(ModuleInterface):
@@ -19,6 +21,8 @@ class CoreModule(ModuleInterface):
 		CommandHandler(["modules"], modules, run_async=True),
 		CommandHandler(["enable"], enable, run_async=True),
 		CommandHandler(["disable"], disable, run_async=True),
+		CommandHandler(["restart"], restart, run_async=True),
+		CommandHandler(["shutdown"], shutdown, run_async=True),
 	]
 
 mdlbinder.register_interface(CoreModule())

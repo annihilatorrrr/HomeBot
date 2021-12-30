@@ -1,5 +1,6 @@
 from homebot import __version__
 from homebot.core.bot import BOT_DATA_HOMEBOT, ModuleStatus
+from homebot.core.error_handler import log_to_logging_chat
 from homebot.core.mdlintf import mdlbinder
 from homebot.lib.libadmin import user_is_admin
 from telegram.ext import CallbackContext
@@ -85,3 +86,49 @@ def disable(update: Update, context: CallbackContext):
 
 	text = [f"{module_name}: {status}" for module_name, status in result.items()]
 	update.message.reply_text("\n".join(text))
+
+def restart(update: Update, context: CallbackContext):
+	if not user_is_admin(update.message.from_user.id):
+		update.message.reply_text("Error: You are not authorized to restart HomeBot")
+		return
+
+	update.message.reply_text("Restarting HomeBot...")
+
+	full_name = update.message.from_user.full_name
+	username = update.message.from_user.username
+	user_id = update.message.from_user.id
+	if username:
+		full_name += f" (@{username})"
+	else:
+		full_name += f" ({user_id})"
+
+	text = (
+		"HomeBot: Restarting...\n"
+		f"Triggered by {full_name}\n"
+	)
+	log_to_logging_chat(context.bot, text)
+
+	context.bot_data[BOT_DATA_HOMEBOT].restart()
+
+def shutdown(update: Update, context: CallbackContext):
+	if not user_is_admin(update.message.from_user.id):
+		update.message.reply_text("Error: You are not authorized to shutdown HomeBot")
+		return
+
+	update.message.reply_text("Shutting down HomeBot...")
+
+	full_name = update.message.from_user.full_name
+	username = update.message.from_user.username
+	user_id = update.message.from_user.id
+	if username:
+		full_name += f" (@{username})"
+	else:
+		full_name += f" ({user_id})"
+
+	text = (
+		"HomeBot: Shutting down...\n"
+		f"Triggered by {full_name}\n"
+	)
+	log_to_logging_chat(context.bot, text)
+
+	context.bot_data[BOT_DATA_HOMEBOT].shutdown()
