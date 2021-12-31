@@ -11,15 +11,18 @@ class Poster:
 	def __init__(self, bot: Bot):
 		self.bot = bot
 
-		self.chat_id = get_config("lineageos_updates.chat_id", "")
-		if self.chat_id == "":
+		self.chat_id = get_config("lineageos_updates.chat_id")
+		self.photo_url_base = get_config("lineageos_updates.photo_url_base")
+		self.donation_link = get_config("lineageos_updates.donation_link")
+
+		if not get_config("lineageos_updates.enable", False):
+			return
+
+		if not self.chat_id:
 			raise AssertionError("No chat ID defined")
 
-		self.photo_url_base = get_config("lineageos_updates.photo_url_base", "")
-		if self.chat_id == "":
+		if not self.photo_url_base:
 			raise AssertionError("No photo URL base defined")
-
-		self.donation_link = get_config("lineageos_updates.donation_link", "")
 
 	def post(self, codename: str, update: FullUpdateInfo):
 		device_data = get_device_data(codename)
@@ -33,7 +36,7 @@ class Poster:
 			f"Sources: {escape_markdown(GITHUB_ORG, 2)}\n"
 			f"\n"
 		)
-		if self.donation_link != "":
+		if self.donation_link is not None:
 			caption += f"Wanna buy me a coffee? {escape_markdown(self.donation_link, 2)}"
 
 		message = self.bot.send_photo(chat_id=self.chat_id,
