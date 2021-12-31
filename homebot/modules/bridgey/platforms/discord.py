@@ -1,6 +1,4 @@
 from __future__ import annotations
-import asyncio
-from asyncio.events import AbstractEventLoop
 from discord import Client, Embed, File as DiscordFile, RequestsWebhookAdapter, Webhook
 from discord import Attachment, Message as DiscordMessage, User as DiscordUser
 from homebot.core.config import get_config
@@ -10,7 +8,6 @@ from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message, MessageType
 from homebot.modules.bridgey.types.user import User
 from io import BytesIO
-from platform import system
 import requests
 from threading import Thread
 
@@ -21,13 +18,10 @@ WEBHOOK_URL = get_config("bridgey.discord.webhook_url", "")
 
 class BridgeyDiscordClient(Client):
 	"""Discord client that pass the message to DiscordPlatform."""
-	def __init__(self, *, loop=None, **options):
+	def __init__(self, platform: DiscordPlatform, *, loop=None, **options):
 		"""Initialize the client."""
 		super().__init__(loop=loop, **options)
 
-		self.platform = None
-
-	def set_platform(self, platform: DiscordPlatform):
 		self.platform = platform
 
 	async def on_message(self, message: DiscordMessage):
@@ -35,31 +29,10 @@ class BridgeyDiscordClient(Client):
 			return
 		if message.channel.id != CHANNEL_ID:
 			return
-		if not self.platform:
-			return
 		if message.webhook_id and (self.platform.webhook.id == message.webhook_id):
 			return
 
-		if self.platform is not None:
-			self.platform.on_message(self.platform.message_to_generic(message))
-
-client = BridgeyDiscordClient()
-
-async def bot_async_start():
-	await client.start(TOKEN)
-
-def bot_loop_start(loop: AbstractEventLoop):
-	loop.run_forever()
-
-def start_daemon():
-	if system() != 'Windows':
-		asyncio.get_child_watcher()
-
-	loop = asyncio.get_event_loop()
-	loop.create_task(bot_async_start())
-	thread = Thread(target=bot_loop_start, args=(loop,), daemon=True)
-	thread.start()
-	return thread
+		self.platform.on_message(self.platform.message_to_generic(message))
 
 class DiscordPlatform(PlatformBase):
 	"""Discord platform."""
@@ -74,6 +47,7 @@ class DiscordPlatform(PlatformBase):
 		super().__init__(coordinator)
 
 		self.webhook = None
+		self.client = None
 		self.thread = None
 
 		if not (ENABLE and CHANNEL_ID and TOKEN and WEBHOOK_URL):
@@ -85,9 +59,13 @@ class DiscordPlatform(PlatformBase):
 			LOGE(f"Failed to create webhook: {e}")
 			return
 
-		client.set_platform(self)
+		self.client = BridgeyDiscordClient(self)
 
-		self.thread = start_daemon()
+		self.thread = Thread(target=self.__daemon, daemon=True)
+		self.thread.start()
+
+	def __daemon(self):
+		self.client.run(TOKEN)
 
 	@property
 	def running(self) -> bool:
