@@ -118,11 +118,13 @@ class DiscordPlatform(PlatformBase):
 			LOGE("Webhook is None")
 			return
 
+		content = message.text
 		title = ""
-		description = message.text
+		description = ""
 		file = None
 
 		if message.message_type is MessageType.STICKER:
+			content = ""
 			title = "Sticker"
 			description = message.sticker_emoji
 
@@ -147,6 +149,6 @@ class DiscordPlatform(PlatformBase):
 
 		try:
 			self.webhook.send(username=str(message.user), avatar_url=message.user.avatar_url,
-			                  embed=embed, file=file)
+			                  content=content, embed=embed, file=file)
 		except Exception as e:
 			LOGE(f"Failed to send message to Discord: {e}")
