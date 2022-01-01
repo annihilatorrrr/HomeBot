@@ -91,9 +91,10 @@ class MatrixPlatform(PlatformBase):
 		else:
 			text = ""
 
+		avatar_url = self.client.api.get_avatar_url(message["sender"])
 		user = User(platform=MatrixPlatform,
 		            name=message["sender"],
-					avatar_url=self.client.api.get_avatar_url(message["sender"]))
+					avatar_url=self.client.api.get_download_url(avatar_url))
 
 		if "url" in content:
 			file = File(platform=MatrixPlatform,
