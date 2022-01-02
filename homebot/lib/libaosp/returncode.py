@@ -26,14 +26,16 @@ class AOSPReturnCode(_AOSPReturnCode):
 		_SUCCESS,
 		_MISSING_ARGS,
 		_MISSING_DIR,
+		_REPO_SYNC_FAILED,
 		_LUNCH_FAILED,
 		_CLEAN_FAILED,
 		_BUILD_FAILED,
-	) = range(6)
+	) = range(7)
 
 	SUCCESS = _AOSPReturnCode(_SUCCESS, "Build completed successfully")
 	MISSING_ARGS = _AOSPReturnCode(_MISSING_ARGS, "Build failed: Missing arguments")
 	MISSING_DIR = _AOSPReturnCode(_MISSING_DIR, "Build failed: Project dir doesn't exists")
+	REPO_SYNC_FAILED = _AOSPReturnCode(_REPO_SYNC_FAILED, "Build failed: repo sync failed", "repo_sync_log.txt")
 	LUNCH_FAILED = _AOSPReturnCode(_LUNCH_FAILED, "Build failed: Lunching failed", "lunch_log.txt")
 	CLEAN_FAILED = _AOSPReturnCode(_CLEAN_FAILED, "Build failed: Cleaning failed", "clean_log.txt")
 	BUILD_FAILED = _AOSPReturnCode(_BUILD_FAILED, "Build failed: Building failed", "build_log.txt")
@@ -42,6 +44,7 @@ class AOSPReturnCode(_AOSPReturnCode):
 		_SUCCESS: SUCCESS,
 		_MISSING_ARGS: MISSING_ARGS,
 		_MISSING_DIR: MISSING_DIR,
+		_REPO_SYNC_FAILED: REPO_SYNC_FAILED,
 		_LUNCH_FAILED: LUNCH_FAILED,
 		_CLEAN_FAILED: CLEAN_FAILED,
 		_BUILD_FAILED: BUILD_FAILED,

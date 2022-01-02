@@ -7,6 +7,7 @@ STATUS=(
 	"SUCCESS"
 	"MISSING_ARGS"
 	"MISSING_DIR"
+	"REPO_SYNC_FAILED"
 	"LUNCH_FAILED"
 	"CLEAN_FAILED"
 	"BUILD_FAILED"
@@ -44,6 +45,10 @@ while [ "${#}" -gt 0 ]; do
 			CI_WITH_GMS="${2}"
 			shift
 			;;
+		--repo_sync )
+			CI_REPO_SYNC="${2}"
+			shift
+			;;
 		--device )
 			CI_DEVICE="${2}"
 			shift
@@ -61,6 +66,15 @@ if [ ! -d "${CI_SOURCES}" ]; then
 fi
 
 cd "${CI_SOURCES}"
+
+if [ "${CI_REPO_SYNC}" = "True" ]; then
+	repo sync -j$(nproc) --force-sync &> repo_sync_log.txt
+	CI_REPO_SYNC_STATUS=$?
+	if [ "${CI_REPO_SYNC_STATUS}" != 0 ]; then
+		exit "${REPO_SYNC_FAILED}"
+	fi
+fi
+
 . build/envsetup.sh
 
 if [ "${CI_WITH_GMS}" = "True" ]; then
