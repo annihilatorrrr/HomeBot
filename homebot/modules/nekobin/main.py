@@ -24,8 +24,8 @@ def nekobin(update: Update, context: CallbackContext):
 		url = to_nekobin(text)
 	except HTTPError as e:
 		message.edit_text(f"Error: failed to upload file to Nekobin: {e.response.status_code}")
-	except Exception as e:
-		message.edit_text(f"Error: failed to upload file to Nekobin: unknown error")
+	except Exception:
+		message.edit_text("Error: failed to upload file to Nekobin: unknown error")
 	else:
 		message.edit_text(f"File uploaded to Nekobin: {url}", disable_web_page_preview=True)
 	finally:
