@@ -114,6 +114,17 @@ config = {
 		"donation_link": "",
 	},
 
+	# Module - Politically correct
+	"politically_correct": {
+		# type: bool
+		# Enable the module
+		"enable": False,
+
+		# type: list[str]
+		# Chats where the module will be enabled
+		"chat_ids": [],
+	},
+
 	# Library - libadmin
 	"libadmin": {
 		# type: list[int]
