@@ -16,13 +16,14 @@ class BatteryData:
 		"""Initialize the battery information."""
 		self.capacity = capacity
 		self.removable = removable
-	
+
 	@classmethod
 	def from_dict(self, battery: dict):
 		"""Create a battery information object from a dictionary."""
 		return self(battery["capacity"], battery["removable"])
 
 	def __str__(self) -> str:
+		"""Return a string representation of the battery information."""
 		return (f"capacity: {self.capacity}mAh"
 		        f", removable: {self.removable}")
 
@@ -142,7 +143,7 @@ class DeviceData:
 	             release: Union[datetime, dict, None],
 	             screen: Union[ScreenData, dict, None],
 	             tree: str,
-	             type: str,
+	             device_type: str,
 	             vendor: str,
 	             vendor_short: str,
 	             versions: list[float]
@@ -167,7 +168,7 @@ class DeviceData:
 		self.release = release
 		self.screen = screen
 		self.tree = tree
-		self.type = type
+		self.device_type = device_type
 		self.vendor = vendor
 		self.vendor_short = vendor_short
 		self.versions = versions
@@ -263,7 +264,7 @@ class DeviceData:
 		"""Return a string representation of the device data."""
 		return (f"Name: {escape_markdown(self.name, 2)}\n"
 		        f"Codename: {escape_markdown(self.codename, 2)}\n"
-		        f"Type: {escape_markdown(self.type, 2)}\n"
+		        f"Type: {escape_markdown(self.device_type, 2)}\n"
 				f"Vendor: {escape_markdown(self.vendor, 2)}\n"
 				f"Vendor \(short\): {escape_markdown(self.vendor_short, 2)}\n"
 				f"Architecture: {escape_markdown(self.architecture, 2)}\n"
