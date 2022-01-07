@@ -22,9 +22,7 @@ ADDITIONAL_ARTIFACTS = [
 ]
 
 class AOSPProject:
-	"""
-	This class represent an AOSP project.
-	"""
+	"""This class represent an AOSP project."""
 	# This value will also be used for folder name
 	name: str
 	# Version of the project
