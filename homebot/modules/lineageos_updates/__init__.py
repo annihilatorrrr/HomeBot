@@ -15,7 +15,7 @@ class LineageosUpdatesModule(ModuleInterface):
 	add_user = add_user
 	remove_user = remove_user
 	handlers = [
-		CommandHandler(["lineageos_updates"], lineageos_updates),
+		CommandHandler(["lineageos_updates"], lineageos_updates, run_async=True),
 	]
 
 mdlbinder.register_interface(LineageosUpdatesModule())

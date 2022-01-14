@@ -11,7 +11,7 @@ class XdaModule(ModuleInterface):
 	name = "xda"
 	version = "1.0"
 	handlers = [
-		CommandHandler(["xda"], xda),
+		CommandHandler(["xda"], xda, run_async=True),
 	]
 
 mdlbinder.register_interface(XdaModule())

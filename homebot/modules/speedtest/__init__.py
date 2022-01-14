@@ -11,7 +11,7 @@ class SpeedtestModule(ModuleInterface):
 	name = "speedtest"
 	version = "1.0"
 	handlers = [
-		CommandHandler(["speedtest"], speedtest),
+		CommandHandler(["speedtest"], speedtest, run_async=True),
 	]
 
 mdlbinder.register_interface(SpeedtestModule())

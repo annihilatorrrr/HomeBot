@@ -12,7 +12,7 @@ class ShellModule(ModuleInterface):
 	version = "1.0"
 	core: True
 	handlers = [
-		CommandHandler(["shell"], shell),
+		CommandHandler(["shell"], shell, run_async=True),
 	]
 
 mdlbinder.register_interface(ShellModule())

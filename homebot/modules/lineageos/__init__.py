@@ -11,7 +11,7 @@ class LineageosModule(ModuleInterface):
 	name = "lineageos"
 	version = "1.0"
 	handlers = [
-		CommandHandler(["lineageos"], lineageos),
+		CommandHandler(["lineageos"], lineageos, run_async=True),
 	]
 
 mdlbinder.register_interface(LineageosModule())

@@ -11,7 +11,7 @@ class CiModule(ModuleInterface):
 	name = "ci"
 	version = "1.0"
 	handlers = [
-		CommandHandler(["ci"], ci),
+		CommandHandler(["ci"], ci, run_async=True),
 	]
 
 mdlbinder.register_interface(CiModule())
