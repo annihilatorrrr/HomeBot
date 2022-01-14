@@ -125,6 +125,13 @@ config = {
 		"chat_ids": [],
 	},
 
+	# Module - Translate
+	"translate": {
+		# type: str
+		# DeepL API key
+		"deepl_api_key": "",
+	},
+
 	# Library - libadmin
 	"libadmin": {
 		# type: list[int]
