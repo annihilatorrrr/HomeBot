@@ -21,6 +21,9 @@ ADDITIONAL_ARTIFACTS = [
 	"recovery.img",
 ]
 
+MAIN_DIR = Path(get_config('ci.main_dir', ''))
+UPLOAD_ARTIFACTS = get_config("ci.upload_artifacts", False)
+
 class AOSPProject:
 	"""This class represent an AOSP project."""
 	# This value will also be used for folder name
@@ -44,6 +47,7 @@ class AOSPProject:
 		self.update = update
 		self.context = context
 		self.args = args
+
 		parser = CIParser(prog="/ci")
 		parser.set_output(self.update.message.reply_text)
 		parser.add_argument('device', help='device codename')
@@ -54,31 +58,35 @@ class AOSPProject:
 		parser.add_argument('--repo_sync', help='run repo sync before building', action='store_true')
 		self.parsed_args = parser.parse_args(args)
 
-	def build(self):
-		project_dir = Path(f"{get_config('ci.main_dir', '')}/{self.name}-{self.version}")
-		device_out_dir: Path = project_dir / "out" / "target" / "product" / self.parsed_args.device
+		self.device: str = self.parsed_args.device
 
-		artifacts = Artifacts(device_out_dir, [self.zip_name] + ADDITIONAL_ARTIFACTS)
-		post_manager = PostManager(self, self.parsed_args.device, artifacts)
+		self.project_dir = MAIN_DIR / f"{self.name}-{self.version}"
+		self.device_out_dir = self.project_dir / "out" / "target" / "product" / self.device
 
-		if self.parsed_args.clean is True:
-			clean_type = "clean"
-		elif self.parsed_args.installclean is True:
-			clean_type = "installclean"
+		if self.parsed_args.clean:
+			self.clean_type = "clean"
+		elif self.parsed_args.installclean:
+			self.clean_type = "installclean"
 		else:
-			clean_type = "none"
+			self.clean_type = "none"
+
+		self.uploader_profile = "release" if self.parsed_args.release else "ci"
+
+	def build(self):
+		artifacts = Artifacts(self.device_out_dir, [self.zip_name] + ADDITIONAL_ARTIFACTS)
+		post_manager = PostManager(self, self.device, artifacts)
 
 		post_manager.update("Building")
 
 		command = [bot_path / "lib" / "libaosp" / "tools" / "building.sh",
-		           "--sources", project_dir,
+		           "--sources", self.project_dir,
 		           "--lunch_prefix", self.lunch_prefix,
 		           "--lunch_suffix", self.lunch_suffix,
 		           "--build_target", self.build_target,
-		           "--clean", clean_type,
+		           "--clean", self.clean_type,
 		           "--with_gms", str(self.parsed_args.with_gms),
 		           "--repo_sync", str(self.parsed_args.repo_sync),
-		           "--device", self.parsed_args.device]
+		           "--device", self.device]
 
 		last_edit = datetime.now()
 		process = subprocess.Popen(command, encoding="UTF-8",
@@ -114,18 +122,16 @@ class AOSPProject:
 		post_manager.update(build_result)
 
 		if build_result.needs_logs_upload():
-			log_file = open(project_dir / build_result.log_file, "rb")
+			log_file = open(self.project_dir / build_result.log_file, "rb")
 			post_manager.send_document(log_file)
 			log_file.close()
 
-		if build_result is not AOSPReturnCode.SUCCESS or get_config("ci.upload_artifacts", False) is False:
-			return
+		if build_result is AOSPReturnCode.SUCCESS and UPLOAD_ARTIFACTS:
+			self.upload(artifacts, post_manager, build_result)
 
-		# Upload artifacts
-		uploader_profile = "release" if self.parsed_args.release else "ci"
-
+	def upload(self, artifacts: Artifacts, post_manager: PostManager, build_result: AOSPReturnCode):
 		try:
-			uploader = Uploader(uploader_profile)
+			uploader = Uploader(self.uploader_profile)
 		except Exception as e:
 			post_manager.update(f"{build_result}\n"
 			                    f"Upload failed: {type(e)}: {e}")
@@ -133,7 +139,7 @@ class AOSPProject:
 
 		artifacts.update()
 
-		zip_filename = list(device_out_dir.glob(self.zip_name))
+		zip_filename = list(self.device_out_dir.glob(self.zip_name))
 		if not zip_filename:
 			return
 
@@ -145,7 +151,7 @@ class AOSPProject:
 				folder_name = date_match.group(1)
 
 		post_manager.update()
-		upload_path = Path() / self.parsed_args.device / folder_name
+		upload_path = Path() / self.device / folder_name
 		for artifact in artifacts.keys():
 			artifacts[artifact] = ArtifactStatus.UPLOADING
 			post_manager.update()
