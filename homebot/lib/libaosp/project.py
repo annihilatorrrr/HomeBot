@@ -23,6 +23,9 @@ ADDITIONAL_ARTIFACTS = [
 
 MAIN_DIR = Path(get_config('ci.main_dir', ''))
 UPLOAD_ARTIFACTS = get_config("ci.upload_artifacts", False)
+ENABLE_CCACHE = get_config("ci.enable_ccache", False)
+CCACHE_EXEC = get_config("ci.ccache_exec")
+CCACHE_DIR = get_config("ci.ccache_dir")
 
 class AOSPProject:
 	"""This class represent an AOSP project."""
@@ -86,6 +89,9 @@ class AOSPProject:
 		           "--clean", self.clean_type,
 		           "--with_gms", str(self.parsed_args.with_gms),
 		           "--repo_sync", str(self.parsed_args.repo_sync),
+		           "--enable_ccache", str(ENABLE_CCACHE),
+		           "--ccache_exec", str(CCACHE_EXEC),
+		           "--ccache_dir", str(CCACHE_DIR),
 		           "--device", self.device]
 
 		last_edit = datetime.now()

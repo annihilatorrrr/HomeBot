@@ -49,6 +49,18 @@ while [ "${#}" -gt 0 ]; do
 			CI_REPO_SYNC="${2}"
 			shift
 			;;
+		--enable_ccache )
+			CI_ENABLE_CCACHE="${2}"
+			shift
+			;;
+		--ccache_exec )
+			CI_CCACHE_EXEC="${2}"
+			shift
+			;;
+		--ccache_dir )
+			CI_CCACHE_DIR="${2}"
+			shift
+			;;
 		--device )
 			CI_DEVICE="${2}"
 			shift
@@ -73,6 +85,12 @@ if [ "${CI_REPO_SYNC}" = "True" ]; then
 	if [ "${CI_REPO_SYNC_STATUS}" != 0 ]; then
 		exit "${REPO_SYNC_FAILED}"
 	fi
+fi
+
+if [ "${CI_ENABLE_CCACHE}" == "True" ]; then
+	export USE_CCACHE=1
+	export CCACHE_EXEC="${CI_CCACHE_EXEC}"
+	export CCACHE_DIR="${CI_CCACHE_DIR}"
 fi
 
 . build/envsetup.sh

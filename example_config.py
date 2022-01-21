@@ -86,6 +86,18 @@ config = {
 		# type: str
 		"github_token": "",
 
+		# type: bool
+		# Enable ccache
+		"enable_ccache": False,
+
+		# type: str
+		# Path to ccache executable
+		"ccache_exec": "",
+
+		# type: str
+		# Path to ccache files
+		"ccache_dir": "",
+
 		# twrpdtgen script
 		"twrpdtgen": {
 			# type: str
