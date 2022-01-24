@@ -5,28 +5,33 @@ from telegram.ext import CallbackContext
 from telegram.update import Update
 
 def nekobin(update: Update, context: CallbackContext):
-	if not update.message.reply_to_message or not update.message.reply_to_message.document:
-		update.message.reply_text("Usage: Reply /nekobin to a message containing a document")
+	reply_to_message = update.message.reply_to_message
+
+	if not reply_to_message:
+		update.message.reply_text("Usage: Reply /nekobin to a message")
 		return
 
-	document = update.message.reply_to_message.document
+	if not reply_to_message.document and not reply_to_message.text:
+		update.message.reply_text("Usage: Reply /nekobin to a message containing a document or text")
+		return
+
 	message = update.message.reply_text("Uploading...")
 
-	try:
-		file: BytesIO = document.get_file().download(out=BytesIO())
-	except Exception:
-		message.edit_text("Error: failed to download file from Telegram (probably too big)")
-		return
-
-	text = file.getvalue().decode(encoding="utf-8", errors="ignore")
+	if reply_to_message.document:
+		try:
+			with reply_to_message.document.get_file().download(out=BytesIO()) as f:
+				text = f.getvalue().decode(encoding="utf-8", errors="ignore")
+		except Exception:
+			message.edit_text("Error: failed to download file from Telegram (probably too big)")
+			return
+	else:
+		text = reply_to_message.text
 
 	try:
 		url = to_nekobin(text)
 	except HTTPError as e:
-		message.edit_text(f"Error: failed to upload file to Nekobin: {e.response.status_code}")
+		message.edit_text(f"Error: failed to upload to Nekobin: {e.response.status_code}")
 	except Exception:
-		message.edit_text("Error: failed to upload file to Nekobin: unknown error")
+		message.edit_text("Error: failed to upload to Nekobin: unknown error")
 	else:
-		message.edit_text(f"File uploaded to Nekobin: {url}", disable_web_page_preview=True)
-	finally:
-		file.close()
+		message.edit_text(f"Done, uploaded to Nekobin: {url}", disable_web_page_preview=True)

@@ -15,7 +15,7 @@ class NekobinModule(ModuleInterface):
 		CommandHandler(["nekobin"], nekobin, run_async=True),
 	]
 	commands_help = [
-		BotCommand("nekobin", "Upload a document to nekobin"),
+		BotCommand("nekobin", "Upload a document or a message text to nekobin"),
 	]
 
 mdlbinder.register_interface(NekobinModule())
