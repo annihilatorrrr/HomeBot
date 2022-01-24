@@ -63,9 +63,11 @@ class HomeBot(Updater):
 		self.modules_lock = Lock()
 
 		for module_name in mdlbinder.get_registered_interfaces():
-			self.enable_module(module_name)
+			self.enable_module(module_name, False)
 
-	def enable_module(self, module_name: str):
+		self.set_my_commands()
+
+	def enable_module(self, module_name: str, set_my_commands: bool = True):
 		"""
 		Enable a provided module and add its command handler
 		to the bot's dispatcher.
@@ -99,9 +101,10 @@ class HomeBot(Updater):
 				self.modules[module_name] = ModuleStatus.ENABLED
 				LOGI(f"Module {module_name} enabled")
 
-		self.set_my_commands()
+		if set_my_commands:
+			self.set_my_commands()
 
-	def disable_module(self, module_name: str):
+	def disable_module(self, module_name: str, set_my_commands: bool = True):
 		"""
 		Disable a provided module and remove its command handler
 		from the bot's dispatcher.
@@ -133,7 +136,8 @@ class HomeBot(Updater):
 				self.modules[module_name] = ModuleStatus.DISABLED
 				LOGI(f"Module {module_name} disabled")
 
-		self.set_my_commands()
+		if set_my_commands:
+			self.set_my_commands()
 
 	def set_my_commands(self):
 		"""Set the bot's own commands based on the enabled handlers."""
