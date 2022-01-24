@@ -12,6 +12,7 @@ from importlib import import_module
 from pathlib import Path
 from pkgutil import iter_modules
 from telegram.bot import Bot
+from telegram.botcommand import BotCommand
 from telegram.ext import Handler
 from typing import Callable
 
@@ -73,10 +74,12 @@ class ModuleInterface(BinderInterface):
 	- remove_user: Function called when a bot disable the module
 	- handlers: python-telegram-bot handlers
 	- ioctl: Function to handle IOCTL
+	- commands_help: A list of BotCommand objects
 	"""
 	add_user: Callable[[ModuleInterface, Bot], None] = lambda self, bot: None
 	remove_user: Callable[[ModuleInterface, Bot], None] = lambda self, bot: None
 	handlers: list[Handler] = []
 	ioctl: Callable[[ModuleInterface, int, dict], IOCTLReturn] = lambda self, ioctl, data: IOCTLReturn.NO_IOCTL
+	commands_help: list[BotCommand] = {}
 
 mdlbinder = Binder(ModuleInterface)
