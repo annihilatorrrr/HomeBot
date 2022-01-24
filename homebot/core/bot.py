@@ -9,30 +9,15 @@ from telegram.ext import ContextTypes, Updater
 from threading import Lock
 
 class _ModuleStatus:
-	(
-		_DISABLED,
-		_ENABLED,
-		_ENABLING,
-		_DISABLING,
-		_ERROR,
-	) = range(5)
-
-	STRINGS = {
-		_DISABLED: "Disabled",
-		_ENABLED: "Enabled",
-		_ENABLING: "Enabling",
-		_DISABLING: "Disabling",
-		_ERROR: "Error",
-	}
-
-	def __init__(self, status: int):
+	def __init__(self, status: int, string: str):
 		self.status = status
+		self.string = string
 
 	def __int__(self):
 		return self.status
 
 	def __str__(self) -> str:
-		return self.STRINGS[self.status]
+		return self.string
 
 class ModuleStatus(_ModuleStatus):
 	"""
@@ -41,11 +26,19 @@ class ModuleStatus(_ModuleStatus):
 	This class indicates the status of a HomeBot module for the bot.
 	Can be casted to int and str.
 	"""
-	DISABLED = _ModuleStatus(_ModuleStatus._DISABLED)
-	ENABLED = _ModuleStatus(_ModuleStatus._ENABLED)
-	ENABLING = _ModuleStatus(_ModuleStatus._ENABLING)
-	DISABLING = _ModuleStatus(_ModuleStatus._DISABLING)
-	ERROR = _ModuleStatus(_ModuleStatus._ERROR)
+	(
+		_DISABLED,
+		_ENABLED,
+		_ENABLING,
+		_DISABLING,
+		_ERROR,
+	) = range(5)
+
+	DISABLED = _ModuleStatus(_DISABLED, "Disabled")
+	ENABLED = _ModuleStatus(_ENABLED, "Enabled")
+	ENABLING = _ModuleStatus(_ENABLING, "Enabling")
+	DISABLING = _ModuleStatus(_DISABLING, "Disabling")
+	ERROR = _ModuleStatus(_ERROR, "Error")
 
 BOT_DATA_HOMEBOT = "homebot"
 
