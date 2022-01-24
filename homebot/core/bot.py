@@ -80,8 +80,6 @@ class HomeBot(Updater):
 		LOGI(f"Enabling module {module_name}")
 
 		module = mdlbinder.get_interface(module_name)
-		if module is None:
-			raise ModuleNotFoundError(f"Module {module_name} not found")
 
 		with self.modules_lock:
 			if not module_name in self.modules:
@@ -116,8 +114,6 @@ class HomeBot(Updater):
 		LOGI(f"Disabling module {module_name}")
 
 		module = mdlbinder.get_interface(module_name)
-		if module is None:
-			raise ModuleNotFoundError(f"Module {module_name} not found")
 
 		with self.modules_lock:
 			if not module_name in self.modules:
