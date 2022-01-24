@@ -25,6 +25,17 @@ def import_modules(modules_path: Path):
 			     f"{format_exception(e)}")
 
 class _IOCTLReturn:
+	def __init__(self, status: int, string: str):
+		self.status = status
+		self.string = string
+
+	def __int__(self):
+		return self.status
+
+	def __str__(self) -> str:
+		return self.string
+
+class IOCTLReturn(_IOCTLReturn):
 	(
 		_OK,
 		_MODULE_NOT_FOUND,
@@ -33,29 +44,11 @@ class _IOCTLReturn:
 		_MODULE_SPECIFIC_ERROR,
 	) = range(5)
 
-	STRINGS = {
-		_OK: "IOCTL handled successfully",
-		_MODULE_NOT_FOUND: "Requested module isn't registered",
-		_NO_IOCTL: "The module doesn't support IOCTL",
-		_NOT_SUPPORTED: "IOCTL value not supported",
-		_MODULE_SPECIFIC_ERROR: "Module-specific error",
-	}
-
-	def __init__(self, status: int):
-		self.status = status
-
-	def __int__(self):
-		return self.status
-
-	def __str__(self) -> str:
-		return self.STRINGS[self.status]
-
-class IOCTLReturn(_IOCTLReturn):
-	OK = _IOCTLReturn(_IOCTLReturn._OK)
-	MODULE_NOT_FOUND = _IOCTLReturn(_IOCTLReturn._MODULE_NOT_FOUND)
-	NO_IOCTL = _IOCTLReturn(_IOCTLReturn._NO_IOCTL)
-	NOT_SUPPORTED = _IOCTLReturn(_IOCTLReturn._NOT_SUPPORTED)
-	MODULE_SPECIFIC_ERROR = _IOCTLReturn(_IOCTLReturn._MODULE_SPECIFIC_ERROR)
+	OK = _IOCTLReturn(_OK, "IOCTL handled successfully")
+	MODULE_NOT_FOUND = _IOCTLReturn(_MODULE_NOT_FOUND, "Requested module isn't registered")
+	NO_IOCTL = _IOCTLReturn(_NO_IOCTL, "The module doesn't support IOCTL")
+	NOT_SUPPORTED = _IOCTLReturn(_NOT_SUPPORTED, "IOCTL value not supported")
+	MODULE_SPECIFIC_ERROR = _IOCTLReturn(_MODULE_SPECIFIC_ERROR, "Module-specific error")
 
 def mdlintf_ioctl(module_name: str, ioctl: int, data: dict) -> IOCTLReturn:
 	"""
