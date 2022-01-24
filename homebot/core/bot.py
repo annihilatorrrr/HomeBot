@@ -99,6 +99,8 @@ class HomeBot(Updater):
 				self.modules[module_name] = ModuleStatus.ENABLED
 				LOGI(f"Module {module_name} enabled")
 
+		self.set_my_commands()
+
 	def disable_module(self, module_name: str):
 		"""
 		Disable a provided module and remove its command handler
@@ -130,6 +132,22 @@ class HomeBot(Updater):
 			else:
 				self.modules[module_name] = ModuleStatus.DISABLED
 				LOGI(f"Module {module_name} disabled")
+
+		self.set_my_commands()
+
+	def set_my_commands(self):
+		"""Set the bot's own commands based on the enabled handlers."""
+		commands = []
+
+		with self.modules_lock:
+			for module_name in self.modules:
+				if not (self.modules[module_name] is ModuleStatus.ENABLED):
+					continue
+
+				module = mdlbinder.get_interface(module_name)
+				commands.extend(module.commands_help)
+
+		self.bot.set_my_commands(commands)
 
 	def restart(self):
 		"""Restart the bot."""
