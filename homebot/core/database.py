@@ -102,14 +102,16 @@ class HomeBotDatabase:
 
 		if not '.' in k:
 			if cls.__has(k) and isinstance(cls.__get(k), dict):
-					cls.__get(k).update(v)
+				cls.__get(k).update(v)
 			else:
 				cls.__dict[k] = v
 		else:
 			d = v
+			current_subkey = ""
 			for subkey in k.split('.')[::-1]:
 				d = {subkey: d}
-				subkey_full = k.removesuffix(f".{subkey}")
+				current_subkey = f".{subkey}" if not current_subkey else f".{subkey}{current_subkey}"
+				subkey_full = k.removesuffix(current_subkey)
 				if cls.__has(subkey_full) and isinstance(cls.__get(subkey_full), dict):
 					cls.__get(subkey_full).update(d)
 					d = cls.__get(subkey_full)
