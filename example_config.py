@@ -29,10 +29,6 @@ config = {
 			# Bot token
 			# type: str
 			"token": "",
-
-			# Channel webhook URL
-			# type: str
-			"webhook_url": "",
 		},
 
 		"matrix": {

@@ -1,5 +1,6 @@
 from __future__ import annotations
-from discord import Client, Embed, File as DiscordFile, RequestsWebhookAdapter, Webhook
+import asyncio
+from discord import Client, Embed, File as DiscordFile, TextChannel
 from discord import Attachment, Message as DiscordMessage, User as DiscordUser
 from homebot.core.config import get_config
 from homebot.lib.liblogging import LOGE
@@ -14,7 +15,6 @@ from threading import Thread
 ENABLE = get_config("bridgey.discord.enable", False)
 CHANNEL_ID = get_config("bridgey.discord.channel_id", None)
 TOKEN = get_config("bridgey.discord.token", "")
-WEBHOOK_URL = get_config("bridgey.discord.webhook_url", "")
 
 class BridgeyDiscordClient(Client):
 	"""Discord client that pass the message to DiscordPlatform."""
@@ -24,15 +24,30 @@ class BridgeyDiscordClient(Client):
 
 		self.platform = platform
 
+	async def on_ready(self):
+		channel = self.get_channel(CHANNEL_ID)
+
+		if not channel:
+			LOGE(f"Failed to get channel {CHANNEL_ID}")
+			return
+
+		if not isinstance(channel, TextChannel):
+			LOGE(f"Channel {CHANNEL_ID} is not a text channel")
+			return
+
+		self.platform.channel = channel
+
 	async def on_message(self, message: DiscordMessage):
 		if message.author == self.user:
 			return
 		if message.channel.id != CHANNEL_ID:
 			return
-		if message.webhook_id and (self.platform.webhook.id == message.webhook_id):
-			return
 
 		self.platform.on_message(self.platform.message_to_generic(message))
+
+	def run_coroutine(self, coroutine):
+		"""Run a coroutine in the client's loop."""
+		return asyncio.run_coroutine_threadsafe(coroutine, self.loop).result()
 
 class DiscordPlatform(PlatformBase):
 	"""Discord platform."""
@@ -46,17 +61,11 @@ class DiscordPlatform(PlatformBase):
 		"""Initialize the platform."""
 		super().__init__(coordinator)
 
-		self.webhook = None
 		self.client = None
+		self.channel = None
 		self.thread = None
 
-		if not (ENABLE and CHANNEL_ID and TOKEN and WEBHOOK_URL):
-			return
-
-		try:
-			self.webhook = Webhook.from_url(WEBHOOK_URL, adapter=RequestsWebhookAdapter())
-		except Exception as e:
-			LOGE(f"Failed to create webhook: {e}")
+		if not (ENABLE and CHANNEL_ID and TOKEN):
 			return
 
 		self.client = BridgeyDiscordClient(self)
@@ -69,7 +78,7 @@ class DiscordPlatform(PlatformBase):
 
 	@property
 	def running(self) -> bool:
-		return bool(self.thread) and self.thread.is_alive() and self.webhook is not None
+		return bool(self.thread) and self.thread.is_alive() and self.channel is not None
 
 	def file_to_generic(self, file: FILE_TYPE) -> Message:
 		return File(platform=DiscordPlatform,
@@ -114,10 +123,6 @@ class DiscordPlatform(PlatformBase):
 		if not self.running:
 			return
 
-		if not self.webhook:
-			LOGE("Webhook is None")
-			return
-
 		content = message.text
 		title = ""
 		description = ""
@@ -129,6 +134,8 @@ class DiscordPlatform(PlatformBase):
 			description = message.sticker_emoji
 
 		embed = Embed(title=title, description=description, timestamp=message.timestamp)
+		embed.set_author(name=str(message.user), url=message.user.url,
+		                 icon_url=message.user.avatar_url)
 		embed.set_footer(text=message.platform.NAME, icon_url=message.platform.ICON_URL)
 
 		if message.file:
@@ -148,7 +155,6 @@ class DiscordPlatform(PlatformBase):
 				file = DiscordFile(BytesIO(r.content), filename=message.file.name)
 
 		try:
-			self.webhook.send(username=str(message.user), avatar_url=message.user.avatar_url,
-			                  content=content, embed=embed, file=file)
+			self.client.run_coroutine(self.channel.send(content=content, embed=embed, file=file))
 		except Exception as e:
 			LOGE(f"Failed to send message to Discord: {e}")
