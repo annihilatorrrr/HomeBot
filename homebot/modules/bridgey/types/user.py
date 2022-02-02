@@ -10,17 +10,20 @@ class User:
 	- platform (PlatformBase): The platform this user is from
 	- name: The user's name
 	- username: The user's username
+	- url: The user's URL
 	- avatar_url: The user's avatar URL
 	"""
 	def __init__(self,
 	             platform: PlatformBase,
 	             name: str,
 	             username: str = "",
+	             url: str = "",
 	             avatar_url: str = "",
 	            ):
 		self.platform = platform
 		self.name = name
 		self.username = username
+		self.url = url
 		self.avatar_url = avatar_url
 
 		if not self.avatar_url and self.platform.ICON_URL:
