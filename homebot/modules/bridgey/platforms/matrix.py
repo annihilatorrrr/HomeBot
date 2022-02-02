@@ -81,6 +81,7 @@ class MatrixPlatform(PlatformBase):
 		avatar_url = self.client.api.get_avatar_url(user)
 		return User(platform=MatrixPlatform,
 		            name=user,
+					url=f"https://matrix.to/#/{user}",
 		            avatar_url=self.client.api.get_download_url(avatar_url))
 
 	def message_to_generic(self, message: MESSAGE_TYPE) -> Message:

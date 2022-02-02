@@ -88,6 +88,7 @@ class DiscordPlatform(PlatformBase):
 	def user_to_generic(self, user: USER_TYPE) -> User:
 		return User(platform=DiscordPlatform,
 		            name=f"{user.name}#{user.discriminator}",
+					url=f"https://discordapp.com/users/{user.id}",
 					avatar_url=user.avatar)
 
 	def message_to_generic(self, message: MESSAGE_TYPE) -> Message:
