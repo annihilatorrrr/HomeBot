@@ -46,7 +46,7 @@ class TelegramPlatform(PlatformBase):
 		return User(platform=TelegramPlatform,
 		            name=user.full_name,
 		            username=user.username,
-					url=f"https://t.me/{user.username}" if user.username else f"tg://user?id={user.id}",
+					url=f"https://t.me/{user.username}" if user.username else "",
 		            avatar_url=avatar_url)
 
 	def message_to_generic(self, message: MESSAGE_TYPE) -> Message:
