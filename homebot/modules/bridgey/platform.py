@@ -1,3 +1,4 @@
+from colour import Color
 from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message
 from homebot.modules.bridgey.types.user import User
@@ -8,6 +9,8 @@ class PlatformBase:
 	NAME: str = None
 	# The icon of the platform, used to indicate platform and as a fallback for user avatar
 	ICON_URL: str = None
+	# The main accent color of the platform
+	ACCENT_COLOR: Color = None
 	# The "native" file type of the platform
 	FILE_TYPE: type = File
 	# The "native" message type of the platform
