@@ -24,6 +24,9 @@ DATA_IS_VALID = bool(ENABLE and USERNAME and PASSWORD and HOMESERVER_URL and ROO
 class MatrixPlatform(PlatformBase):
 	NAME = "Matrix"
 	ICON_URL = "https://matrix.org/blog/wp-content/uploads/2015/01/logo1.png"
+	FILE_TYPE = str
+	MESSAGE_TYPE = dict
+	USER_TYPE = str
 
 	def __init__(self, coordinator):
 		super().__init__(coordinator)
@@ -70,7 +73,17 @@ class MatrixPlatform(PlatformBase):
 	def running(self):
 		return DATA_IS_VALID and self.thread and self.thread.is_alive()
 
-	def message_to_generic(self, message: dict) -> Message:
+	def file_to_generic(self, file: FILE_TYPE) -> Message:
+		return File(platform=MatrixPlatform,
+		            url=self.client.api.get_download_url(file))
+
+	def user_to_generic(self, user: USER_TYPE) -> User:
+		avatar_url = self.client.api.get_avatar_url(user)
+		return User(platform=MatrixPlatform,
+		            name=user,
+		            avatar_url=self.client.api.get_download_url(avatar_url))
+
+	def message_to_generic(self, message: MESSAGE_TYPE) -> Message:
 		content = message["content"]
 
 		if content["msgtype"] == "m.text":
@@ -91,14 +104,10 @@ class MatrixPlatform(PlatformBase):
 		else:
 			text = ""
 
-		avatar_url = self.client.api.get_avatar_url(message["sender"])
-		user = User(platform=MatrixPlatform,
-		            name=message["sender"],
-					avatar_url=self.client.api.get_download_url(avatar_url))
+		user = self.user_to_generic(message["sender"])
 
 		if "url" in content:
-			file = File(platform=MatrixPlatform,
-			            url=self.client.api.get_download_url(content["url"]))
+			file = self.file_to_generic(content["url"])
 		else:
 			file = None
 
