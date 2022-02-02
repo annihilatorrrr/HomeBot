@@ -43,10 +43,14 @@ class PlatformBase:
 		"""Convert a platform-specific message object to a generic message."""
 		raise NotImplementedError
 
-	def on_message(self, message: Message) -> None:
-		"""A new message has been received and must be sent to other bridges."""
-		self.coordinator.handle_message(message)
+	def on_message(self, message: Message) -> int:
+		"""A new message has been received and must be sent to other bridges.
 
-	def send_message(self, message: Message) -> None:
+		Returns the common ID assigned by the coordinator. The platform
+		must save this ID to be able to identify the message later.
+		"""
+		return self.coordinator.handle_message(message)
+
+	def send_message(self, message: Message, message_id: int) -> None:
 		"""Send a message to the platform."""
 		raise NotImplementedError

@@ -94,6 +94,7 @@ class Message:
 	- text: The text of the message, can be empty
 	- file: The file of the message if message type requires it (see File class)
 	- sticker_emoji: The emoji associated with a sticker, applicable only to MessageType.STICKER
+	- reply_to: The generic message ID of the message which this message is a reply to, None otherwise
 	"""
 	def __init__(self,
 	             platform: PlatformBase,
@@ -103,6 +104,7 @@ class Message:
 	             text: str = "",
 	             file: File = None,
 	             sticker_emoji: str = "",
+				 reply_to: int = None,
 	            ):
 		"""Initialize the message."""
 		self.platform = platform
@@ -112,3 +114,4 @@ class Message:
 		self.text = text
 		self.file = file
 		self.sticker_emoji = sticker_emoji
+		self.reply_to = reply_to

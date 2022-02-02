@@ -3,6 +3,7 @@ import asyncio
 from discord import Client, Embed, File as DiscordFile, TextChannel
 from discord import Attachment, Message as DiscordMessage, User as DiscordUser
 from homebot.core.config import get_config
+from homebot.core.database import HomeBotDatabase
 from homebot.lib.liblogging import LOGE
 from homebot.modules.bridgey.platform import PlatformBase
 from homebot.modules.bridgey.types.file import File
@@ -43,7 +44,8 @@ class BridgeyDiscordClient(Client):
 		if message.channel.id != CHANNEL_ID:
 			return
 
-		self.platform.on_message(self.platform.message_to_generic(message))
+		message_id = self.platform.on_message(self.platform.message_to_generic(message))
+		HomeBotDatabase.set(f"bridgey.messages.{message_id}.{self.platform.NAME}", message.id)
 
 	def run_coroutine(self, coroutine):
 		"""Run a coroutine in the client's loop."""
@@ -95,6 +97,7 @@ class DiscordPlatform(PlatformBase):
 		message_type = MessageType.TEXT
 		text = message.content
 		file = None
+		reply_to = None
 
 		if message.attachments:
 			message_type = MessageType.DOCUMENT
@@ -113,14 +116,26 @@ class DiscordPlatform(PlatformBase):
 				for attachment in message.attachments[1:]:
 					text += f"\n - {attachment.url}"
 
+		if message.reference and HomeBotDatabase.has(f"bridgey.messages"):
+			for message_id, message_platforms_id in HomeBotDatabase.get(f"bridgey.messages").items():
+				if not self.NAME in message_platforms_id:
+					continue
+
+				if message_platforms_id[self.NAME] != message.reference.message_id:
+					continue
+
+				reply_to = message_id
+				break
+
 		return Message(platform=DiscordPlatform,
 		               message_type=message_type,
 		               user=self.user_to_generic(message.author),
 					   timestamp=message.created_at,
 		               text=text,
-					   file=self.file_to_generic(file) if file else None)
+					   file=self.file_to_generic(file) if file else None,
+					   reply_to=reply_to)
 
-	def send_message(self, message: Message) -> None:
+	def send_message(self, message: Message, message_id: int) -> None:
 		if not self.running:
 			return
 
@@ -155,7 +170,18 @@ class DiscordPlatform(PlatformBase):
 
 				file = DiscordFile(BytesIO(r.content), filename=message.file.name)
 
+		if message.reply_to and HomeBotDatabase.has(f"bridgey.messages.{message.reply_to}.{self.NAME}"):
+			reference = self.channel.get_partial_message(HomeBotDatabase.get(f"bridgey.messages.{message.reply_to}.{self.NAME}"))
+		else:
+			reference = None
+
 		try:
-			self.client.run_coroutine(self.channel.send(content=content, embed=embed, file=file))
+			discord_message = self.client.run_coroutine(self.channel.send(content=content,
+			                                                              embed=embed,
+			                                                              file=file,
+			                                                              reference=reference))
 		except Exception as e:
 			LOGE(f"Failed to send message to Discord: {e}")
+			return
+
+		HomeBotDatabase.set(f"bridgey.messages.{message_id}.{self.NAME}", discord_message.id)

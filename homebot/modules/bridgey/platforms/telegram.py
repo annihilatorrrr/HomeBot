@@ -1,4 +1,5 @@
 from homebot.core.config import get_config
+from homebot.core.database import HomeBotDatabase
 from homebot.lib.libexception import format_exception
 from homebot.lib.liblogging import LOGE, LOGI
 from homebot.modules.bridgey.platform import PlatformBase
@@ -53,6 +54,8 @@ class TelegramPlatform(PlatformBase):
 		text = ""
 		file = None
 		sticker_emoji = ""
+		reply_to = None
+
 		if message.text:
 			message_type = MessageType.TEXT
 			text = message.text
@@ -79,15 +82,27 @@ class TelegramPlatform(PlatformBase):
 		else:
 			message_type = MessageType.UNKNOWN
 
+		if message.reply_to_message and HomeBotDatabase.has(f"bridgey.messages"):
+			for message_id, message_platforms_id in HomeBotDatabase.get(f"bridgey.messages").items():
+				if not self.NAME in message_platforms_id:
+					continue
+
+				if message_platforms_id[self.NAME] != message.reply_to_message.message_id:
+					continue
+
+				reply_to = message_id
+				break
+
 		return Message(platform=TelegramPlatform,
 		               message_type=message_type,
 		               user=self.user_to_generic(message.from_user),
 		               timestamp=message.date,
 		               text=text if text else "",
 		               file=self.file_to_generic(file) if file else None,
-					   sticker_emoji=sticker_emoji)
+					   sticker_emoji=sticker_emoji,
+		               reply_to=reply_to)
 
-	def send_message(self, message: Message) -> None:
+	def send_message(self, message: Message, message_id: int) -> None:
 		text = f"[{message.platform.NAME}] {message.user}:"
 		if message.text:
 			text += f"\n{message.text}"
@@ -99,27 +114,34 @@ class TelegramPlatform(PlatformBase):
 				LOGE(f"Failed to download file: {e}")
 				return
 
+		if message.reply_to and HomeBotDatabase.has(f"bridgey.messages.{message.reply_to}.{self.NAME}"):
+			reply_to_message_id = HomeBotDatabase.get(f"bridgey.messages.{message.reply_to}.{self.NAME}")
+		else:
+			reply_to_message_id = None
+
 		for bot in posters:
 			try:
 				if message.message_type == MessageType.TEXT:
-					bot.send_message(chat_id=CHAT_ID, text=text)
+					telegram_message = bot.send_message(chat_id=CHAT_ID, text=text, reply_to_message_id=reply_to_message_id)
 				elif message.message_type == MessageType.IMAGE:
-					bot.send_photo(chat_id=CHAT_ID, photo=r.content, filename=message.file.name, caption=text)
+					telegram_message = bot.send_photo(chat_id=CHAT_ID, photo=r.content, filename=message.file.name, caption=text, reply_to_message_id=reply_to_message_id)
 				elif message.message_type == MessageType.VIDEO:
-					bot.send_video(chat_id=CHAT_ID, video=r.content, filename=message.file.name, caption=text)
+					telegram_message = bot.send_video(chat_id=CHAT_ID, video=r.content, filename=message.file.name, caption=text, reply_to_message_id=reply_to_message_id)
 				elif message.message_type == MessageType.AUDIO:
-					bot.send_audio(chat_id=CHAT_ID, audio=r.content, filename=message.file.name, caption=text)
+					telegram_message = bot.send_audio(chat_id=CHAT_ID, audio=r.content, filename=message.file.name, caption=text, reply_to_message_id=reply_to_message_id)
 				elif message.message_type == MessageType.DOCUMENT:
-					bot.send_document(chat_id=CHAT_ID, document=r.content, filename=message.file.name, caption=text)
+					telegram_message = bot.send_document(chat_id=CHAT_ID, document=r.content, filename=message.file.name, caption=text, reply_to_message_id=reply_to_message_id)
 				elif message.message_type == MessageType.STICKER:
-					bot.send_sticker(chat_id=CHAT_ID, sticker=r.content)
+					telegram_message = bot.send_sticker(chat_id=CHAT_ID, sticker=r.content, reply_to_message_id=reply_to_message_id)
 				elif message.message_type == MessageType.ANIMATION:
-					bot.send_animation(chat_id=CHAT_ID, animation=r.content, filename=message.file.name, caption=text)
+					telegram_message = bot.send_animation(chat_id=CHAT_ID, animation=r.content, filename=message.file.name, caption=text, reply_to_message_id=reply_to_message_id)
 				else:
 					LOGI(f"Unknown message type: {message.message_type}")
 			except Exception as e:
 				LOGI(f"Failed to send message: {format_exception(e)}, retrying with different bot")
 				print(message.file_url)
 				continue
+
+			HomeBotDatabase.set(f"bridgey.messages.{message_id}.{self.NAME}", telegram_message.message_id)
 
 			break

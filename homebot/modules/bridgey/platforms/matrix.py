@@ -86,6 +86,10 @@ class MatrixPlatform(PlatformBase):
 
 	def message_to_generic(self, message: MESSAGE_TYPE) -> Message:
 		content = message["content"]
+		message_type = MessageType.UNKNOWN
+		text = ""
+		file = None
+		reply_to = None
 
 		if content["msgtype"] == "m.text":
 			message_type = MessageType.TEXT
@@ -97,38 +101,46 @@ class MatrixPlatform(PlatformBase):
 			message_type = MessageType.AUDIO
 		elif content["msgtype"] == "m.file":
 			message_type = MessageType.DOCUMENT
-		else:
-			message_type = MessageType.UNKNOWN
 
 		if "body" in content:
 			text = content["body"]
-		else:
-			text = ""
 
 		user = self.user_to_generic(message["sender"])
 
 		if "url" in content:
 			file = self.file_to_generic(content["url"])
-		else:
-			file = None
+
+		if ("m.relates_to" in content and "m.in_reply_to" in content["m.relates_to"]
+		    and "event_id" in content["m.relates_to"]["m.in_reply_to"]
+			and HomeBotDatabase.has(f"bridgey.messages")):
+			in_reply_to = content['m.relates_to']['m.in_reply_to']['event_id']
+			for message_id, message_platforms_id in HomeBotDatabase.get(f"bridgey.messages").items():
+				if not self.NAME in message_platforms_id:
+					continue
+
+				if message_platforms_id[self.NAME] != in_reply_to:
+					continue
+
+				reply_to = message_id
+				break
 
 		return Message(platform=MatrixPlatform,
 		               message_type=message_type,
 		               user=user,
 		               timestamp=datetime.now(),
 		               text=text,
-		               file=file)
+		               file=file,
+					   reply_to=reply_to)
 
 	def handle_msg(self, room: Room, event: dict):
 		# Make sure we didn't send this message
 		if event['sender'] == self.client.user_id:
 			return
 
-		message = self.message_to_generic(event)
+		message_id = self.on_message(self.message_to_generic(event))
+		HomeBotDatabase.set(f"bridgey.messages.{message_id}.{self.NAME}", event["event_id"])
 
-		self.on_message(message)
-
-	def send_message(self, message: Message):
+	def send_message(self, message: Message, message_id: int):
 		if not self.running:
 			return
 
@@ -152,15 +164,17 @@ class MatrixPlatform(PlatformBase):
 			url = None
 
 		if message.message_type is MessageType.TEXT:
-			self.room.send_text(text)
+			matrix_message = self.room.send_text(text)
 		elif message.message_type is MessageType.IMAGE or message.message_type is MessageType.STICKER:
-			self.room.send_image(url, message.file.name, body=text)
+			matrix_message = self.room.send_image(url, message.file.name, body=text)
 		elif message.message_type is MessageType.VIDEO or message.message_type is MessageType.ANIMATION:
-			self.room.send_video(url, message.file.name,body=text)
+			matrix_message = self.room.send_video(url, message.file.name,body=text)
 		elif message.message_type is MessageType.AUDIO:
-			self.room.send_audio(url, message.file.name, body=text)
+			matrix_message = self.room.send_audio(url, message.file.name, body=text)
 		elif message.message_type is MessageType.DOCUMENT:
-			self.room.send_file(url, message.file.name, body=text)
+			matrix_message = self.room.send_file(url, message.file.name, body=text)
 		else:
 			LOGE(f"Unknown message type: {message.message_type}")
 			return
+
+		HomeBotDatabase.set(f"bridgey.messages.{message_id}.{self.NAME}", matrix_message["event_id"])

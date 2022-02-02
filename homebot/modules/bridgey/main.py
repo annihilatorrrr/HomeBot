@@ -1,4 +1,5 @@
 from telegram.bot import Bot
+from homebot.core.database import HomeBotDatabase
 from homebot.modules.bridgey.coordinator import Coordinator
 from homebot.modules.bridgey.platforms.telegram import TelegramPlatform, posters, CHAT_ID
 from telegram.ext import CallbackContext
@@ -21,7 +22,8 @@ def handle_telegram_update(update: Update, context: CallbackContext):
 	if (update.message.chat.username != CHAT_ID) and (update.message.chat.id != CHAT_ID):
 		return
 
-	telegramplatform.on_message(telegramplatform.message_to_generic(update.message))
+	message_id = telegramplatform.on_message(telegramplatform.message_to_generic(update.message))
+	HomeBotDatabase.set(f"bridgey.messages.{message_id}.{telegramplatform.NAME}", update.message.message_id)
 
 def bridgey(update: Update, context: CallbackContext):
 	reply = "Bridgey status:"
