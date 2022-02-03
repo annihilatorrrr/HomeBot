@@ -139,13 +139,11 @@ class DiscordPlatform(PlatformBase):
 		if not self.running:
 			return
 
-		content = message.text
 		title = ""
-		description = ""
+		description = message.text
 		file = None
 
 		if message.message_type is MessageType.STICKER:
-			content = ""
 			title = "Sticker"
 			description = message.sticker_emoji
 
@@ -176,8 +174,7 @@ class DiscordPlatform(PlatformBase):
 			reference = None
 
 		try:
-			discord_message = self.client.run_coroutine(self.channel.send(content=content,
-			                                                              embed=embed,
+			discord_message = self.client.run_coroutine(self.channel.send(embed=embed,
 			                                                              file=file,
 			                                                              reference=reference))
 		except Exception as e:
