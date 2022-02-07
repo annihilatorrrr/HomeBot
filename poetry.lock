@@ -186,7 +186,7 @@ test = ["pytest (>=6.2.0)", "pytest-cov", "pytest-subtests", "pytest-xdist", "pr
 
 [[package]]
 name = "deepl"
-version = "1.4.0"
+version = "1.4.1"
 description = "Python library for the DeepL API."
 category = "main"
 optional = false
@@ -924,8 +924,8 @@ cryptography = [
     {file = "cryptography-35.0.0.tar.gz", hash = "sha256:9933f28f70d0517686bd7de36166dda42094eac49415459d9bdf5e7df3e0086d"},
 ]
 deepl = [
-    {file = "deepl-1.4.0-py3-none-any.whl", hash = "sha256:50945a389343ec396439e44957af1b9becbb701fb7f5db178a75fa368ce04d59"},
-    {file = "deepl-1.4.0.tar.gz", hash = "sha256:b3af9b3e44cbf9b100fef81ea5bd96dabe694ebc81bdb957e41cd6fd41ae3df2"},
+    {file = "deepl-1.4.1-py3-none-any.whl", hash = "sha256:6f60d107707d2692a12020dd9b490a16d7be56afe2e853d2d768635acc7b7700"},
+    {file = "deepl-1.4.1.tar.gz", hash = "sha256:d7272aed1dff7bc703ab8a52db9418aed91cb32e4b858a9cb1b7e180ead197e2"},
 ]
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
