@@ -27,8 +27,6 @@ class Poster:
 			f"Device wiki page: [Here]({escape_markdown(f'https://wiki.lineageos.org/devices/{codename}', 2)})\n"
 			f"Installation instructions: [Here]({escape_markdown(f'https://wiki.lineageos.org/devices/{codename}/install', 2)})\n"
 			f"\n"
-			f"Sources: {escape_markdown(GITHUB_ORG, 2)}\n"
-			f"\n"
 		)
 		if chat.username:
 			text += (
