@@ -4,6 +4,7 @@ from homebot.modules.lineageos_updates.poster import Poster
 from telegram.bot import Bot
 from telegram.ext import CallbackContext
 from telegram.update import Update
+from tempfile import TemporaryFile
 from typing import Callable
 
 _observer = Observer()
@@ -25,17 +26,28 @@ def enable(update: Update, context: CallbackContext):
 
 def info(update: Update, context: CallbackContext):
 	alive = _observer.thread.is_alive()
-	text = f"Enabled: {str(alive)}\n"
+	caption = (
+		"Status:\n"
+		f"Enabled: {str(alive)}\n"
+	)
+	text = ""
 	if alive:
+		caption += "List of devices:\n"
 		text += (
-			"Observed devices:\n"
 			"Device | Last post\n"
 		)
 		for device in _observer.last_device_post:
 			date = _observer.last_device_post[device]
 			text += f"{device} | {date.strftime('%Y/%m/%d, %H:%M:%S')}\n"
 
-	update.message.reply_text(text)
+	if text:
+		fd = TemporaryFile(mode='r+')
+		fd.write(text)
+		fd.seek(0)
+		update.message.reply_document(document=fd, filename="output.txt", caption=caption)
+		fd.close()
+	else:
+		update.message.reply_text(caption)
 
 # name: function
 COMMANDS: dict[str, Callable[[Update, CallbackContext], None]] = {
