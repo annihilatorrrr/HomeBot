@@ -196,8 +196,10 @@ class DeviceData:
 				dimensions = {}
 				for device, dimension_data in data["dimensions"]:
 					dimensions[device] = DimensionData.from_dict(dimension_data)
-			else:
+			elif isinstance(data["dimensions"], dict):
 				dimensions = DimensionData.from_dict(data["dimensions"])
+			else:
+				dimensions = None
 		else:
 			dimensions = None
 
