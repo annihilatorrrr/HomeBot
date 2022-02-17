@@ -1,6 +1,7 @@
 from datetime import datetime
 from homebot.core.config import get_config
 from homebot.lib.libexception import format_exception
+from homebot.lib.liblineage.hudson import get_lineage_build_targets
 from homebot.lib.liblineage.ota import get_nightlies
 from homebot.lib.liblogging import LOGE, LOGI
 from threading import Event, Thread
@@ -8,16 +9,15 @@ from time import sleep
 
 class Observer:
 	def __init__(self):
-		self.devices = get_config("lineageos_updates.devices", [])
 		self.last_device_post = {}
 		self.posters = {}
 
 		now = datetime.now()
-		for device in self.devices:
+		for device in [build_target.device for build_target in get_lineage_build_targets()]:
 			self.last_device_post[device] = now
 
 		self.event = Event()
-		if get_config("lineageos_updates.enable", False) and self.devices:
+		if get_config("lineageos_updates.enable", False):
 			self.event.set()
 
 		self.thread = Thread(target=self.daemon, name="LineageOS updates observer", daemon=True)
@@ -26,7 +26,7 @@ class Observer:
 	def daemon(self):
 		while True:
 			self.event.wait()
-			for device in self.devices:
+			for device in [build_target.device for build_target in get_lineage_build_targets()]:
 				try:
 					response = get_nightlies(device)
 				except Exception:
@@ -38,7 +38,7 @@ class Observer:
 				last_update = response[-1]
 
 				build_date = last_update.datetime
-				if build_date <= self.last_device_post[device]:
+				if device in self.last_device_post and build_date <= self.last_device_post[device]:
 					continue
 
 				self.last_device_post[device] = build_date

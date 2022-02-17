@@ -109,17 +109,8 @@ config = {
 		# type: bool
 		"enable": False,
 
-		# type: list[str]
-		"devices": [],
-
 		# type: str
 		"chat_id": "",
-
-		# type: str
-		"photo_url_base": "",
-
-		# type: str
-		"donation_link": "",
 	},
 
 	# Module - Politically correct

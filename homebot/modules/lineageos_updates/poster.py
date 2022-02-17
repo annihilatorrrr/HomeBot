@@ -1,4 +1,3 @@
-from homebot.core.database import HomeBotDatabase
 from homebot.lib.liblineage import GITHUB_ORG, LINEAGEOS_TO_ANDROID_VERSION
 from homebot.lib.liblineage.ota import FullUpdateInfo
 from homebot.lib.liblineage.wiki import get_device_data
@@ -12,48 +11,30 @@ class Poster:
 		self.bot = bot
 
 		self.chat_id = get_config("lineageos_updates.chat_id")
-		self.photo_url_base = get_config("lineageos_updates.photo_url_base")
-		self.donation_link = get_config("lineageos_updates.donation_link")
 
 		if not get_config("lineageos_updates.enable", False):
 			return
 
-		if not self.chat_id:
-			raise AssertionError("No chat ID defined")
-
-		if not self.photo_url_base:
-			raise AssertionError("No photo URL base defined")
-
 	def post(self, codename: str, update: FullUpdateInfo):
+		chat = self.bot.get_chat(chat_id=self.chat_id)
 		device_data = get_device_data(codename)
-		caption = (
-			f"{escape_markdown(f'#{codename}', 2)} \#lineageos {escape_markdown(f'#{LINEAGEOS_TO_ANDROID_VERSION[update.version].version_short.lower()}', 2)}\n"
-			f"LineageOS {escape_markdown(update.version, 2)} for {escape_markdown(device_data.name, 2)} {escape_markdown(f'({codename})', 2)}\n"
+		text = (
+			f"{escape_markdown(f'#{codename}', 2)} {escape_markdown(f'#{LINEAGEOS_TO_ANDROID_VERSION[update.version].version_short.lower()}', 2)}\n"
+			f"*LineageOS {escape_markdown(update.version, 2)} for {escape_markdown(device_data.name, 2)} {escape_markdown(f'({codename})', 2)}*\n"
 			f"\n"
-			f"⚡️Build date: {escape_markdown(update.datetime.strftime('%Y/%m/%d'), 2)}\n"
-			f"⚡️Download: [ROM & Recovery]({escape_markdown(f'https://download.lineageos.org/{codename}', 2)})\n"
+			f"Build date: {escape_markdown(update.datetime.strftime('%Y/%m/%d'), 2)}\n"
+			f"Download: [Here]({escape_markdown(f'https://download.lineageos.org/{codename}', 2)})\n"
+			f"Device wiki page: [Here]({escape_markdown(f'https://wiki.lineageos.org/devices/{codename}', 2)})\n"
+			f"Installation instructions: [Here]({escape_markdown(f'https://wiki.lineageos.org/devices/{codename}/install', 2)})\n"
 			f"\n"
 			f"Sources: {escape_markdown(GITHUB_ORG, 2)}\n"
 			f"\n"
 		)
-		if self.donation_link is not None:
-			caption += f"Wanna buy me a coffee? {escape_markdown(self.donation_link, 2)}"
+		if chat.username:
+			text += (
+				f"@{chat.username}\n"
+			)
 
-		message = self.bot.send_photo(chat_id=self.chat_id,
-		                              photo=f"{self.photo_url_base}/{codename}.png",
-		                              caption=caption,
-		                              parse_mode=ParseMode.MARKDOWN_V2)
-
-		if HomeBotDatabase.has(f"lineageos_updates.{codename}.last_message_id"):
-			message_id = HomeBotDatabase.get(f"lineageos_updates.{codename}.last_message_id")
-			try:
-				self.bot.unpin_chat_message(chat_id=self.chat_id, message_id=message_id)
-			except Exception:
-				pass
-
-		try:
-			message.pin(disable_notification=True)
-		except Exception:
-			pass
-
-		HomeBotDatabase.set(f"lineageos_updates.{codename}.last_message_id", message.message_id)
+		chat.send_message(chat_id=self.chat_id,
+		                  text=text,
+		                  parse_mode=ParseMode.MARKDOWN_V2)
