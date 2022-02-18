@@ -33,12 +33,14 @@ class Observer:
 					response = []
 
 				if not response:
+					LOGI(f"No updates for {device}")
 					continue
 
 				last_update = response[-1]
 
 				build_date = last_update.datetime
 				if device in self.last_device_post and build_date <= self.last_device_post[device]:
+					LOGI(f"No new updates for {device}")
 					continue
 
 				self.last_device_post[device] = build_date
