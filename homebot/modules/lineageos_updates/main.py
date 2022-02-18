@@ -25,7 +25,7 @@ def enable(update: Update, context: CallbackContext):
 	update.message.reply_text("Observer enabled")
 
 def info(update: Update, context: CallbackContext):
-	alive = _observer.thread.is_alive()
+	alive = _observer.thread.is_alive() and _observer.event.is_set()
 	caption = (
 		"Status:\n"
 		f"Enabled: {str(alive)}\n"
