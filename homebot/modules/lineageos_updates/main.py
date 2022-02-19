@@ -88,7 +88,7 @@ def set_start_date(update: Update, context: CallbackContext):
 		return
 
 	try:
-		date = datetime.fromtimestamp(context.args[1])
+		date = datetime.fromtimestamp(int(context.args[1]))
 	except Exception:
 		update.message.reply_text(f"Error: Invalid timestamp: {context.args[1]}")
 		return
