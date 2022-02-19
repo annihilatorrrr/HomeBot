@@ -15,8 +15,8 @@ class Poster:
 		if not get_config("lineageos_updates.enable", False):
 			return
 
-	def post(self, codename: str, update: FullUpdateInfo):
-		chat = self.bot.get_chat(chat_id=self.chat_id)
+	def post(self, codename: str, update: FullUpdateInfo, chat_id: str = None):
+		chat = self.bot.get_chat(chat_id=(chat_id if chat_id else self.chat_id))
 		device_data = get_device_data(codename)
 		text = (
 			f"{escape_markdown(f'#{codename}', 2)} {escape_markdown(f'#{LINEAGEOS_TO_ANDROID_VERSION[update.version].version_short.lower()}', 2)}\n"

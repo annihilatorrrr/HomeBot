@@ -51,12 +51,13 @@ def info(update: Update, context: CallbackContext):
 	else:
 		update.message.reply_text(caption)
 
-def post(update: Update, context: CallbackContext):
+def test_post(update: Update, context: CallbackContext):
 	if len(context.args) < 2:
 		update.message.reply_text("Error: No device provided")
 		return
 
 	device = context.args[1]
+	chat_id = update.message.chat_id
 
 	try:
 		response = get_nightlies(device)
@@ -73,7 +74,7 @@ def post(update: Update, context: CallbackContext):
 
 	for poster in _observer.posters.values():
 		try:
-			poster.post(device, last_update)
+			poster.post(device, last_update, chat_id)
 		except Exception:
 			pass
 		else:
@@ -102,8 +103,8 @@ COMMANDS: dict[str, Callable[[Update, CallbackContext], None]] = {
 	"disable": disable,
 	"enable": enable,
 	"info": info,
-	"post": post,
 	"set_start_date": set_start_date,
+	"test_post": test_post,
 }
 
 HELP_TEXT = (
