@@ -1,3 +1,4 @@
+from datetime import datetime
 from homebot.lib.libadmin import user_is_admin
 from homebot.lib.liblineage.ota import get_nightlies
 from homebot.modules.lineageos_updates.observer import Observer
@@ -81,12 +82,28 @@ def post(update: Update, context: CallbackContext):
 
 	update.message.reply_text(f"Error: Could not post {device} {build_date}")
 
+def set_start_date(update: Update, context: CallbackContext):
+	if not context.args:
+		update.message.reply_text("Error: No timestamp provided")
+		return
+
+	try:
+		date = datetime.fromtimestamp(context.args[0])
+	except Exception:
+		update.message.reply_text("Error: Invalid timestamp")
+		return
+
+	_observer.set_start_date(date)
+
+	update.message.reply_text(f"Start date set to {date.strftime('%Y/%m/%d, %H:%M:%S')}")
+
 # name: function
 COMMANDS: dict[str, Callable[[Update, CallbackContext], None]] = {
 	"disable": disable,
 	"enable": enable,
 	"info": info,
 	"post": post,
+	"set_start_date": set_start_date,
 }
 
 HELP_TEXT = (

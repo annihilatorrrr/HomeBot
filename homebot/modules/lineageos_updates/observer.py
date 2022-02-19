@@ -13,8 +13,7 @@ class Observer:
 		self.posters = {}
 
 		now = datetime.now()
-		for device in [build_target.device for build_target in get_lineage_build_targets()]:
-			self.last_device_post[device] = now
+		self.set_start_date(now)
 
 		self.event = Event()
 		if get_config("lineageos_updates.enable", False):
@@ -56,3 +55,7 @@ class Observer:
 
 			# Wait 10 minutes
 			sleep(10 * 60)
+
+	def set_start_date(self, date: datetime):
+		for device in [build_target.device for build_target in get_lineage_build_targets()]:
+			self.last_device_post[device] = date
