@@ -78,7 +78,6 @@ def test_post(update: Update, context: CallbackContext):
 		except Exception:
 			pass
 		else:
-			update.message.reply_text(f"Build {device} {build_date} posted successfully")
 			return
 
 	update.message.reply_text(f"Error: Could not post {device} {build_date}")

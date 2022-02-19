@@ -39,7 +39,6 @@ class Observer:
 
 				build_date = last_update.datetime
 				if device in self.last_device_post and build_date <= self.last_device_post[device]:
-					LOGI(f"No new updates for {device}")
 					continue
 
 				self.last_device_post[device] = build_date
@@ -50,8 +49,6 @@ class Observer:
 					except Exception as e:
 						LOGE(f"Failed to post {device} {build_date} build\n"
 						     f"{format_exception(e)}")
-					else:
-						LOGI(f"Build {device} {build_date} posted successfully")
 
 			# Wait 10 minutes
 			sleep(10 * 60)
