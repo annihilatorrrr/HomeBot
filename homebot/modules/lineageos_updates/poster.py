@@ -31,7 +31,7 @@ class Poster:
 		)
 		if chat.username:
 			text += (
-				f"@{chat.username}\n"
+				f"@{escape_markdown(chat.username, 2)}\n"
 			)
 
 		try:
