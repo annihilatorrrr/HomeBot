@@ -1,6 +1,7 @@
 from homebot.lib.liblineage import GITHUB_ORG, LINEAGEOS_TO_ANDROID_VERSION
 from homebot.lib.liblineage.ota import FullUpdateInfo
 from homebot.lib.liblineage.wiki import get_device_data
+from homebot.lib.liblogging import LOGE
 from homebot.core.config import get_config
 from telegram.bot import Bot
 from telegram.parsemode import ParseMode
@@ -33,4 +34,12 @@ class Poster:
 				f"@{chat.username}\n"
 			)
 
-		chat.send_message(text, parse_mode=ParseMode.MARKDOWN_V2)
+		try:
+			chat.send_message(text, parse_mode=ParseMode.MARKDOWN_V2)
+		except Exception as e:
+			LOGE(
+				f"Error: {e}\n"
+				f"{text}\n"
+			)
+			# Reraise exception
+			raise e
