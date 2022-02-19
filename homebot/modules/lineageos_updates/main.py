@@ -90,7 +90,7 @@ def set_start_date(update: Update, context: CallbackContext):
 	try:
 		date = datetime.fromtimestamp(context.args[1])
 	except Exception:
-		update.message.reply_text("Error: Invalid timestamp")
+		update.message.reply_text(f"Error: Invalid timestamp: {context.args[1]}")
 		return
 
 	_observer.set_start_date(date)
