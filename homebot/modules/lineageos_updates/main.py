@@ -1,4 +1,5 @@
 from homebot.lib.libadmin import user_is_admin
+from homebot.lib.liblineage.ota import get_nightlies
 from homebot.modules.lineageos_updates.observer import Observer
 from homebot.modules.lineageos_updates.poster import Poster
 from telegram.bot import Bot
@@ -49,11 +50,43 @@ def info(update: Update, context: CallbackContext):
 	else:
 		update.message.reply_text(caption)
 
+def post(update: Update, context: CallbackContext):
+	if not context.args:
+		update.message.reply_text("Error: No device provided")
+		return
+
+	device = context.args[0]
+
+	try:
+		response = get_nightlies(device)
+	except Exception:
+		response = []
+
+	if not response:
+		update.message.reply_text(f"No updates for {device}")
+		return
+
+	last_update = response[-1]
+
+	build_date = last_update.datetime
+
+	for poster in _observer.posters.values():
+		try:
+			poster.post(device, last_update)
+		except Exception:
+			pass
+		else:
+			update.message.reply_text(f"Build {device} {build_date} posted successfully")
+			return
+
+	update.message.reply_text(f"Error: Could not post {device} {build_date}")
+
 # name: function
 COMMANDS: dict[str, Callable[[Update, CallbackContext], None]] = {
 	"disable": disable,
 	"enable": enable,
 	"info": info,
+	"post": post,
 }
 
 HELP_TEXT = (
