@@ -33,6 +33,4 @@ class Poster:
 				f"@{chat.username}\n"
 			)
 
-		chat.send_message(chat_id=self.chat_id,
-		                  text=text,
-		                  parse_mode=ParseMode.MARKDOWN_V2)
+		chat.send_message(text, parse_mode=ParseMode.MARKDOWN_V2)
