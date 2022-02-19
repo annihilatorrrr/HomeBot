@@ -52,11 +52,11 @@ def info(update: Update, context: CallbackContext):
 		update.message.reply_text(caption)
 
 def post(update: Update, context: CallbackContext):
-	if not context.args:
+	if len(context.args) < 2:
 		update.message.reply_text("Error: No device provided")
 		return
 
-	device = context.args[0]
+	device = context.args[1]
 
 	try:
 		response = get_nightlies(device)
@@ -83,12 +83,12 @@ def post(update: Update, context: CallbackContext):
 	update.message.reply_text(f"Error: Could not post {device} {build_date}")
 
 def set_start_date(update: Update, context: CallbackContext):
-	if not context.args:
+	if len(context.args) < 2:
 		update.message.reply_text("Error: No timestamp provided")
 		return
 
 	try:
-		date = datetime.fromtimestamp(context.args[0])
+		date = datetime.fromtimestamp(context.args[1])
 	except Exception:
 		update.message.reply_text("Error: Invalid timestamp")
 		return
