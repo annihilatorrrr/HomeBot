@@ -21,7 +21,7 @@ class Poster:
 		device_data = get_device_data(codename)
 		text = (
 			f"{escape_markdown(f'#{codename}', 2)} {escape_markdown(f'#{LINEAGEOS_TO_ANDROID_VERSION[update.version].version_short.lower()}', 2)}\n"
-			f"*LineageOS {escape_markdown(update.version, 2)} for {escape_markdown(device_data.name, 2)} {escape_markdown(f'({codename})', 2)}*\n"
+			f"*LineageOS {escape_markdown(update.version, 2)} for {escape_markdown(device_data.vendor, 2)} {escape_markdown(device_data.name, 2)} {escape_markdown(f'({codename})', 2)}*\n"
 			f"\n"
 			f"Build date: {escape_markdown(update.datetime.strftime('%Y/%m/%d'), 2)}\n"
 			f"Download: [Here]({escape_markdown(f'https://download.lineageos.org/{codename}', 2)})\n"
