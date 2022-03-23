@@ -111,18 +111,9 @@ class MatrixPlatform(PlatformBase):
 			file = self.file_to_generic(content["url"])
 
 		if ("m.relates_to" in content and "m.in_reply_to" in content["m.relates_to"]
-		    and "event_id" in content["m.relates_to"]["m.in_reply_to"]
-			and HomeBotDatabase.has(f"bridgey.messages")):
+		    and "event_id" in content["m.relates_to"]["m.in_reply_to"]):
 			in_reply_to = content['m.relates_to']['m.in_reply_to']['event_id']
-			for message_id, message_platforms_id in HomeBotDatabase.get(f"bridgey.messages").items():
-				if not self.NAME in message_platforms_id:
-					continue
-
-				if message_platforms_id[self.NAME] != in_reply_to:
-					continue
-
-				reply_to = message_id
-				break
+			reply_to = reply_to = self.get_generic_message_id(in_reply_to)
 
 		return Message(platform=MatrixPlatform,
 		               message_type=message_type,

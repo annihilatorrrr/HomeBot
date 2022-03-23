@@ -82,16 +82,8 @@ class TelegramPlatform(PlatformBase):
 		else:
 			message_type = MessageType.UNKNOWN
 
-		if message.reply_to_message and HomeBotDatabase.has(f"bridgey.messages"):
-			for message_id, message_platforms_id in HomeBotDatabase.get(f"bridgey.messages").items():
-				if not self.NAME in message_platforms_id:
-					continue
-
-				if message_platforms_id[self.NAME] != message.reply_to_message.message_id:
-					continue
-
-				reply_to = message_id
-				break
+		if message.reply_to_message:
+			reply_to = self.get_generic_message_id(message.reply_to_message.message_id)
 
 		return Message(platform=TelegramPlatform,
 		               message_type=message_type,

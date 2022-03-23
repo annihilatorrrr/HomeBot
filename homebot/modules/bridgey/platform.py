@@ -1,4 +1,5 @@
 from colour import Color
+from homebot.core.database import HomeBotDatabase
 from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message
 from homebot.modules.bridgey.types.user import User
@@ -26,6 +27,30 @@ class PlatformBase:
 		"""Return the name of the platform."""
 		return self.NAME
 
+	def on_message(self, message: Message) -> int:
+		"""A new message has been received and must be sent to other bridges.
+
+		Returns the common ID assigned by the coordinator. The platform
+		must save this ID to be able to identify the message later.
+		"""
+		return self.coordinator.handle_message(message)
+
+	def get_generic_message_id(self, platform_message_id: int) -> int:
+		"""Get the common ID of a message given the platform message ID."""
+		if not HomeBotDatabase.has(f"bridgey.messages"):
+			return None
+
+		for message_id, platform_message_ids in dict(HomeBotDatabase.get(f"bridgey.messages")).items():
+			if not self.NAME in platform_message_ids:
+				continue
+
+			if platform_message_ids[self.NAME] != platform_message_id:
+				continue
+
+			return message_id
+
+		return None
+
 	@property
 	def running(self) -> bool:
 		"""The platform observer is running."""
@@ -42,14 +67,6 @@ class PlatformBase:
 	def message_to_generic(self, message: MESSAGE_TYPE) -> Message:
 		"""Convert a platform-specific message object to a generic message."""
 		raise NotImplementedError
-
-	def on_message(self, message: Message) -> int:
-		"""A new message has been received and must be sent to other bridges.
-
-		Returns the common ID assigned by the coordinator. The platform
-		must save this ID to be able to identify the message later.
-		"""
-		return self.coordinator.handle_message(message)
 
 	def send_message(self, message: Message, message_id: int) -> None:
 		"""Send a message to the platform."""

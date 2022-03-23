@@ -116,16 +116,8 @@ class DiscordPlatform(PlatformBase):
 				for attachment in message.attachments[1:]:
 					text += f"\n - {attachment.url}"
 
-		if message.reference and HomeBotDatabase.has(f"bridgey.messages"):
-			for message_id, message_platforms_id in HomeBotDatabase.get(f"bridgey.messages").items():
-				if not self.NAME in message_platforms_id:
-					continue
-
-				if message_platforms_id[self.NAME] != message.reference.message_id:
-					continue
-
-				reply_to = message_id
-				break
+		if message.reference:
+			reply_to = reply_to = self.get_generic_message_id(message.reference.message_id)
 
 		return Message(platform=DiscordPlatform,
 		               message_type=message_type,
