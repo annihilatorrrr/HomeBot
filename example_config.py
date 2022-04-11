@@ -12,55 +12,60 @@ config = {
 
 	# Module - Bridgey
 	"bridgey": {
-		# Enable the module
+		# Enable bridging
 		# type: bool
-		"enable": False,
+		"enabled": False,
 
-		# Discord bridge
-		"discord": {
-			# Enable the bridge
-			# type: bool
-			"enable": False,
+		# List of pools (don't change pools and platforms name after you start the bridge)
+		# type: dict[str, dict[str, dict]]
+		"pools": {
+			"example": {
+				"discord": {
+					# The name of the platform
+					# type: str
+					"platform": "Discord",
 
-			# ID of the channel to bridge
-			# type: int
-			"channel_id": None,
+					# ID of the channel to bridge
+					# type: int
+					"channel_id": 0,
 
-			# Bot token
-			# type: str
-			"token": "",
-		},
+					# Bot token
+					# type: str
+					"token": "",
+				},
 
-		"matrix": {
-			# Enable the bridge
-			# type: bool
-			"enable": False,
+				"matrix": {
+					# The name of the platform
+					# type: str
+					"platform": "Matrix",
 
-			# User ID of the bot account (e.g. @user:matrix.org)
-			# type: str
-			"username": "",
+					# User ID of the bot account (e.g. @user:matrix.org)
+					# type: str
+					"username": "",
 
-			# Password of the bot account
-			# type: str
-			"password": "",
+					# Password of the bot account
+					# type: str
+					"password": "",
 
-			# URL of the Matrix server (e.g. https://matrix.org)
-			# type: str
-			"homeserver_url": "",
+					# URL of the Matrix server (e.g. https://matrix.org)
+					# type: str
+					"homeserver_url": "",
 
-			# The alias of the room you want to bridge (e.g. #room:matrix.org)
-			# type: str
-			"room_alias": "",
-		},
+					# The alias of the room you want to bridge (e.g. #room:matrix.org)
+					# type: str
+					"room_alias": "",
+				},
 
-		"telegram": {
-			# Enable the bridge
-			# type: bool
-			"enable": False,
+				"telegram": {
+					# The name of the platform
+					# type: str
+					"platform": "Telegram",
 
-			# ID or username of the chat to bridge
-			# type: int | str
-			"chat_id": "",
+					# ID of the chat to bridge
+					# type: int
+					"chat_id": 0,
+				},
+			},
 		},
 	},
 

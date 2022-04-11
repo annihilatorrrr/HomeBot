@@ -2,8 +2,6 @@ from __future__ import annotations
 import asyncio
 from discord import Client, Embed, File as DiscordFile, TextChannel
 from discord import Attachment, Message as DiscordMessage, User as DiscordUser
-from homebot.core.config import get_config
-from homebot.core.database import HomeBotDatabase
 from homebot.lib.liblogging import LOGE
 from homebot.modules.bridgey.platform import PlatformBase
 from homebot.modules.bridgey.types.file import File
@@ -12,10 +10,6 @@ from homebot.modules.bridgey.types.user import User
 from io import BytesIO
 import requests
 from threading import Thread
-
-ENABLE = get_config("bridgey.discord.enable", False)
-CHANNEL_ID = get_config("bridgey.discord.channel_id", None)
-TOKEN = get_config("bridgey.discord.token", "")
 
 class BridgeyDiscordClient(Client):
 	"""Discord client that pass the message to DiscordPlatform."""
@@ -26,14 +20,14 @@ class BridgeyDiscordClient(Client):
 		self.platform = platform
 
 	async def on_ready(self):
-		channel = self.get_channel(CHANNEL_ID)
+		channel = self.get_channel(self.platform.channel_id)
 
 		if not channel:
-			LOGE(f"Failed to get channel {CHANNEL_ID}")
+			LOGE(f"Failed to get channel {self.platform.channel_id}")
 			return
 
 		if not isinstance(channel, TextChannel):
-			LOGE(f"Channel {CHANNEL_ID} is not a text channel")
+			LOGE(f"Channel {self.platform.channel_id} is not a text channel")
 			return
 
 		self.platform.channel = channel
@@ -41,11 +35,10 @@ class BridgeyDiscordClient(Client):
 	async def on_message(self, message: DiscordMessage):
 		if message.author == self.user:
 			return
-		if message.channel.id != CHANNEL_ID:
+		if message.channel.id != self.platform.channel_id:
 			return
 
-		message_id = self.platform.on_message(self.platform.message_to_generic(message))
-		HomeBotDatabase.set(f"bridgey.messages.{message_id}.{self.platform.NAME}", message.id)
+		self.platform.on_message(self.platform.message_to_generic(message), message.id)
 
 	def run_coroutine(self, coroutine):
 		"""Run a coroutine in the client's loop."""
@@ -59,16 +52,16 @@ class DiscordPlatform(PlatformBase):
 	MESSAGE_TYPE = DiscordMessage
 	USER_TYPE = DiscordUser
 
-	def __init__(self, coordinator):
+	def __init__(self, pool, instance_name: str, data: dict):
 		"""Initialize the platform."""
-		super().__init__(coordinator)
+		super().__init__(pool, instance_name, data)
+
+		self.channel_id: int = data["channel_id"]
+		self.token: str = data["token"]
 
 		self.client = None
-		self.channel = None
+		self.channel: TextChannel = None
 		self.thread = None
-
-		if not (ENABLE and CHANNEL_ID and TOKEN):
-			return
 
 		self.client = BridgeyDiscordClient(self)
 
@@ -76,19 +69,19 @@ class DiscordPlatform(PlatformBase):
 		self.thread.start()
 
 	def __daemon(self):
-		self.client.run(TOKEN)
+		self.client.run(self.token)
 
 	@property
 	def running(self) -> bool:
 		return bool(self.thread) and self.thread.is_alive() and self.channel is not None
 
 	def file_to_generic(self, file: FILE_TYPE) -> Message:
-		return File(platform=DiscordPlatform,
+		return File(platform=self,
 		            url=file.url,
 		            name=file.filename)
 
 	def user_to_generic(self, user: USER_TYPE) -> User:
-		return User(platform=DiscordPlatform,
+		return User(platform=self,
 		            name=f"{user.name}#{user.discriminator}",
 					url=f"https://discordapp.com/users/{user.id}",
 					avatar_url=user.avatar)
@@ -119,7 +112,7 @@ class DiscordPlatform(PlatformBase):
 		if message.reference:
 			reply_to = reply_to = self.get_generic_message_id(message.reference.message_id)
 
-		return Message(platform=DiscordPlatform,
+		return Message(platform=self,
 		               message_type=message_type,
 		               user=self.user_to_generic(message.author),
 					   timestamp=message.created_at,
@@ -160,10 +153,11 @@ class DiscordPlatform(PlatformBase):
 
 				file = DiscordFile(BytesIO(r.content), filename=message.file.name)
 
-		if message.reply_to and HomeBotDatabase.has(f"bridgey.messages.{message.reply_to}.{self.NAME}"):
-			reference = self.channel.get_partial_message(HomeBotDatabase.get(f"bridgey.messages.{message.reply_to}.{self.NAME}"))
-		else:
-			reference = None
+		reference = None
+		if message.reply_to:
+			reply_to_message_id = self.get_platform_message_id(message.reply_to)
+			if reply_to_message_id is not None:
+				reference = self.channel.get_partial_message(reply_to_message_id)
 
 		try:
 			discord_message = self.client.run_coroutine(self.channel.send(embed=embed,
@@ -173,4 +167,4 @@ class DiscordPlatform(PlatformBase):
 			LOGE(f"Failed to send message to Discord: {e}")
 			return
 
-		HomeBotDatabase.set(f"bridgey.messages.{message_id}.{self.NAME}", discord_message.id)
+		self.set_platform_message_id(message_id, discord_message.id)
