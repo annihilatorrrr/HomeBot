@@ -2,13 +2,13 @@ from __future__ import annotations
 import asyncio
 from discord import Client, Embed, File as DiscordFile, TextChannel
 from discord import Attachment, Message as DiscordMessage, User as DiscordUser
-from homebot.lib.liblogging import LOGE
 from homebot.modules.bridgey.platform import PlatformBase
 from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message, MessageType
 from homebot.modules.bridgey.types.user import User
 from io import BytesIO
 import requests
+from sebaubuntu_libs.liblogging import LOGE
 from threading import Thread
 
 class BridgeyDiscordClient(Client):

@@ -1,8 +1,8 @@
-from homebot.lib.liblineage import GITHUB_ORG, LINEAGEOS_TO_ANDROID_VERSION
-from homebot.lib.liblineage.ota import FullUpdateInfo
-from homebot.lib.liblineage.wiki import get_device_data
-from homebot.lib.liblogging import LOGE
 from homebot.core.config import get_config
+from sebaubuntu_libs.liblineage import LINEAGEOS_TO_ANDROID_VERSION
+from sebaubuntu_libs.liblineage.ota import FullUpdateInfo
+from sebaubuntu_libs.liblineage.wiki import get_device_data
+from sebaubuntu_libs.liblogging import LOGE
 from telegram.bot import Bot
 from telegram.parsemode import ParseMode
 from telegram.utils.helpers import escape_markdown

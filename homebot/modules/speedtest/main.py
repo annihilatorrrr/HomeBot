@@ -1,5 +1,5 @@
 from datetime import datetime
-from homebot.lib.liblogging import LOGI
+from sebaubuntu_libs.liblogging import LOGI
 from speedtest import Speedtest
 from telegram.ext import CallbackContext
 from telegram.update import Update

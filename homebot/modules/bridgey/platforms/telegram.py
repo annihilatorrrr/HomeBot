@@ -1,10 +1,10 @@
-from homebot.lib.libexception import format_exception
-from homebot.lib.liblogging import LOGE, LOGI
 from homebot.modules.bridgey.platform import PlatformBase
 from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message, MessageType
 from homebot.modules.bridgey.types.user import User
 import requests
+from sebaubuntu_libs.libexception import format_exception
+from sebaubuntu_libs.liblogging import LOGE, LOGI
 from telegram import File as TelegramFile
 from telegram.bot import Bot
 from telegram.error import BadRequest

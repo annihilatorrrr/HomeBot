@@ -1,6 +1,6 @@
-from homebot.lib.libnekobin import to_nekobin
 from io import BytesIO
 from requests import HTTPError
+from sebaubuntu_libs.libnekobin import to_nekobin
 from telegram.ext import CallbackContext
 from telegram.update import Update
 

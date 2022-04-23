@@ -1,7 +1,7 @@
 from homebot.core.config import get_config
 from homebot.core.database import HomeBotDatabase
-from homebot.lib.liblogging import LOGW
 from homebot.modules.bridgey.platform import PlatformBase
+from sebaubuntu_libs.liblogging import LOGW
 from threading import Lock
 
 # Platforms

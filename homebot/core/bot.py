@@ -1,8 +1,8 @@
 from homebot.core.error_handler import error_handler
 from homebot.core.mdlintf import mdlbinder
-from homebot.lib.libexception import format_exception
-from homebot.lib.liblogging import LOGE, LOGI
 from os import execl
+from sebaubuntu_libs.libexception import format_exception
+from sebaubuntu_libs.liblogging import LOGE, LOGI
 from signal import SIGTERM
 import sys
 from telegram.ext import ContextTypes, Updater

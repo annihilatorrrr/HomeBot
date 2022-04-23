@@ -2,7 +2,7 @@ from homebot import __version__
 from homebot.core.bot import HomeBot
 from homebot.core.config import get_config
 from homebot.core.logging import setup_logging
-from homebot.lib.liblogging import LOGI
+from sebaubuntu_libs.liblogging import LOGI
 
 def main():
 	setup_logging()

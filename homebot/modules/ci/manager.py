@@ -1,7 +1,7 @@
-from homebot.lib.libexception import format_exception
-from homebot.lib.liblogging import LOGE, LOGI
 from importlib import import_module
 from queue import Queue
+from sebaubuntu_libs.libexception import format_exception
+from sebaubuntu_libs.liblogging import LOGE, LOGI
 from telegram.ext.callbackcontext import CallbackContext
 from telegram.update import Update
 from threading import Thread

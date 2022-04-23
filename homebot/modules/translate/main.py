@@ -1,6 +1,6 @@
 from deepl import Translator
 from homebot.core.config import get_config
-from homebot.lib.liblogging import LOGE
+from sebaubuntu_libs.liblogging import LOGE
 from telegram.ext import CallbackContext
 from telegram.parsemode import ParseMode
 from telegram.update import Update

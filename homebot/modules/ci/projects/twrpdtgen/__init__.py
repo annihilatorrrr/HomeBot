@@ -4,12 +4,12 @@ from datetime import date
 from git import Repo
 from git.exc import GitCommandError
 from github import Github, GithubException
-from twrpdtgen.utils.logging import LOGE
 from homebot.core.config import get_config
-from homebot.lib.libexception import format_exception
 from homebot.modules.ci.parser import CIParser
 from pathlib import Path
 import requests
+from sebaubuntu_libs.libexception import format_exception
+from sebaubuntu_libs.liblogging import LOGE
 from telegram import Update
 from telegram.ext import CallbackContext
 from tempfile import TemporaryDirectory

@@ -1,8 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
 from homebot.core.database import HomeBotDatabase
-from homebot.lib.libexception import format_exception
-from homebot.lib.liblogging import LOGE
 from homebot.modules.bridgey.platform import PlatformBase
 from homebot.modules.bridgey.types.file import File
 from homebot.modules.bridgey.types.message import Message, MessageType
@@ -11,6 +9,8 @@ import magic
 from matrix_client.client import MatrixClient, MatrixRequestError
 from matrix_client.room import Room
 import requests
+from sebaubuntu_libs.libexception import format_exception
+from sebaubuntu_libs.liblogging import LOGE
 
 class MatrixPlatform(PlatformBase):
 	NAME = "Matrix"

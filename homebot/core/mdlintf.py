@@ -6,11 +6,11 @@
 from __future__ import annotations
 
 from homebot.core.binder import Binder, BinderInterface
-from homebot.lib.libexception import format_exception
-from homebot.lib.liblogging import LOGE
 from importlib import import_module
 from pathlib import Path
 from pkgutil import iter_modules
+from sebaubuntu_libs.libexception import format_exception
+from sebaubuntu_libs.liblogging import LOGE
 from telegram.bot import Bot
 from telegram.botcommand import BotCommand
 from telegram.ext import Handler

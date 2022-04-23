@@ -2,7 +2,7 @@
 # Module Binder IPC
 #
 
-from homebot.lib.liblogging import LOGI, LOGW
+from sebaubuntu_libs.liblogging import LOGI, LOGW
 from threading import Lock
 
 class BinderInterface:

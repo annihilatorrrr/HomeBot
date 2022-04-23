@@ -3,13 +3,13 @@ from homebot import bot_path
 from homebot.core.config import get_config
 from homebot.lib.libaosp.post import PostManager
 from homebot.lib.libaosp.returncode import AOSPReturnCode
-from homebot.lib.libexception import format_exception
-from homebot.lib.liblogging import LOGE
 from homebot.lib.libupload import Uploader
 from homebot.modules.ci.artifacts import Artifacts, ArtifactStatus
 from homebot.modules.ci.parser import CIParser
 from pathlib import Path
 import re
+from sebaubuntu_libs.libexception import format_exception
+from sebaubuntu_libs.liblogging import LOGE
 import subprocess
 from telegram.ext import CallbackContext
 from telegram.update import Update
