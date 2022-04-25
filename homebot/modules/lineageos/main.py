@@ -24,8 +24,7 @@ def info(update: Update, context: CallbackContext):
 		update.message.reply_text("Error: Device not found")
 		return
 
-	update.message.reply_text(escape_markdown(f"{device_data}", 2),
-	                          parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
+	update.message.reply_text(f"{device_data}", disable_web_page_preview=True)
 
 def last(update: Update, context: CallbackContext):
 	if len(context.args) < 2:
@@ -74,8 +73,7 @@ def when(update: Update, context: CallbackContext):
 	command = f'from random import Random; print(Random("{device}").randint(1, 7))'
 	day_int = int(check_output(f"python2 -c '{command}'", shell=True))
 	day = day_name[day_int - 1]
-	update.message.reply_text(f"The next build for {escape_markdown(device_data.vendor + ' ' + device_data.name, 2)} \({escape_markdown(device, 2)}\) will be on {day}",
-	                          parse_mode=ParseMode.MARKDOWN_V2)
+	update.message.reply_text(f"The next build for {device_data.vendor} {device_data.name} ({device}) will be on {day}")
 
 # name: function
 COMMANDS: dict[str, Callable[[Update, CallbackContext], None]] = {
