@@ -24,7 +24,7 @@ def info(update: Update, context: CallbackContext):
 		update.message.reply_text("Error: Device not found")
 		return
 
-	update.message.reply_text(f"{device_data}",
+	update.message.reply_text(escape_markdown(f"{device_data}", 2),
 	                          parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True)
 
 def last(update: Update, context: CallbackContext):
