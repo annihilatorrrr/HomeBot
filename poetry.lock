@@ -517,7 +517,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
 
 [[package]]
 name = "sebaubuntu-libs"
-version = "1.0.2"
+version = "1.0.5"
 description = "SebaUbuntu's shared libs"
 category = "main"
 optional = false
@@ -1233,8 +1233,8 @@ requests = [
     {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
 ]
 sebaubuntu-libs = [
-    {file = "sebaubuntu_libs-1.0.2-py3-none-any.whl", hash = "sha256:50766e094ee5f2ab4f8f7e14d3c95b436dd27d363ee6190eeab810b341c530c0"},
-    {file = "sebaubuntu_libs-1.0.2.tar.gz", hash = "sha256:2601d917c79fd0e4f69d87777ad90f0aa2d7297a8e2b713d6a35f4ef24fb0f05"},
+    {file = "sebaubuntu_libs-1.0.5-py3-none-any.whl", hash = "sha256:39d6751055dbc79181deee169216b7a50ba5e7c0104085ca212ba2e33508f4fc"},
+    {file = "sebaubuntu_libs-1.0.5.tar.gz", hash = "sha256:b291a72b26394ce18b129237462de4855ac21de21b9689560c417ab5c7db006d"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
