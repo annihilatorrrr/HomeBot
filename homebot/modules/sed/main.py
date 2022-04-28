@@ -1,4 +1,4 @@
-import re
+from sebaubuntu_libs.libsed import sed
 from telegram.ext import CallbackContext
 from telegram.update import Update
 
@@ -29,18 +29,9 @@ def sed_handler(update: Update, context: CallbackContext):
 	else:
 		flags = ""
 
-	# flags parsing
-	all_matches = 'g' in flags
-	ignorecase = 'i' in flags or 'I' in flags
-	multiline = 'm' in flags or 'M' in flags
-
-	flags = 0
-	flags |= (re.M if multiline else 0)
-	flags |= (re.I if ignorecase else 0)
-
 	force_reply = False
 	try:
-		result = re.sub(pattern, repl, string, (0 if all_matches else 1), flags)
+		result = sed(string, pattern, repl, flags)
 	except Exception as e:
 		result = (
 			f"fuck me\n"
