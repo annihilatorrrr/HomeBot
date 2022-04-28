@@ -2,7 +2,7 @@ import re
 from telegram.ext import CallbackContext
 from telegram.update import Update
 
-def sed(update: Update, context: CallbackContext):
+def sed_handler(update: Update, context: CallbackContext):
 	if not update.message.reply_to_message:
 		return
 
