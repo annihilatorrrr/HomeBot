@@ -51,6 +51,8 @@ def sed(update: Update, context: CallbackContext):
 	if not force_reply and result == string:
 		return
 
+	result = result.strip()
+
 	if not result:
 		result = "Result is an empty string you fuck"
 
