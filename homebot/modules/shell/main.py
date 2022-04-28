@@ -1,8 +1,9 @@
 from homebot.lib.libadmin import user_is_admin
 import subprocess
-from telegram.constants import MAX_MESSAGE_LENGTH
+from telegram.constants import MAX_MESSAGE_LENGTH, PARSEMODE_MARKDOWN_V2
 from telegram.ext import CallbackContext
 from telegram.update import Update
+from telegram.utils.helpers import escape_markdown
 from tempfile import TemporaryFile
 
 def shell(update: Update, context: CallbackContext):
@@ -27,25 +28,28 @@ def shell(update: Update, context: CallbackContext):
 		output = process
 
 	text = (
-		f"Command: {command}\n"
+		f"Command: `{escape_markdown(command, 2)}`\n"
 		f"Return code: {returncode}\n"
 		"\n"
 	)
 
 	text_message = (
 		"Output:\n"
-		f"{output}"
+		"```\n"
+		f"{escape_markdown(output, 2)}\n"
+		"```"
 	)
 
 	text_document = "Output: sent as document"
 
 	if len(text) + len(text_message) < MAX_MESSAGE_LENGTH:
 		text += text_message
-		update.message.reply_text(text)
+		update.message.reply_text(text, parse_mode=PARSEMODE_MARKDOWN_V2)
 	else:
 		text += text_document
 		fd = TemporaryFile(mode='r+')
 		fd.write(output)
 		fd.seek(0)
-		update.message.reply_document(document=fd, filename="output.txt", caption=text)
+		update.message.reply_document(document=fd, filename="output.txt", caption=text,
+		                              parse_mode=PARSEMODE_MARKDOWN_V2)
 		fd.close()
