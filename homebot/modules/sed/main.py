@@ -20,6 +20,9 @@ def sed_handler(update: Update, context: CallbackContext):
 
 	for command in message_text.split(';'):
 		command = command.lstrip()
+		if not command.strip():
+			continue
+
 		if not command.startswith("s/"):
 			return
 
