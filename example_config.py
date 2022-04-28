@@ -118,17 +118,6 @@ config = {
 		"chat_id": "",
 	},
 
-	# Module - Politically correct
-	"politically_correct": {
-		# type: bool
-		# Enable the module
-		"enable": False,
-
-		# type: list[str]
-		# Chats where the module will be enabled
-		"chat_ids": [],
-	},
-
 	# Module - Translate
 	"translate": {
 		# type: str
