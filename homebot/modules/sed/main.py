@@ -15,29 +15,34 @@ def sed_handler(update: Update, context: CallbackContext):
 	if not message_text:
 		return
 
-	if not message_text.startswith("s/"):
-		return
-
-	sed_command = message_text.split("/")
-	if len(sed_command) < 3 or len(sed_command) > 4:
-		return
-
-	pattern = sed_command[1]
-	repl = sed_command[2]
-	if len(sed_command) == 4:
-		flags = sed_command[3]
-	else:
-		flags = ""
-
+	result = string
 	force_reply = False
-	try:
-		result = sed(string, pattern, repl, flags)
-	except Exception as e:
-		result = (
-			f"fuck me\n"
-			f"{e}"
-		)
-		force_reply = True
+
+	for command in message_text.split(';'):
+		command = command.lstrip()
+		if not command.startswith("s/"):
+			return
+
+		sed_command = command.split("/")
+		if len(sed_command) < 3 or len(sed_command) > 4:
+			return
+
+		pattern = sed_command[1]
+		repl = sed_command[2]
+		if len(sed_command) == 4:
+			flags = sed_command[3]
+		else:
+			flags = ""
+
+		try:
+			result = sed(string, pattern, repl, flags)
+		except Exception as e:
+			result = (
+				f"fuck me\n"
+				f"{e}"
+			)
+			force_reply = True
+			break
 
 	if not force_reply and result == string:
 		return
