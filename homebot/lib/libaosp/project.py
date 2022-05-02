@@ -16,9 +16,10 @@ from telegram.update import Update
 
 ADDITIONAL_ARTIFACTS = [
 	"boot.img",
-	"vendor_boot.img",
 	"dtbo.img",
 	"recovery.img",
+	"vbmeta.img",
+	"vendor_boot.img",
 ]
 
 MAIN_DIR = Path(get_config('ci.main_dir', ''))
