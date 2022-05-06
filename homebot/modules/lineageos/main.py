@@ -1,11 +1,10 @@
 from calendar import day_name
 from humanize import naturalsize
+from random import Random
 from re import match
 from requests import HTTPError
 from sebaubuntu_libs.liblineage.ota import get_nightlies
 from sebaubuntu_libs.liblineage.wiki import get_device_data
-from shutil import which
-from subprocess import check_output
 from telegram.ext import CallbackContext
 from telegram.parsemode import ParseMode
 from telegram.update import Update
@@ -66,12 +65,9 @@ def when(update: Update, context: CallbackContext):
 		update.message.reply_text("Error: Device not maintained")
 		return
 
-	if which("python2") is None:
-		update.message.reply_text("Error: Python 2.x isn't installed, it's required to parse the day")
-		return
-
-	command = f'from random import Random; print(Random("{device}").randint(1, 7))'
-	day_int = int(check_output(f"python2 -c '{command}'", shell=True))
+	random = Random()
+	random.seed(device, version=1)
+	day_int = int(1+7*random.random())
 	day = day_name[day_int - 1]
 	update.message.reply_text(f"The next build for {device_data.vendor} {device_data.name} ({device}) will be on {day}")
 
