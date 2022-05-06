@@ -110,7 +110,7 @@ class DiscordPlatform(PlatformBase):
 					text += f"\n - {attachment.url}"
 
 		if message.reference:
-			reply_to = reply_to = self.get_generic_message_id(message.reference.message_id)
+			reply_to = self.get_generic_message_id(message.reference.message_id)
 
 		return Message(platform=self,
 		               message_type=message_type,
