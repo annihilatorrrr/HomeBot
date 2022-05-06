@@ -13,8 +13,8 @@ from sebaubuntu_libs.liblogging import LOGE
 from telegram import Update
 from telegram.ext import CallbackContext
 from tempfile import TemporaryDirectory
-from twrpdtgen.devicetree import DeviceTree
-from twrpdtgen.utils.deviceinfo import PARTITIONS
+from twrpdtgen.device_tree import DeviceTree
+from twrpdtgen.utils.device_info import PARTITIONS
 
 BUILD_DESCRIPTION = ["ro.build.description"] + [f"ro.{partition}.build.description" for partition in PARTITIONS]
 
