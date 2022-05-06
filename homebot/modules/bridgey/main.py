@@ -20,7 +20,7 @@ def handle_telegram_update(update: Update, context: CallbackContext):
 			if platform.chat_id != update.message.chat.id:
 				continue
 
-			platform.on_message(platform.message_to_generic(update.message), update.message.chat.id)
+			platform.on_message(platform.message_to_generic(update.message), update.message.message_id)
 
 def bridgey(update: Update, context: CallbackContext):
 	reply = "Bridgey status:\n"
