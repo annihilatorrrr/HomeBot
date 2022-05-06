@@ -25,7 +25,13 @@ class Observer:
 	def daemon(self):
 		while True:
 			self.event.wait()
-			for device in [build_target.device for build_target in get_lineage_build_targets()]:
+			try:
+				build_targets = get_lineage_build_targets()
+			except Exception as e:
+				LOGE(f"Can't get build targets: {format_exception(e)}")
+				continue
+
+			for device in [build_target.device for build_target in build_targets]:
 				try:
 					response = get_nightlies(device)
 				except Exception:
