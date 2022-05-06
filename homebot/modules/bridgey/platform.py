@@ -39,23 +39,23 @@ class PlatformBase:
 		"""A new message has been received and must be sent to other bridges."""
 		return self.pool.on_message(message, original_message_id)
 
-	def get_generic_message_id(self, platform_message_id: int) -> int:
+	def get_generic_message_id(self, platform_message_id) -> int:
 		"""Get the common ID of a message given the platform message ID."""
 		if not HomeBotDatabase.has(self.pool.messages_key):
 			return None
 
 		for message_id, platform_message_ids in dict(HomeBotDatabase.get(self.pool.messages_key)).items():
-			if not self.NAME in platform_message_ids:
+			if not self.instance_name in platform_message_ids:
 				continue
 
-			if platform_message_ids[self.NAME] != platform_message_id:
+			if platform_message_ids[self.instance_name] != platform_message_id:
 				continue
 
-			return message_id
+			return int(message_id)
 
 		return None
 
-	def get_platform_message_id(self, generic_message_id: int) -> int:
+	def get_platform_message_id(self, generic_message_id: int):
 		"""Get the platform message ID of a generic message."""
 		key = f"{self.pool.messages_key}.{generic_message_id}.{self.instance_name}"
 
