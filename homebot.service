@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 # Change WorkingDirectory with the directory where you have HomeBot configs
-WorkingDirectory=/home/seba/Scrivania/Repositories/HomeBot
+WorkingDirectory=/home/seba/Scrivania/Repositories/homebot
 ExecStart=/usr/bin/python3.9 -m homebot
 Type=simple
 Restart=always
