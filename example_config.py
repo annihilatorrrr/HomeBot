@@ -69,46 +69,6 @@ config = {
 		},
 	},
 
-	# Module - CI
-	# Read this before continuing: https://github.com/SebaUbuntu/HomeBot/wiki/Modules-%7C-ci#variables
-	"ci": {
-		# type: str
-		"main_dir": "",
-
-		# type: str
-		"channel_id": "",
-
-		# type: bool
-		"upload_artifacts": False,
-
-		# type: str
-		"github_username": "",
-
-		# type: str
-		"github_token": "",
-
-		# type: bool
-		# Enable ccache
-		"enable_ccache": False,
-
-		# type: str
-		# Path to ccache executable
-		"ccache_exec": "",
-
-		# type: str
-		# Path to ccache files
-		"ccache_dir": "",
-
-		# twrpdtgen script
-		"twrpdtgen": {
-			# type: str
-			"github_org": "",
-
-			# type: str
-			"channel_id": "",
-		}
-	},
-
 	# Module - LineageOS updates
 	"lineageos_updates": {
 		# type: bool
@@ -125,29 +85,6 @@ config = {
 
 		# type: list[int]
 		"approved_user_ids": [],
-	},
-
-	# Library - libupload
-	"libupload": {
-		"default": {
-			# type: str
-			"method": "",
-
-			# type: str
-			"base_dir": "",
-
-			# type: str
-			"host": "",
-
-			# type: str
-			"port": "",
-
-			# type: str
-			"username": "",
-
-			# type: str
-			"password": "",
-		},
 	},
 	# [END]
 }
