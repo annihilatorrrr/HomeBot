@@ -18,9 +18,7 @@ Reference
     :toctree: homebot
     :recursive:
 
-    homebot.core
-    homebot.lib
-    homebot.modules
+    homebot
 
 .. toctree::
     :titlesonly:
