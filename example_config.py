@@ -10,15 +10,6 @@ config = {
 		"logging_chat_id": "",
 	},
 
-	# Module - LineageOS updates
-	"lineageos_updates": {
-		# type: bool
-		"enable": False,
-
-		# type: str
-		"chat_id": "",
-	},
-
 	# Library - libadmin
 	"libadmin": {
 		# type: list[int]
